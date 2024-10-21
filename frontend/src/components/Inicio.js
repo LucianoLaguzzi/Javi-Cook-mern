@@ -350,6 +350,8 @@ const Inicio = () => {
                     </div>
 
                     <main className="principal">
+                        
+    {/* Seguir desde aca, con el boton de los filtros */}                    
                         {/* Sección de filtro */}
                         <section className="filtro">
                             <h2>Buscá tus recetas por ingredientes</h2>
