@@ -27,7 +27,8 @@ const Inicio = () => {
     const [topRecetas, setTopRecetas] = useState([]);
     const [favoritos, setFavoritos] = useState([]);
 
-
+    //Para el filtro:
+    const [recetasFiltradas, setRecetasFiltradas] = useState([]); // Recetas después del filtrado
 
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
 
@@ -39,6 +40,7 @@ const Inicio = () => {
         axios.get('/api/recetas')
         .then(response => {
             setRecetas(response.data);
+            setRecetasFiltradas(response.data); // Inicialmente mostrar todas
             setLoading(false);
         })
         .catch(error => {
@@ -218,6 +220,29 @@ const Inicio = () => {
                 .catch(error => console.error('Error al agregar a favoritos:', error));
         }
     };
+
+
+    
+    // Función para manejar el filtrado por ingredientes
+    const manejarFiltroIngredientes = (input) => {
+        const ingredientesBuscados = input.toLowerCase().split(/[\s,]+/).filter(Boolean); // Dividir por espacios o comas, ignorando entradas vacías
+        if (ingredientesBuscados.length === 0) {
+            // Mostrar todas las recetas si no se ingresó ningún ingrediente
+            setRecetasFiltradas(recetas);
+        } else {
+            // Filtrar las recetas que contienen todos los ingredientes buscados
+            const recetasFiltradasPorIngrediente = recetas.filter((receta) => {
+                const ingredientesReceta = receta.ingredientes[0].toLowerCase().split(', ');
+                // Verificar si todos los ingredientes buscados están en los ingredientes de la receta
+                return ingredientesBuscados.every(ingrediente => 
+                    ingredientesReceta.some(ingReceta => ingReceta.includes(ingrediente))
+                );
+            });
+    
+            setRecetasFiltradas(recetasFiltradasPorIngrediente);
+        }
+    };
+    
     
     
 
@@ -350,18 +375,16 @@ const Inicio = () => {
                     </div>
 
                     <main className="principal">
-                        
-    {/* Seguir desde aca, con el boton de los filtros */}                    
-                        {/* Sección de filtro */}
+                 
+                       {/* Sección de filtro */}
                         <section className="filtro">
                             <h2>Buscá tus recetas por ingredientes</h2>
                             <div className="filtro-ing">
-                                <button className="boton-filtro" onClick={() => console.log('Buscar por ingredientes')}>Buscar</button>
                                 <input 
                                     type="text" 
                                     className="text-filtro" 
-                                    placeholder="Buscar por ingredientes..." 
-                                    onChange={(e) => console.log(e.target.value)} // Manejo de entrada
+                                    placeholder="Buscar por ingrediente/s ..." 
+                                    onChange={(e) => manejarFiltroIngredientes(e.target.value)} // Filtrado en tiempo real
                                 />
                             </div>
                         </section>
@@ -373,25 +396,25 @@ const Inicio = () => {
                             </div>
 
                             {loading ? (
-                            <div className="loading-container">
-                                <div className="spinner"></div>
-                                <p className='cargando-recetas'>Cargando recetas...</p>
-                            </div>
+                                <div className="loading-container">
+                                    <div className="spinner"></div>
+                                    <p className='cargando-recetas'>Cargando recetas...</p>
+                                </div>
                             ) : (
-                                recetas.length > 0 ? (
+                                recetasFiltradas.length > 0 ? (
                                     <div className="panel-recetas">
-                                        {recetas.map((receta) => (
+                                        {recetasFiltradas.map((receta) => (
                                             <div key={receta.id} className="tarjeta-receta">
                                                 <div className="imagen-contenedor">
                                                     <img src={receta.imagen} alt={receta.titulo} />
                                                     <div className="info-imagen">
                                                         <span className="nombre-usuario">{receta.usuario.nombre}</span>  
-                                                        <span className="fecha-subida"> {new Date(receta.fecha).toLocaleDateString('es-AR')}</span>
+                                                        <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString('es-AR')}</span>
                                                     </div>
                                                     <i className={`fas fa-heart icono-favorito ${favoritos.includes(receta._id) ? 'favorito' : ''}`}
                                                         title={favoritos.includes(receta._id) ? 'Quitar de favoritos' : 'Guardar como favorito'}
                                                         onClick={() => toggleFavorito(receta._id)}
-                                                    ></i>                                                     {/* Implementar el toogle  */ }
+                                                    ></i> {/* Implementar el toogle */}
                                                 </div>
                                                 <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
                                                 <p>Categoría: {receta.categoria}</p>
@@ -404,22 +427,21 @@ const Inicio = () => {
                                                     <p>Valoración Promedio</p>
                                                     <div className="estrellas">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <i key={i} className={`fa${i < receta.valoracion ? 's' : 'r'} fa-star`}></i>
+                                                            <i key={i} className={`fa${i < Math.round(receta.valoracion) ? 's' : 'r'} fa-star`}></i>
                                                         ))}
                                                     </div>
                                                 </div>
-
                                                 <a className="ver-mas" onClick={() => navigate(`/detalle-receta/${receta._id}`)}>
                                                     Ver más
                                                 </a>
-
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <span className='mensaje-no-recetas'>Aún no hay recetas disponibles. ¡Sé el primero en compartir la tuya!</span>
+                                    <span className='mensaje-no-recetas'>No se encontraron recetas con esos ingredientes.</span>
                                 )
                             )}
+
 
 
                             {/* BOTON PARA VER MAS RECETAS
