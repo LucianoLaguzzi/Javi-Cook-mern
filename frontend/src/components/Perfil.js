@@ -316,6 +316,7 @@ const Perfil = () => {
                             )}
                         </div>
 
+
                         <div className="perfil-link-index">
                             <span className="mensaje-ir-index">
                                 <a href="/inicio" className="link">Volver a las recetas</a>

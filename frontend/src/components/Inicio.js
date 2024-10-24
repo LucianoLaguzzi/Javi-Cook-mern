@@ -26,9 +26,24 @@ const Inicio = () => {
     const [ingredientes, setIngredientes] = useState('');
     const [topRecetas, setTopRecetas] = useState([]);
     const [favoritos, setFavoritos] = useState([]);
-
-    //Para el filtro:
     const [recetasFiltradas, setRecetasFiltradas] = useState([]); // Recetas después del filtrado
+
+    const [paginaActual, setPaginaActual] = useState(1); // Página actual
+    const [recetasPorPagina] = useState(6); // Número de recetas a mostrar por página
+
+
+    //Calculos para mostrar bien las cantidades de recetas en la paginacion
+    const indexOfLastReceta = paginaActual * recetasPorPagina; // Última receta en la página actual
+    const indexOfFirstReceta = indexOfLastReceta - recetasPorPagina; // Primera receta en la página actual
+    const recetasActuales = recetasFiltradas.slice(indexOfFirstReceta, indexOfLastReceta); // Recetas a mostrar
+
+    //Calculos para manejar la paginacion bien
+    const totalRecetas = recetasFiltradas.length; // Total de recetas filtradas
+    const totalPaginas = Math.ceil(totalRecetas / recetasPorPagina); // Calcular el total de páginas
+
+
+
+
 
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
 
@@ -200,6 +215,12 @@ const Inicio = () => {
     }, []);
 
 
+    // Efecto para mostrar bien la seccion de recetas al cambiar la pagina en paginacion
+    useEffect(() => {
+        window.scrollTo(0, 0); // Desplazar hacia la parte superior
+    }, [paginaActual]);
+
+
     // Manejar el toggle de favoritos
     const toggleFavorito = (recetaId) => {
         const isFavorito = favoritos.includes(recetaId);
@@ -242,6 +263,8 @@ const Inicio = () => {
             setRecetasFiltradas(recetasFiltradasPorIngrediente);
         }
     };
+
+
     
     
     
@@ -285,6 +308,7 @@ const Inicio = () => {
         })
         .then(response => {
             setRecetas(prevRecetas => [...prevRecetas, response.data]);
+            setRecetasFiltradas(prevRecetas => [...prevRecetas, response.data]);
             cerrarModal();
             resetFormulario();
         })
@@ -401,9 +425,9 @@ const Inicio = () => {
                                     <p className='cargando-recetas'>Cargando recetas...</p>
                                 </div>
                             ) : (
-                                recetasFiltradas.length > 0 ? (
+                                recetasActuales.length > 0 ? (
                                     <div className="panel-recetas">
-                                        {recetasFiltradas.map((receta) => (
+                                        {recetasActuales.map((receta) => (
                                             <div key={receta.id} className="tarjeta-receta">
                                                 <div className="imagen-contenedor">
                                                     <img src={receta.imagen} alt={receta.titulo} />
@@ -442,16 +466,22 @@ const Inicio = () => {
                                 )
                             )}
 
-
-
-                            {/* BOTON PARA VER MAS RECETAS
-                            
-                            {recetas.length > 0 && (
-                                <div className="ver-mas-recetas">
-                                    <button onClick={() => console.log('Cargar más recetas')}>Ver más recetas...</button>
-                                </div>
-                            )}
-                            */}
+                            {/* Controles de Paginación */}
+                            <div className="paginacion">
+                                <button 
+                                    onClick={() => setPaginaActual(paginaActual > 1 ? paginaActual - 1 : 1)}
+                                    disabled={paginaActual === 1}
+                                >
+                                    Anterior
+                                </button>
+                                <span className='texto-paginacion'>Página {paginaActual} de {totalPaginas}</span>
+                                <button 
+                                    onClick={() => setPaginaActual(paginaActual < totalPaginas ? paginaActual + 1 : totalPaginas)}
+                                    disabled={paginaActual === totalPaginas}
+                                >
+                                    Siguiente
+                                </button>
+                            </div>
 
 
                             {/* Botón para agregar una nueva receta */}
@@ -591,7 +621,7 @@ const Inicio = () => {
                                         {/* Ingredientes */}
                                         <div className="div-ingredientes">
                                             <label className="label-ingredientes">Ingredientes característicos de la receta:</label>
-                                            <input type="text" id="ingredientesInput" className="input-ingredientes" placeholder="Ingrese ingredientes esenciales de la receta..." name="ingredientes" value={ingredientes} onChange={(e) => setIngredientes(e.target.value)} />
+                                            <input type="text" id="ingredientesInput" className="input-ingredientes" placeholder="Ingrese ingredientes..." name="ingredientes" value={ingredientes} onChange={(e) => setIngredientes(e.target.value)} />
                                         </div>
                                         <div className="p-aclaracion-ingrediente">
                                             <p className="instruccion-ingrediente">Separe cada ingrediente por una coma ( , )</p>
@@ -608,6 +638,14 @@ const Inicio = () => {
                                 </div>
                             </div>
                             )}
+
+
+        
+
+
+
+
+
                         </section>
 
 
