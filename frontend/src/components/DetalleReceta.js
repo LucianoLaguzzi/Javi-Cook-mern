@@ -16,10 +16,12 @@ const DetalleReceta = () => {
   const [esPropietario, setEsPropietario] = useState(false);
   const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState('');
-  const [ingredientesCantidades, setIngredientesCantidades] = useState('');
   const [pasos, setPasos] = useState('');
+  const [tituloOriginal, setTituloOriginal] = useState(receta.titulo); // Estado para el título original
   const [tituloEditable, setTituloEditable] = useState(false);
+  const [ingredientesCantidades, setIngredientesCantidades] = useState('');
   const [ingredientesEditable, setIngredientesEditable] = useState(false);
+  const [ingredientesOriginales, setIngredientesOriginales] = useState(ingredientesCantidades); // Estado para los ingredientes originales
   const [pasosEditable, setPasosEditable] = useState(false);
   // Estado para manejar los pasos en edición
   const [pasosEditados, setPasosEditados] = useState(pasos.split('\r\n'));
@@ -79,8 +81,16 @@ const DetalleReceta = () => {
 
  
   // Manejar la edición del título
-  const cambiarTitulo = () => setTituloEditable(true);
-  const cancelarTitulo = () => setTituloEditable(false);
+  const cambiarTitulo = () => {
+    setTituloOriginal(receta.titulo); // Guarda el título original
+    setTituloEditable(true);
+  };
+
+
+  const cancelarTitulo = () => {
+    setReceta({ ...receta, titulo: tituloOriginal }); // Restablece el título al original
+    setTituloEditable(false);
+  };
 
   // Función para guardar el nuevo título
   const guardarTitulo = async () => {
@@ -92,6 +102,19 @@ const DetalleReceta = () => {
       }
   };
 
+
+
+  // Manejar la edición de ingredientes
+  const cambiarIngredientes = () => {
+    setIngredientesOriginales(ingredientesCantidades); // Guarda los ingredientes originales
+    setIngredientesEditable(true);
+  };
+
+  // Función para cancelar la edición de ingredientes
+  const cancelarIngredientes = () => {
+    setIngredientesCantidades(ingredientesOriginales); // Restablece a los ingredientes originales
+    setIngredientesEditable(false);
+  };
 
     // Guardar ingredientes
     const guardarIngredientes = async () => {
@@ -407,25 +430,22 @@ const DetalleReceta = () => {
                   <p>Ingredientes</p>
                   {!ingredientesEditable ? (
                       <>
-                      <div className='valores-cantidad'>
-                          {ingredientesCantidades.split('\n').map((ingrediente, index) => {
-                              // Separar el ingrediente y la cantidad con un espacio después de ":"
-                              const partes = ingrediente.split(':');
-                              
-                              if (partes.length === 2) {
-                                  const ingredienteFormateado = `${partes[0].trim()}: ${partes[1].trim()}`;
-                                  return <div key={index}>{ingredienteFormateado}</div>;
-                              }
-          
-                              return <div key={index}>{ingrediente}</div>; // Si no sigue el formato "ingrediente: cantidad", se muestra tal cual.
-                          })}
-                      </div>
-                      {esPropietario && (
-                          <a className='btn-editar-ingredientes' onClick={() => setIngredientesEditable(true)}>
-                              <i className="fas fa-pencil-alt"></i>
-                          </a>
-                      )}
-                  </>
+                          <div className='valores-cantidad'>
+                              {ingredientesCantidades.split('\n').map((ingrediente, index) => {
+                                  const partes = ingrediente.split(':');
+                                  if (partes.length === 2) {
+                                      const ingredienteFormateado = `${partes[0].trim()}: ${partes[1].trim()}`;
+                                      return <div key={index}>{ingredienteFormateado}</div>;
+                                  }
+                                  return <div key={index}>{ingrediente}</div>; 
+                              })}
+                          </div>
+                          {esPropietario && (
+                              <a className='btn-editar-ingredientes' onClick={cambiarIngredientes}>
+                                  <i className="fas fa-pencil-alt"></i>
+                              </a>
+                          )}
+                      </>
                   ) : (
                       <>
                           <textarea
@@ -434,7 +454,7 @@ const DetalleReceta = () => {
                               onChange={(e) => setIngredientesCantidades(e.target.value)}
                           />
                           <div className='cancel-ok-ingredientes'>
-                              <a className='btn-cancelar-ingredientes' onClick={() => setIngredientesEditable(false)}>
+                              <a className='btn-cancelar-ingredientes' onClick={cancelarIngredientes}>
                                   <i className="fas fa-times-circle"></i>
                               </a>
                               <a className='btn-guardar-ingredientes' onClick={guardarIngredientes}>
@@ -443,7 +463,7 @@ const DetalleReceta = () => {
                           </div>
                       </>
                   )}
-                </div>
+              </div>
                 
                 <hr className='divider'></hr>
     
@@ -555,13 +575,6 @@ const DetalleReceta = () => {
                   <i className="fas fa-trash-alt" title="Eliminar receta"></i>
                 </button>
               )}
-
-
-
-
-
-
-
 
 
               <div className="detalles-comentarios">

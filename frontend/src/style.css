@@ -419,7 +419,7 @@ h1.titulo-registrar{
 }
 
 section{
-    background: #787272;
+    background: #6b6661;
     margin-top: 20px;
     border-radius: 30px;
     width: 96%;
@@ -606,6 +606,12 @@ img.img-cerrar-sesion:hover {
     margin-bottom: 20px; /* Más espacio inferior */
 }
 
+@media (max-width: 450px) {
+    .filtro h2 {
+        font-size: 1.2em;
+    }
+}
+
 .text-filtro{
     padding: 10px;
     border: none;
@@ -719,7 +725,7 @@ img.img-cerrar-sesion:hover {
 }
 
 .mensaje-no-recetas{
-    color: #fff;
+    color: #ea974df5;
     display: flex;
     justify-content: center;
     padding-bottom: 20px;
@@ -727,6 +733,22 @@ img.img-cerrar-sesion:hover {
     padding-top: 30px;
     text-shadow: 2px 2px 4px #000000;
     letter-spacing: 1px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+@media (max-width: 1000px) {
+    .mensaje-no-recetas {
+        font-size: 25px;
+        margin: 0px 10px 0px 10px;
+    }
+}
+
+@media (max-width: 800px) {
+    .mensaje-no-recetas {
+        font-size: 20px;
+        
+    }
 }
 
 .add-recipe-btn{
@@ -824,10 +846,10 @@ img.img-cerrar-sesion:hover {
 
 
 .btn-cancelar-titulo{
-    color: #ce2d2d;
+    color: #a91515;
 }
 .btn-cancelar-titulo:hover{
-    color: #bb0b0b;
+    color: #901414;
 }
 
 .btn-guardar-titulo{
@@ -844,6 +866,7 @@ img.img-cerrar-sesion:hover {
     position: absolute;
     right: 0;
     color: #a7a89e;
+    top: 0;
 }
 
 .cancel-ok-ingredientes{
@@ -855,7 +878,7 @@ img.img-cerrar-sesion:hover {
 }
 
 .btn-cancelar-ingredientes{
-    color: #ce2d2d;
+    color: #a91515;
 }
 
 .btn-guardar-ingredientes{
@@ -886,8 +909,22 @@ img.img-cerrar-sesion:hover {
     letter-spacing: 1px;
 }
 
+@media (max-width: 700px) {
+    .text-area-ingredientes {
+        width: auto;
+        height: 10em;
+    }
+}
+
 .titulo-section-recetas{
     margin-bottom: 30px;
+}
+
+@media (max-width: 450px) {
+    .titulo-section-recetas {
+        margin-bottom: 0px;
+
+    }
 }
 
 .titulo-section-recetas h2 {
@@ -897,7 +934,12 @@ img.img-cerrar-sesion:hover {
     text-shadow: 2px 2px 4px #000000;
 }
 
+@media (max-width: 450px) {
+    .titulo-section-recetas h2 {
+        font-size: 30px;
 
+    }
+}
 
 
 .panel-recetas {
@@ -935,7 +977,9 @@ img.img-cerrar-sesion:hover {
         grid-template-columns: repeat(auto-fit, minmax(370px, 30%));
     }
 }
-
+.imagen-contenedor {
+    position: relative; /* Establece la posición relativa para el contenedor de la imagen */
+}
 
 .tarjeta-receta {
     text-align: left;
@@ -944,32 +988,24 @@ img.img-cerrar-sesion:hover {
     display: flex;
     flex-direction: column;
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-    transition: box-shadow 0.4s ease, transform 0.4s ease; /* Solo las propiedades necesarias */
-    height: 650px;
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+    height: 650px; /* Puedes ajustar este valor */
     width: 100%;
     position: relative;
 }
 
-
-
-
-
-
-.imagen-contenedor {
-    position: relative; /* Establece la posición relativa para el contenedor de la imagen */
-}
-
-.tarjeta-receta:hover {
-    transform: scale(1.06);
+.imagen-contenedor-chica {
+    position: relative;
+    height: 400px; /* Establecer un alto fijo para el contenedor de la imagen */
+    overflow: hidden; /* Para evitar que la imagen sobresalga del contenedor */
 }
 
 .tarjeta-receta img {
-    max-width: 100%;
-    height: 400px;
-    object-fit: cover;
+    width: 100%; /* Asegúrate de que la imagen ocupe todo el ancho */
+    height: 100%; /* Fija la altura al 100% del contenedor */
+    object-fit: cover; /* Mantiene la relación de aspecto de la imagen */
     border-radius: 20px 20px 0px 0px;
     margin-bottom: 5px;
-    width: 100%;
 }
 
 
@@ -1397,6 +1433,13 @@ img.img-cerrar-sesion:hover {
     width: 99%;
 }
 
+.crop-container {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Ajusta según lo necesites */
+    overflow: hidden;
+}
+
 .label-imagen-receta{
     font-size: 20px;
     font-family: 'Montserrat';
@@ -1438,17 +1481,63 @@ img.img-cerrar-sesion:hover {
     }
 }
 
-.imagen-preview{
-    padding: 10px;
+.imagen-preview {
+    position: relative;
+    width: 25%;
+    height: 60vh;
+    /* max-height: 80vh; */
+    border: 1px solid #ccc;
+    overflow: hidden;
+    display: none;
+    margin: 0;
 }
 
-.preview-imagen{
+@media (max-width: 1600px) { /* Para pantallas móviles */
+    .imagen-preview {
+        height: 45vh;
+        width: 35%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .imagen-preview {
+        height: 40vh;
+        width: 30%;
+    }
+}
+
+@media (max-width: 800px) { /* Para pantallas móviles */
+    .imagen-preview {
+        height: 25vh;
+        width: 50%;
+    }
+}
+
+
+.imagen-preview.visible {
+    display: block; /* Muestra el contenedor cuando se añade la clase 'visible' */
+}
+
+.cropper {
+    width: 100%; /* Asegúrate de que el cropper ocupe todo el espacio */
+    height: 100%; /* Para que el cropper tenga la altura completa del contenedor */
+}
+.cropper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Esto hará que la imagen cubra el área del cropper completamente */
+}
+
+
+/*.preview-imagen{
     width: 100%;
     max-width: 1000px;
     max-height: 600px;
     display: none;
     border-radius: 30px;
-}
+}*/
+
+
 
 .modal-error-imagen {
     color: red;
@@ -2195,11 +2284,12 @@ span.fecha-subida{
 }
 
 .detalles-titulo{
-    color: #ffae72;
+    color: #ffffff;
     font-size: 35px;
     font-family: Montserrat;
     font-weight: 600;
     margin-left: auto;
+    text-shadow: 2px 2px 4px #000000;
 }
 
 @media (max-width: 800px) {
@@ -2279,6 +2369,13 @@ margin-left: 20px;
     .detalles-tiempo-dificultad {
         gap: 10%;
         font-size: 15px;
+    }
+}
+
+@media (max-width: 550px) {
+    .detalles-tiempo-dificultad {
+        gap: 6%;
+        font-size: 12px;
     }
 }
 
@@ -2474,6 +2571,7 @@ margin-left: 20px;
     position: absolute;
     right: 0;
     color: #a7a89e;
+    top: 0;
 }
 
 
@@ -2509,10 +2607,10 @@ margin-left: 20px;
 }
 
 .btn-cancelar-pasos{
-    color: #ce2d2d;
+    color: #a91515;
 }
 .btn-cancelar-pasos:hover{
-    color: #bb0b0b;
+    color: #901414;
 }
 
 .btn-guardar-pasos{
@@ -2535,6 +2633,7 @@ i.fas.fa-undo {
     gap: 10px;
     font-size: 23px;
     padding-bottom: 7px;
+    margin-top: 30px;
 }
 
 .input-comentarios{
@@ -2618,7 +2717,7 @@ i.fas.fa-undo {
 }
 
 .comentario-fecha{
-    color: #7c7676b8;
+    color: #cecececc;
     font-size: 12px;
 }
 
@@ -2651,19 +2750,35 @@ i.fas.fa-undo {
     color: grey;
   }
 
-  .link-eliminar-receta{
+  .link-eliminar-receta {
     background: none;
     outline: none;
     border: none;
     margin: 20px;
-  }
+    transition: transform 0.3s, box-shadow 0.3s; /* Transiciones para el efecto hover */
+}
 
 .link-eliminar-receta .fa-trash-alt {
-    margin-right: 5px; /* Espaciado entre el icono y el texto */
-    color: #ff3d46;
-    font-size: 25px;
+    margin-right: 5px;
+    color: #b3170ced;
+    font-size: 28px;
     cursor: pointer;
+    transition: transform 0.3s, filter 0.3s;
+    /* Añadimos un filtro sutil */
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1)); 
 }
+
+/* Efecto al pasar el mouse */
+.link-eliminar-receta:hover .fa-trash-alt {
+    transform: scale(1.1);
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2)); 
+}
+
+/* Opcional: Efecto de fondo en hover */
+.link-eliminar-receta:hover {
+    filter: brightness(1.1); 
+}
+
 
 /* Sweet alert para eliminar receta*/
 
@@ -2779,6 +2894,12 @@ i.fas.fa-undo {
     margin-top: 10px;
     animation: parpadeo 1s infinite;
   }
+
+  @media (max-width: 700px) {
+    .mensaje-edicion {
+        font-size: 16px;
+    }
+}
   
   @keyframes parpadeo {
     0% {
@@ -3006,8 +3127,9 @@ i.fas.fa-undo {
 }
 
 .perfil-inputs{
-    width: 70%;
+    width: 100%;
     display: flex;
+    text-align: center;
 }
 
 .div-label-perfil{
@@ -3023,10 +3145,11 @@ i.fas.fa-undo {
     color: white;
     padding: 5px 10px 5px 10px;
     width: 70%;
+    margin-left: 15px;
 }
 
 .output-nombre-usuario{
-    margin-left: 15px;
+    /*margin-left: 15px;*/
 }
 
 .btn-editar-user{
@@ -3039,7 +3162,7 @@ i.fas.fa-undo {
 }
 
 .output-email-usuario{
-    margin-left: 25px;
+    /*margin-left: 25px;*/
 }
 
 .perfil-email{
@@ -3064,6 +3187,7 @@ i.fas.fa-undo {
     color: white;
     padding: 5px 10px 5px 10px;
     width: 70%;
+    margin-left: 15px;
 }
 
 
@@ -3215,6 +3339,21 @@ i.fas.fa-undo {
     display: none;
 }
 
+@media (max-width: 700px) {
+    .edit-icon {
+        margin-left: 4px;
+    }
+}
+
+@media (max-width: 450px) {
+    .edit-icon {
+        margin-left: 20px;
+    }
+}
+
+
+
+
 .image-container:hover .edit-icon {
     display: block;
     font-size: 20px;
@@ -3259,6 +3398,13 @@ i.fas.fa-undo {
     font-weight: 700;
     color: #FFFFFF;
     text-shadow: 2px 4px 4px #000000;
+}
+
+
+@media (max-width: 450px) {
+    .top-recetas-titulo {
+        font-size: 30px;
+    }
 }
 
 .top3 > .panel-recetas > .tarjeta-receta{
@@ -3322,6 +3468,12 @@ i.fas.fa-undo {
     text-shadow: 2px 4px 4px #000000;
 }
 
+@media (max-width: 450px) {
+    .favoritos-titulo {
+        font-size: 30px;
+    }
+}
+
 
 .mensaje-no-recetas-favoritas{
     color: #fff;
@@ -3335,6 +3487,14 @@ i.fas.fa-undo {
     margin-left: 10px;
 }
 
+@media (max-width: 450px) {
+    .mensaje-no-recetas-favoritas {
+        font-size: 14px;
+        margin: 0px 12px 0px 12px;
+        text-align: center;
+    }
+}
+
 .footer{
     position: relative;
     display: flex;
@@ -3346,6 +3506,12 @@ i.fas.fa-undo {
     align-items: center;
     margin-top: 25px;
     font-size: 15px;
+}
+
+@media (max-width: 700px) {
+    .footer {
+        font-size: 12px;
+    }
 }
 
 

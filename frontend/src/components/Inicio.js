@@ -1,9 +1,10 @@
 // Inicio.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, } from 'react';
 import '../style.css'; // Asegúrate de que la ruta sea correcta
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
+import Cropper from 'react-easy-crop'; // Importa el componente de recorte
 
 const Inicio = () => {
     // Recupera la información del usuario del localStorage
@@ -27,9 +28,14 @@ const Inicio = () => {
     const [topRecetas, setTopRecetas] = useState([]);
     const [favoritos, setFavoritos] = useState([]);
     const [recetasFiltradas, setRecetasFiltradas] = useState([]); // Recetas después del filtrado
-
     const [paginaActual, setPaginaActual] = useState(1); // Página actual
     const [recetasPorPagina] = useState(6); // Número de recetas a mostrar por página
+
+
+    const [imagenRecortada, setImagenRecortada] = useState(null); // Estado para la imagen recortada
+    const [crop, setCrop] = useState({ x: 0, y: 0 }); // Coordenadas de recorte
+    const [zoom, setZoom] = useState(1); // Nivel de zoom para el recorte
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null); // Área recortada
 
 
     //Calculos para mostrar bien las cantidades de recetas en la paginacion
@@ -40,8 +46,6 @@ const Inicio = () => {
     //Calculos para manejar la paginacion bien
     const totalRecetas = recetasFiltradas.length; // Total de recetas filtradas
     const totalPaginas = Math.ceil(totalRecetas / recetasPorPagina); // Calcular el total de páginas
-
-
 
 
 
@@ -155,41 +159,66 @@ const Inicio = () => {
     };
 
     const previewImage = (event) => {
-        const preview = document.getElementById('previewImagen');
         const file = event.target.files[0];
-    
         if (file) {
             const reader = new FileReader();
-            reader.onload = function() {
-                preview.src = reader.result;
-                preview.style.display = 'block';
+            reader.onload = () => {
+                setImagen(reader.result);
             };
             reader.readAsDataURL(file);
-
-            // Actualiza el estado de la imagen con el archivo seleccionado
-            setImagen(file);
-
-        } else {
-            preview.src = '#';  // Reiniciamos la preview si no hay archivo
-            setImagen(null); // Si no hay archivo, asegúrate de limpiar el estado
         }
+    };
+
+    // Maneja el recorte
+    const handleCropComplete = (croppedArea, croppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    };
+
+    const getCroppedImg = async () => {
+        if (!imagen || !croppedAreaPixels) return;
+        const image = await fetch(imagen).then((res) => res.blob()); // Convierte a blob
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = await createImageBitmap(image);
+
+        // Configura el tamaño del canvas
+        canvas.width = croppedAreaPixels.width;
+        canvas.height = croppedAreaPixels.height;
+
+        // Dibuja la imagen en el canvas
+        ctx.drawImage(
+            img,
+            croppedAreaPixels.x,
+            croppedAreaPixels.y,
+            croppedAreaPixels.width,
+            croppedAreaPixels.height,
+            0,
+            0,
+            croppedAreaPixels.width,
+            croppedAreaPixels.height
+        );
+
+        // Obtiene la imagen recortada
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, 'image/jpeg');
+        });
     };
 
     const quitarMinuto = (e) => {
         e.preventDefault();
-        const tiempoPreparacion = document.getElementById("tiempoPreparacion");
-        let tiempo = parseInt(tiempoPreparacion.value, 10);
-    
-        if (tiempo > 0) {
-            tiempoPreparacion.value = tiempo - 1;
-        }
+        // Convierte el valor actual a un número y resta 1
+        const nuevoTiempo = parseInt(tiempoPreparacion, 10) - 1;
+        // Asegúrate de no ir a un número negativo
+        setTiempoPreparacion(Math.max(nuevoTiempo, 0));
     };
-
+    
     const agregarMinuto = (e) => {
         e.preventDefault();
-        const tiempoPreparacion = document.getElementById("tiempoPreparacion");
-        let tiempo = parseInt(tiempoPreparacion.value, 10) || 0;
-        tiempoPreparacion.value = tiempo + 1;
+        // Convierte el valor actual a un número y suma 1
+        const nuevoTiempo = parseInt(tiempoPreparacion, 10) + 1;
+        setTiempoPreparacion(nuevoTiempo);
     };
 
     const autoResize = (e) => {
@@ -264,16 +293,13 @@ const Inicio = () => {
         }
     };
 
-
-    
-    
     
 
 
     //                                                  Aca ya van los metodos de la vista:
 
     //Envio del formulario para dar de alta receta
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const nuevaReceta = {
             titulo,
@@ -291,10 +317,14 @@ const Inicio = () => {
             formData.append(key, nuevaReceta[key]);
         }
     
-        // Asegúrate de que el archivo imagen se adjunta correctamente
-        if (imagen) {
-            formData.append('imagen', imagen); // Aquí el nombre 'imagen' debe coincidir con lo que multer espera
-        }
+       // Aquí obtenemos la imagen recortada
+       const croppedImage = await getCroppedImg();
+       if (croppedImage) {
+            // Cambia el nombre de 'receta.jpg' por el nombre que deseas
+            const nombreReceta = nuevaReceta.titulo || 'receta'; // Asegúrate de que el título esté disponible
+            const nombreArchivo = `${Date.now()}-${nombreReceta}.jpg`; // Nombre único para el archivo
+            formData.append('imagen', croppedImage, nombreArchivo); // Añade la imagen recortada al FormData
+       }
 
         // Asegúrate de que ingredientesCantidades tenga el valor correcto
         const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
@@ -307,8 +337,9 @@ const Inicio = () => {
             },
         })
         .then(response => {
-            setRecetas(prevRecetas => [...prevRecetas, response.data]);
-            setRecetasFiltradas(prevRecetas => [...prevRecetas, response.data]);
+            setRecetas(prevRecetas => [response.data, ...prevRecetas]);
+            setRecetasFiltradas(prevRecetas => [response.data, ...prevRecetas]);
+
             cerrarModal();
             resetFormulario();
         })
@@ -337,6 +368,12 @@ const Inicio = () => {
         </div>
         );
     }
+
+
+
+    //Mover las imagenes para verlas todas en la tarjeta:
+    
+    
 
 
     // Función para generar tarjetas vacías si faltan recetas
@@ -425,44 +462,48 @@ const Inicio = () => {
                                     <p className='cargando-recetas'>Cargando recetas...</p>
                                 </div>
                             ) : (
-                                recetasActuales.length > 0 ? (
-                                    <div className="panel-recetas">
-                                        {recetasActuales.map((receta) => (
-                                            <div key={receta.id} className="tarjeta-receta">
-                                                <div className="imagen-contenedor">
-                                                    <img src={receta.imagen} alt={receta.titulo} />
-                                                    <div className="info-imagen">
-                                                        <span className="nombre-usuario">{receta.usuario.nombre}</span>  
-                                                        <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString('es-AR')}</span>
-                                                    </div>
-                                                    <i className={`fas fa-heart icono-favorito ${favoritos.includes(receta._id) ? 'favorito' : ''}`}
-                                                        title={favoritos.includes(receta._id) ? 'Quitar de favoritos' : 'Guardar como favorito'}
-                                                        onClick={() => toggleFavorito(receta._id)}
-                                                    ></i> {/* Implementar el toogle */}
-                                                </div>
-                                                <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
-                                                <p>Categoría: {receta.categoria}</p>
-                                                <p>
-                                                    <span className="tiempo">Tiempo de preparación: {receta.tiempoPreparacion}'</span>
-                                                    <i className="far fa-clock"></i> 
-                                                    <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>{receta.dificultad}</span>
-                                                </p>
-                                                <div className="valoracion">
-                                                    <p>Valoración Promedio</p>
-                                                    <div className="estrellas">
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <i key={i} className={`fa${i < Math.round(receta.valoracion) ? 's' : 'r'} fa-star`}></i>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <a className="ver-mas" onClick={() => navigate(`/detalle-receta/${receta._id}`)}>
-                                                    Ver más
-                                                </a>
-                                            </div>
-                                        ))}
-                                    </div>
+                                recetas.length === 0 ? ( // Si no hay recetas en absoluto
+                                    <span className='mensaje-no-recetas'>Aún no tienes recetas. ¡Empieza agregando una!</span>
                                 ) : (
-                                    <span className='mensaje-no-recetas'>No se encontraron recetas con esos ingredientes.</span>
+                                    recetasActuales.length > 0 ? ( // Si hay recetas, y recetasActuales tiene coincidencias
+                                        <div className="panel-recetas">
+                                            {recetasActuales.map((receta) => (
+                                                <div key={receta.id} className="tarjeta-receta">
+                                                    <div className="imagen-contenedor-chica">
+                                                        <img src={receta.imagen} alt={receta.titulo} />
+                                                        <div className="info-imagen">
+                                                            <span className="nombre-usuario">{receta.usuario.nombre}</span>  
+                                                            <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString('es-AR')}</span>
+                                                        </div>
+                                                        <i className={`fas fa-heart icono-favorito ${favoritos.includes(receta._id) ? 'favorito' : ''}`}
+                                                            title={favoritos.includes(receta._id) ? 'Quitar de favoritos' : 'Guardar como favorito'}
+                                                            onClick={() => toggleFavorito(receta._id)}
+                                                        ></i>
+                                                    </div>
+                                                    <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
+                                                    <p>Categoría: {receta.categoria}</p>
+                                                    <p>
+                                                        <span className="tiempo">Tiempo de preparación: {receta.tiempoPreparacion}'</span>
+                                                        <i className="far fa-clock"></i> 
+                                                        <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>{receta.dificultad}</span>
+                                                    </p>
+                                                    <div className="valoracion">
+                                                        <p>Valoración Promedio</p>
+                                                        <div className="estrellas">
+                                                            {[...Array(5)].map((_, i) => (
+                                                                <i key={i} className={`fa${i < Math.round(receta.valoracion) ? 's' : 'r'} fa-star`}></i>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <a className="ver-mas" onClick={() => navigate(`/detalle-receta/${receta._id}`)}>
+                                                        Ver más
+                                                    </a>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : ( // Si hay recetas, pero recetasActuales está vacío (filtro sin coincidencias)
+                                        <span className='mensaje-no-recetas'>No se encontraron recetas con esos ingredientes.</span>
+                                    )
                                 )
                             )}
 
@@ -572,11 +613,26 @@ const Inicio = () => {
                                             <label htmlFor="imagen" className="label-imagen-receta">Imagen de la receta:</label>
                                             <input type="file" id="imagen" name="file" accept="image/*" onChange={previewImage} className="input-imagen" />
                                             <div id="modalErrorImagen" className="modal-error-imagen"></div>
-                                            <div className="imagen-preview">
-                                                <img id="previewImagen" className="preview-imagen" src="#" alt="Previesualización de la imagen" />
+                                            <div className={`imagen-preview ${imagen ? 'visible' : ''}`}>
+                                                {imagen && (
+                                                   <Cropper
+                                                    image={imagen}
+                                                    crop={crop}
+                                                    zoom={zoom}
+                                                    aspect={4 / 3} // Cambia el aspecto según sea necesario
+                                                    onCropChange={setCrop}
+                                                    onZoomChange={setZoom}
+                                                    onCropComplete={handleCropComplete}
+                                                    style={{ 
+                                                        width: '100%', // Se asegura de que ocupe todo el espacio del contenedor
+                                                        height: '100%' // También asegura que ocupe toda la altura
+                                                    }}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
 
+                                        
                                         {/* Dificultad */}
                                         <div className="div-dificultad">
                                             <label htmlFor="dificultad" className="label-dificultad">Seleccione la dificultad de la receta: </label>
@@ -608,11 +664,28 @@ const Inicio = () => {
                                         {/* Tiempo de preparación */}
                                         <div className="div-tiempo-preparacion">
                                             <label htmlFor="tiempoPreparacion" className="label-tiempo-preparacion">Tiempo de preparación (minutos): </label>
-                                            <button id="btnQuitarTiempo" className="btn-quitar-tiempo" title="Quitar 1 minuto" onClick={quitarMinuto}>
+                                            
+                                            <button 
+                                                id="btnQuitarTiempo" 
+                                                className="btn-quitar-tiempo" 
+                                                title="Quitar 1 minuto" 
+                                                onClick={quitarMinuto}>
                                                 <i className="fas fa-minus"></i>
                                             </button>
-                                            <input type="text" id="tiempoPreparacion" className="input-tiempo-preparacion" value={tiempoPreparacion} onChange={(e) => setTiempoPreparacion(e.target.value)} />
-                                            <button id="btnAgregarTiempo" className="btn-agregar-tiempo" title="Agregar 1 minuto" onClick={agregarMinuto}>
+                                            
+                                            <input 
+                                                type="text" 
+                                                id="tiempoPreparacion" 
+                                                className="input-tiempo-preparacion" 
+                                                value={tiempoPreparacion} 
+                                                onChange={(e) => setTiempoPreparacion(e.target.value)} 
+                                            />
+                                            
+                                            <button 
+                                                id="btnAgregarTiempo" 
+                                                className="btn-agregar-tiempo" 
+                                                title="Agregar 1 minuto" 
+                                                onClick={agregarMinuto}>
                                                 <i className="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -639,13 +712,6 @@ const Inicio = () => {
                             </div>
                             )}
 
-
-        
-
-
-
-
-
                         </section>
 
 
@@ -655,7 +721,7 @@ const Inicio = () => {
                             <div className="panel-recetas">
                                 {topRecetas.map((receta) => (
                                     <div key={receta.id} className="tarjeta-receta">
-                                        <div className="imagen-contenedor">
+                                        <div className="imagen-contenedor-chica">
                                             <img src={receta.imagen} alt={receta.titulo} />
                                             <div className="info-imagen">
                                                 <span className="nombre-usuario">{receta.usuario.nombre}</span>
@@ -697,7 +763,7 @@ const Inicio = () => {
                                 <div className="panel-recetas">
                                     {recetas.filter(receta => favoritos.map(fav => fav.toString()).includes(receta._id)).map(receta => (
                                         <div key={receta._id} className="tarjeta-receta">
-                                            <div className="imagen-contenedor">
+                                            <div className="imagen-contenedor-chica">
                                                 <img src={receta.imagen} alt={receta.titulo} />
                                                 <div className="info-imagen">
                                                     <span className="nombre-usuario">{receta.usuario.nombre}</span>

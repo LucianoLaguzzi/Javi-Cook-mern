@@ -12,7 +12,7 @@ const router = express.Router();
 // Obtener todas las recetas
 router.get('/', async (req, res) => {
     try {
-        const recetas = await Receta.find().populate('usuario');
+        const recetas = await Receta.find().populate('usuario').sort({ createdAt: -1});
         res.status(200).json(recetas);
     } catch (error) {
         console.error("Error al cargar recetas", error);
@@ -50,7 +50,7 @@ const storage = multer.diskStorage({
         cb(null, uploadDir); // Carpeta donde se guardarán las imágenes
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname); // Nombre único del archivo
+        cb(null, file.originalname); // Nombre único del archivo
     }
 });
 
@@ -60,9 +60,6 @@ const upload = multer({ storage });
 router.post('/', upload.single('imagen'), async (req, res) => {
     try {
         const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
-
-        // Asegúrate de que ingredientesCantidades tenga un valor
-        console.log("Ingredientes y Cantidades:", ingredientesCantidades);
 
         // El path de la imagen se puede acceder a través de req.file.path
         const nuevaReceta = new Receta({
