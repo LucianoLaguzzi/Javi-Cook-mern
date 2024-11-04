@@ -4,6 +4,9 @@ import Usuario from '../models/Usuario.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import Token from '../models/Token.js'; // el modelo de token que creaste
+import nodemailer from 'nodemailer'; // usar para enviar el correo
+import { randomBytes } from 'crypto'; // Importa randomBytes aquí
 
 const router = express.Router();
 
@@ -202,6 +205,107 @@ router.delete('/:id/favoritos', async (req, res) => {
   }
 });
 
+
+
+
+
+
+// Ruta para solicitar recuperación de contraseña
+router.post('/recuperar', async (req, res) => {
+  const { usuario } = req.body;
+
+  try {
+      // Buscar al usuario por nombre de usuario o email
+      const user = await Usuario.findOne({ $or: [{ nombre: usuario }, { email: usuario }] });
+      if (!user) {
+          return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      // Generar token de recuperación
+      const token = new Token({
+          userId: user._id,
+          token: randomBytes(32).toString('hex') // Cambiar a usar randomBytes
+      });
+      await token.save();
+
+      // Crear el enlace de recuperación (aca iba `http://localhost:3000/recuperar/${token.token}`)
+      const enlace = `http://192.168.0.178:3000/recuperar/${token.token}`;
+
+      // Configurar y enviar el email
+      const transporter = nodemailer.createTransport({
+          service: 'gmail', // o el servicio que uses
+          auth: {
+              user: 'javicook.app@gmail.com',
+              pass: 'tdhqvpfqpzqhrbys' // Asegúrate de que esto sea seguro
+          }
+      });
+
+      const mailOptions = {
+        from: 'javicook.app@gmail.com',
+        to: user.email,
+        subject: 'Recuperación de contraseña',
+        html: `
+        <div style="font-family: Arial, sans-serif; color: #333; text-align: center;">
+            <h1 style="color: #3498db;">JaviCook</h1>
+            <p>Hola ${user.nombre || 'usuario'},</p>
+            <p>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el botón de abajo para cambiarla:</p>
+            <a href="${enlace}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #3498db; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Cambiar contraseña
+            </a>
+            <p>O copia y pega el siguiente enlace en tu navegador:</p>
+            <p style="color: #3498db;">${enlace}</p>
+            <p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
+            <br>
+            <p>Saludos,<br>Equipo de Javicook</p>
+            <p style="color: #ccc;">© ${new Date().getFullYear()} Javicook. Todos los derechos reservados.</p>
+        </div>
+    `
+    };
+
+      await transporter.sendMail(mailOptions);
+
+      res.status(200).json({ mensaje: "Revisa tu email para cambiar la contraseña" });
+  } catch (error) {
+      console.error("Error en recuperación de contraseña", error);
+      res.status(500).json({ error: "Error en recuperación de contraseña" });
+  }
+});
+
+
+// Ruta para cambiar la contraseña
+router.post('/cambiar-contrasenia', async (req, res) => {
+  const { token, nuevaContrasenia } = req.body;
+
+  try {
+      // Verificar el token
+      const tokenRegistro = await Token.findOne({ token });
+      if (!tokenRegistro) {
+          return res.status(400).json({ error: "Token inválido" });
+      }
+
+      // Buscar al usuario
+      const usuario = await Usuario.findById(tokenRegistro.userId);
+      if (!usuario) {
+          return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      // Encriptar la nueva contraseña
+      const salt = await bcrypt.genSalt(10);
+      const contraseniaEncriptada = await bcrypt.hash(nuevaContrasenia, salt);
+
+      // Actualizar la contraseña del usuario
+      usuario.contrasenia = contraseniaEncriptada;
+      await usuario.save();
+
+      // Eliminar el token después de usarlo
+      await Token.deleteOne({ token });
+
+      res.status(200).json({ mensaje: "Contraseña cambiada con éxito" });
+  } catch (error) {
+      console.error("Error al cambiar la contraseña:", error);
+      res.status(500).json({ error: "Error al cambiar la contraseña" });
+  }
+});
 
 
 

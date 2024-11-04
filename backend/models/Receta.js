@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const RecetaSchema = new mongoose.Schema({
   titulo: {
     type: String,
-    required: true,
+    required: false,
   },
   pasos: {
     type: [String], // Array de pasos de preparación

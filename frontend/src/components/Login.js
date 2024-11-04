@@ -90,7 +90,7 @@ function Login() {
                     </div>
 
                     <span className="mensaje-recuperar-contrasenia">
-                        <a href="/recuperar-contrasenia" className="link">¿Olvidaste tu contraseña?</a>
+                        <a href="/recuperar" className="link">¿Olvidaste tu contraseña?</a>
                     </span>
                 </form>
             </section>

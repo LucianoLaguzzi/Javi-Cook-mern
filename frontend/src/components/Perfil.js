@@ -168,9 +168,16 @@ const Perfil = () => {
                 <div className="encabezado">
                     <div className="barra-navegacion">
                         <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
-                        <span className="bienvenido-text">Bienvenido, {usuarioEnSesion?.nombre}!</span>
 
-                        <span class="subtitulo-detalle-receta"> Detalles de la receta </span>
+                    
+                        <div className="bienvenido-text">
+                            <span >Bienvenido, {usuarioEnSesion?.nombre}!</span>
+                        </div>
+
+                        <div className="subtitulo-perfil">
+                            <span > Pefil del usuario </span>
+                        </div>
+
                         <img src="../images/cubiertos-cruzados.png" className="img-cerrar-sesion" alt="Cerrar Sesión" 
                             onClick={() => {
                                 localStorage.removeItem('usuario');
@@ -228,8 +235,9 @@ const Perfil = () => {
                                         onChange={(e) => setNuevoNombre(e.target.value)}
                                         className="input-nuevo-nombre"
                                     />
-                                ) : (
-                                    <span className="output-nombre-usuario">{usuario ? usuario.nombre : 'Cargando...'}</span>
+                                ) : (<div className='output-nombre-usuario'>
+                                        <span className="output-nombre-usuario-texto">{usuario ? usuario.nombre : 'Cargando...'}</span>
+                                    </div>
                                 )}
 
                                </div> 
@@ -271,7 +279,9 @@ const Perfil = () => {
                                         className="input-nuevo-email"
                                     />
                                 ) : (
-                                    <span className="output-email-usuario">{usuario ? usuario.email : 'Cargando...'}</span>
+                                    <div className='output-email-usuario'>
+                                        <span className="output-email-usuario-texto">{usuario ? usuario.email : 'Cargando...'}</span>
+                                    </div>
                                 )}
                                 
                                 </div>

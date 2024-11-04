@@ -67,3 +67,6 @@ app.use('/api/recetas', comentarioRoutes); // Aquí simplemente usas '/api/recet
 
 // Usar las rutas de las valoraciones en la aplicación
 app.use('/api/valoraciones', valoracionRoutes); // Aquí simplemente usas '/api/recetas'
+
+// Rutas de usuario
+app.use('/api/recuperar', usuarioRoutes); // Agrega esta línea para recuperar contraseña

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 import '../style.css'; // Asegúrate de que la ruta sea correcta
 
 const Registro = () => {
@@ -39,76 +40,82 @@ const Registro = () => {
 
   return (
 
+    <div>
+      <Helmet>
+          <title>Registrar usuario</title>
+          <link rel="icon" href="/favicon-login.png" />
+      </Helmet>
     
-    <div className="body-new-user">
-      {mensajeError && (
-        <div id="error-container">
-          <i className="fa fa-exclamation-circle"></i>
-          <p>{mensajeError}</p>
-        </div>
-      )}
-
-      {mensajeExito && (
-        <div id="exito-container">
-          <i className="fa fa-check-circle"></i>
-          <p>{mensajeExito}</p>
-        </div>
-      )}
-
-      <header className="titulo-registrar">
-        <h1>Registrar nuevo usuario</h1>
-      </header>
-
-      <section className="new-user-section">
-
-        <form className="new-user-form" onSubmit={manejarRegistro}>
-            
-        <h2 className="new-user-title">Registre sus datos</h2>
-          <div className="entrada">
-            <input
-              type="text"
-              placeholder="Usuario"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="inp-nuevo-usuario"
-              required
-            />
-            <i className="fas fa-user"></i>
+      <div className="body-new-user">
+        {mensajeError && (
+          <div id="error-container">
+            <i className="fa fa-exclamation-circle"></i>
+            <p>{mensajeError}</p>
           </div>
+        )}
 
-          <div className="entrada">
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={contrasenia}
-              onChange={(e) => setContrasenia(e.target.value)}
-              className="inp-nueva-pass"
-              required
-            />
-            <i className="fas fa-lock"></i>
+        {mensajeExito && (
+          <div id="exito-container">
+            <i className="fa fa-check-circle"></i>
+            <p>{mensajeExito}</p>
           </div>
+        )}
 
-          <div className="entrada">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="inp-nuevo-email"
-              required
-            />
-            <i className="fas fa-envelope"></i>
-          </div>
+        <header className="titulo-registrar">
+          <h1>Registrar nuevo usuario</h1>
+        </header>
 
-          <button type="submit" className="boton-registrar-usuario">Registrarse</button>
+        <section className="new-user-section">
 
-          <div className="panel-links">
-            <span className="mensaje-ir-login">
-              ¿Ya tenés usuario? <a href="/login" className="link">Iniciar sesión</a>
-            </span>
-          </div>
-        </form>
-      </section>
+          <form className="new-user-form" onSubmit={manejarRegistro}>
+              
+          <h2 className="new-user-title">Registre sus datos</h2>
+            <div className="entrada">
+              <input
+                type="text"
+                placeholder="Usuario"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="inp-nuevo-usuario"
+                required
+              />
+              <i className="fas fa-user"></i>
+            </div>
+
+            <div className="entrada">
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={contrasenia}
+                onChange={(e) => setContrasenia(e.target.value)}
+                className="inp-nueva-pass"
+                required
+              />
+              <i className="fas fa-lock"></i>
+            </div>
+
+            <div className="entrada">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="inp-nuevo-email"
+                required
+              />
+              <i className="fas fa-envelope"></i>
+            </div>
+
+            <button type="submit" className="boton-registrar-usuario">Registrarse</button>
+
+            <div className="panel-links">
+              <span className="mensaje-ir-login">
+                ¿Ya tenés usuario? <a href="/login" className="link">Iniciar sesión</a>
+              </span>
+            </div>
+          </form>
+        </section>
+      </div>
     </div>
   );
 };
