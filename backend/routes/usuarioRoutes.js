@@ -228,8 +228,8 @@ router.post('/recuperar', async (req, res) => {
       });
       await token.save();
 
-      // Crear el enlace de recuperación (aca iba `http://localhost:3000/recuperar/${token.token}`)
-      const enlace = `http://192.168.0.178:3000/recuperar/${token.token}`;
+      // Crear el enlace de recuperación (aca iba `https://localhost:3000/recuperar/${token.token}`)
+      const enlace = `https://192.168.0.178:3000/recuperar/${token.token}`;
 
       // Configurar y enviar el email
       const transporter = nodemailer.createTransport({

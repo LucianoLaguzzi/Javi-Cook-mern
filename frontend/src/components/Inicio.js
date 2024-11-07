@@ -44,6 +44,8 @@ const Inicio = () => {
     const [errorTiempo, setErrorTiempo] = useState("");
     const [errorIngredientes, setErrorIngredientes] = useState("");
 
+    const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
+
 
 
     //Calculos para mostrar bien las cantidades de recetas en la paginacion
@@ -474,14 +476,98 @@ const Inicio = () => {
     // Añadir un evento de scroll
     window.addEventListener('scroll', ajustarPosicionBoton);
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    let reconocimientoVoz;
+    let reconocedorActivo = false;
+
+    const iniciarReconocimiento = () => {
+        // Verificar si la API de reconocimiento de voz está disponible
+        const Recognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+        if (!Recognition) {
+            alert("La API de reconocimiento de voz no es compatible con este navegador.");
+            return;
+        }
+
+        reconocimientoVoz = new Recognition();
+        reconocimientoVoz.lang = "es-ES";
+        reconocimientoVoz.continuous = true;  // Mantener el reconocimiento continuo
+        reconocimientoVoz.interimResults = true;  // Permitir resultados intermedios
+
+        reconocimientoVoz.onstart = () => {
+            reconocedorActivo = true;
+            console.log("Reconocimiento de voz iniciado...");
+        };
+
+        reconocimientoVoz.onerror = (event) => {
+            console.error("Error de reconocimiento de voz:", event.error);
+            alert("Hubo un error con el reconocimiento de voz.");
+            reconocedorActivo = false;
+        };
+
+        reconocimientoVoz.onend = () => {
+            reconocedorActivo = false;
+            console.log("Reconocimiento de voz finalizado.");
+        };
+
+        reconocimientoVoz.onresult = (event) => {
+            let transcripcionFinal = "";
+            let transcripcionIntermedia = "";
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    transcripcionFinal += event.results[i][0].transcript;
+                } else {
+                    transcripcionIntermedia += event.results[i][0].transcript;
+                }
+            }
+
+            // Actualizar el campo de entrada con la transcripción final y provisional
+            inputRef.current.value = transcripcionFinal || transcripcionIntermedia;
+            manejarFiltroIngredientes(transcripcionFinal || transcripcionIntermedia); // Aplicar el filtro con el texto de voz en tiempo real
+
+            console.log("Transcripción final:", transcripcionFinal);
+            console.log("Transcripción intermedia:", transcripcionIntermedia);
+        };
+
+        reconocimientoVoz.start();
+    };
+
+    // Función para detener el reconocimiento si es necesario
+    const detenerReconocimiento = () => {
+        if (reconocedorActivo) {
+            reconocimientoVoz.stop();
+            console.log("Reconocimiento de voz detenido.");
+            reconocedorActivo = false;
+        }
+    };
     
     
-    
-    
+
     
     
     
 
+
+
+
+
+
+
+    
 
     // Función para generar tarjetas vacías si faltan recetas
     const generarTarjetasPlaceholder = (num) => {
@@ -553,7 +639,12 @@ const Inicio = () => {
                                     className="text-filtro" 
                                     placeholder="Buscar por ingrediente/s ..." 
                                     onChange={(e) => manejarFiltroIngredientes(e.target.value)} // Filtrado en tiempo real
+                                    ref={inputRef}
                                 />
+                                
+                                <button onClick={iniciarReconocimiento} className="microfono">
+                                    <i className="fas fa-microphone"></i>
+                                </button>
                             </div>
                         </section>
 
@@ -867,8 +958,7 @@ const Inicio = () => {
 
                                 </div>
                             </div>
-                            )}
-
+                            )}                    
                         </section>
 
 
