@@ -30,7 +30,6 @@ const Inicio = () => {
     const [recetasFiltradas, setRecetasFiltradas] = useState([]); // Recetas después del filtrado
     const [paginaActual, setPaginaActual] = useState(1); // Página actual
     const [recetasPorPagina] = useState(6); // Número de recetas a mostrar por página
-    const [imagenRecortada, setImagenRecortada] = useState(null); // Estado para la imagen recortada
     const [crop, setCrop] = useState({ x: 0, y: 0 }); // Coordenadas de recorte
     const [zoom, setZoom] = useState(1); // Nivel de zoom para el recorte
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null); // Área recortada
@@ -283,25 +282,43 @@ const Inicio = () => {
 
 
     
-    // Función para manejar el filtrado por ingredientes
+    // Función para quitar los acentos (normalizar)
+    const quitarTildes = (texto) => {
+        return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    };
+
+    // Función para manejar el filtrado por ingredientes y título
     const manejarFiltroIngredientes = (input) => {
-        const ingredientesBuscados = input.toLowerCase().split(/[\s,]+/).filter(Boolean); // Dividir por espacios o comas, ignorando entradas vacías
-        if (ingredientesBuscados.length === 0) {
-            // Mostrar todas las recetas si no se ingresó ningún ingrediente
+        // Normalizamos la entrada de búsqueda para quitar los tildes
+        const palabrasClave = quitarTildes(input).toLowerCase().split(/[\s,]+/).filter(Boolean);
+
+        if (palabrasClave.length === 0) {
+            // Mostrar todas las recetas si no se ingresó ningún ingrediente o título
             setRecetasFiltradas(recetas);
         } else {
-            // Filtrar las recetas que contienen todos los ingredientes buscados
-            const recetasFiltradasPorIngrediente = recetas.filter((receta) => {
-                const ingredientesReceta = receta.ingredientes[0].toLowerCase().split(', ');
+            const recetasFiltradas = recetas.filter((receta) => {
+                const ingredientesReceta = quitarTildes(receta.ingredientes[0]).toLowerCase().split(', ');
+                const tituloReceta = quitarTildes(receta.titulo).toLowerCase();
+
                 // Verificar si todos los ingredientes buscados están en los ingredientes de la receta
-                return ingredientesBuscados.every(ingrediente => 
+                const coincidenIngredientes = palabrasClave.every(ingrediente =>
                     ingredientesReceta.some(ingReceta => ingReceta.includes(ingrediente))
                 );
+
+                // Verificar si todos los términos buscados coinciden en el título de la receta
+                const coincideTitulo = palabrasClave.every(palabra =>
+                    tituloReceta.includes(palabra)
+                );
+
+                // Retornar true solo si todos los ingredientes y/o el título coinciden
+                return coincideTitulo || coincidenIngredientes;
             });
-    
-            setRecetasFiltradas(recetasFiltradasPorIngrediente);
+
+            setRecetasFiltradas(recetasFiltradas);
         }
     };
+    
+
 
     
 
@@ -478,19 +495,7 @@ const Inicio = () => {
     
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //BUSQUEDA DEL FILTRO POR VOZ
     let reconocimientoVoz;
     let reconocedorActivo = false;
 
@@ -503,9 +508,9 @@ const Inicio = () => {
         }
 
         reconocimientoVoz = new Recognition();
-        reconocimientoVoz.lang = "es-ES";
-        reconocimientoVoz.continuous = true;  // Mantener el reconocimiento continuo
-        reconocimientoVoz.interimResults = true;  // Permitir resultados intermedios
+        reconocimientoVoz.lang = "es-AR";
+        reconocimientoVoz.continuous = false;  // Cambiar a `false` para que se detenga automáticamente al final de cada frase
+        reconocimientoVoz.interimResults = true;
 
         reconocimientoVoz.onstart = () => {
             reconocedorActivo = true;
@@ -521,6 +526,8 @@ const Inicio = () => {
         reconocimientoVoz.onend = () => {
             reconocedorActivo = false;
             console.log("Reconocimiento de voz finalizado.");
+            // Opcional: Reiniciar automáticamente en el celular o dispositivo que funcione mejor con reconocimiento continuo
+            // reconocimientoVoz.start();
         };
 
         reconocimientoVoz.onresult = (event) => {
@@ -535,36 +542,24 @@ const Inicio = () => {
                 }
             }
 
-            // Actualizar el campo de entrada con la transcripción final y provisional
             inputRef.current.value = transcripcionFinal || transcripcionIntermedia;
-            manejarFiltroIngredientes(transcripcionFinal || transcripcionIntermedia); // Aplicar el filtro con el texto de voz en tiempo real
-
-            console.log("Transcripción final:", transcripcionFinal);
-            console.log("Transcripción intermedia:", transcripcionIntermedia);
+            manejarFiltroIngredientes(transcripcionFinal || transcripcionIntermedia);
         };
 
         reconocimientoVoz.start();
     };
 
-    // Función para detener el reconocimiento si es necesario
-    const detenerReconocimiento = () => {
+    // Función para activar y desactivar el reconocimiento de voz
+    const toggleReconocimiento = () => {
         if (reconocedorActivo) {
-            reconocimientoVoz.stop();
+            reconocimientoVoz.stop();  // Detener el reconocimiento si está activo
             console.log("Reconocimiento de voz detenido.");
-            reconocedorActivo = false;
+        } else {
+            iniciarReconocimiento();   // Iniciar el reconocimiento si está inactivo
         }
     };
     
     
-
-    
-    
-    
-
-
-
-
-
 
 
     
@@ -642,7 +637,7 @@ const Inicio = () => {
                                     ref={inputRef}
                                 />
                                 
-                                <button onClick={iniciarReconocimiento} className="microfono">
+                                <button onClick={toggleReconocimiento} className="microfono">
                                     <i className="fas fa-microphone"></i>
                                 </button>
                             </div>
