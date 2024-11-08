@@ -10,8 +10,8 @@ import recetaRoutes from './routes/recetaRoutes.js';
 import detalleRoutes from './routes/detalleRoutes.js';
 import comentarioRoutes from './routes/comentarioRoutes.js';
 import valoracionRoutes from './routes/valoracionRoutes.js';
-import fs from 'fs';
-import https from 'https';
+//import fs from 'fs';
+//import https from 'https';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,16 +25,11 @@ const startServer = async () => {
   try {
     await conectarDB();
 
-    // Configuración de certificados para HTTPS
-    const privateKey = fs.readFileSync('frontend/server.key', 'utf8');
-    const certificate = fs.readFileSync('frontend/server.crt', 'utf8');
-    const credentials = { key: privateKey, cert: certificate };
-
-    // Crear servidor HTTPS
-    https.createServer(credentials, app).listen(PORT, () => {
-      console.log(`Servidor HTTPS corriendo en https://localhost:${PORT}`);
+    // Cambia a servidor HTTP en lugar de HTTPS
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en http://localhost:${PORT}`);
       if (process.env.NODE_ENV !== 'production') {
-        open(`https://localhost:${PORT}`);
+        open(`http://localhost:${PORT}`);
       }
     });
   } catch (error) {
