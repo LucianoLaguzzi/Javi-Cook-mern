@@ -47,8 +47,8 @@ app.get('/', (req, res) => {
 
 // Configurar la ruta para servir archivos estáticos
 const __dirname = path.resolve();
-app.use('https://javicook-mern.onrender.com/uploads', express.static(path.join(__dirname, 'https://javicook-mern.onrender.com/uploads')));
-app.use('https://javicook-mern.onrender.com/images', express.static(path.join(__dirname, 'https://javicook-mern.onrender.com/images')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Rutas de la aplicación
 app.use('/api/usuarios', usuarioRoutes);

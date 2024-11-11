@@ -315,7 +315,13 @@ const Perfil = () => {
                                         <ul>
                                             {recetas.map((receta) => (
                                                 <li key={receta._id} className="tarjeta-receta2">
-                                                    <a href={`https://javicook-mern.onrender.com/detalle-receta/${receta._id}`} className="receta-etiqueta">{capitalizarPrimeraLetra(receta.titulo)}</a>
+                                                     <a
+                                                        href="#"
+                                                        className="receta-etiqueta"
+                                                        onClick={() => navigate(`/detalle-receta/${receta._id}`)}
+                                                    >
+                                                        {capitalizarPrimeraLetra(receta.titulo)}
+                                                    </a>
                                                 </li>
                                             ))}
                                         </ul>
@@ -329,7 +335,7 @@ const Perfil = () => {
 
                         <div className="perfil-link-index">
                             <span className="mensaje-ir-index">
-                                <a href="https://javicook-mern.onrender.com/inicio" className="link">Volver a las recetas</a>
+                                <a onClick={() => {navigate('/inicio');}} className="link"> Volver a las recetas</a>
                             </span>
                         </div>
                     </div>
