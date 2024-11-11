@@ -126,6 +126,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (req, res) => {
+  console.log("Archivo recibido:", req.file); // Para verificar que el archivo está llegando
+  if (!req.file) {
+    return res.status(400).json({ mensaje: 'No se ha proporcionado ninguna imagen.' });
+  }
   try {
     const usuarioId = req.params.usuarioId;
     if (!usuarioId) {
@@ -139,7 +143,7 @@ router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (re
     }
 
     // Guardar la ruta de la nueva imagen en la base de datos
-    usuario.imagenPerfil = `/images/perfil/${usuario.nombre.toLowerCase().replace(/\s+/g, '-')}-profile${path.extname(req.file.originalname)}`;
+    usuario.imagenPerfil = `https://javicook-mern.onrender.com/images/perfil/${usuario.nombre.toLowerCase().replace(/\s+/g, '-')}-profile${path.extname(req.file.originalname)}`;
     await usuario.save();
 
     return res.status(200).json({ mensaje: 'Imagen de perfil actualizada con éxito.', imagenPerfil: usuario.imagenPerfil });
