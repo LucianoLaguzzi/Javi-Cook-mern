@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: '*', // Permite todos los orígenes (solo para pruebas)
+  origin: 'https://javicook-mern-front.onrender.com', // Especifica el origen exacto del frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
