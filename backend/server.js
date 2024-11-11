@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'https://javicook-mern-front.onrender.com', // Dominio de tu frontend
+  origin: '*', // Permite todos los orígenes (solo para pruebas)
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -53,6 +53,8 @@ app.get('/', (req, res) => {
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
+// Habilitar acceso público a la carpeta donde están las imágenes de perfil
+app.use('/images/perfil', express.static(path.join(__dirname, 'images', 'perfil')));
 
 // Rutas de la aplicación
 app.use('/api/usuarios', usuarioRoutes);
