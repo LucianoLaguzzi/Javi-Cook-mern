@@ -40,7 +40,7 @@ const Perfil = () => {
 
         const obtenerRecetas = async () => {
             try {
-                const response = await axios.get(`/api/recetas/usuario/${usuarioEnSesion._id}`);
+                const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/usuario/${usuarioEnSesion._id}`);
                 setRecetas(response.data);
             } catch (error) {
                 console.error('Error al obtener las recetas del usuario:', error);
@@ -81,7 +81,7 @@ const Perfil = () => {
         formData.append('usuarioId', usuario._id); // Enviar el ID del usuario
         
         try {
-            const response = await axios.put(`/api/usuarios/imagen-perfil/${usuario._id}`, formData, {
+            const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -108,7 +108,7 @@ const Perfil = () => {
     // Función para actualizar usuario en el backend
     const actualizarUsuario = async (actualizado) => {
         try {
-            const response = await axios.put(`/api/usuarios/actualizarPerfil/${usuario._id}`, actualizado);
+            const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/actualizarPerfil/${usuario._id}`, actualizado);
             console.log('Usuario actualizado:', response.data);
             
             // Actualiza el estado del usuario
@@ -197,7 +197,7 @@ const Perfil = () => {
                             <div className="image-container">
                                 <img
                                     id="imagePreview"
-                                    src={usuario && usuario.imagenPerfil ? usuario.imagenPerfil : '/default-profile.png'}
+                                    src={usuario && usuario.imagenPerfil ? usuario.imagenPerfil : '/default-imagen-perfil.jpg'}
                                     alt="Imagen de Perfil"
                                     className="imagen-perfil"
                                 />
@@ -315,7 +315,7 @@ const Perfil = () => {
                                         <ul>
                                             {recetas.map((receta) => (
                                                 <li key={receta._id} className="tarjeta-receta2">
-                                                    <a href={`/detalle-receta/${receta._id}`} className="receta-etiqueta">{capitalizarPrimeraLetra(receta.titulo)}</a>
+                                                    <a href={`https://javicook-mern.onrender.com/detalle-receta/${receta._id}`} className="receta-etiqueta">{capitalizarPrimeraLetra(receta.titulo)}</a>
                                                 </li>
                                             ))}
                                         </ul>
@@ -329,7 +329,7 @@ const Perfil = () => {
 
                         <div className="perfil-link-index">
                             <span className="mensaje-ir-index">
-                                <a href="/inicio" className="link">Volver a las recetas</a>
+                                <a href="https://javicook-mern.onrender.com/inicio" className="link">Volver a las recetas</a>
                             </span>
                         </div>
                     </div>

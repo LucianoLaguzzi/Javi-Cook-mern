@@ -44,7 +44,7 @@ const DetalleReceta = () => {
     // Obtener detalles de la receta desde el backend usando Axios
     const obtenerReceta = async () => {
       try {
-        const response = await axios.get(`/api/detalles/${id}`);
+        const response = await axios.get(`https://javicook-mern.onrender.com/api/detalles/${id}`);
         setReceta(response.data);
 
         // Comparar IDs para determinar si es propietario
@@ -64,7 +64,7 @@ const DetalleReceta = () => {
 
         
         // Obtener la valoración del usuario
-        const valoracionResponse = await axios.get(`/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+        const valoracionResponse = await axios.get(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
         if (valoracionResponse.data.valoracionUsuario) {
           setValoracionUsuario(valoracionResponse.data.valoracionUsuario);
           setYaValorado(true);
@@ -95,7 +95,7 @@ const DetalleReceta = () => {
   // Función para guardar el nuevo título
   const guardarTitulo = async () => {
       try {
-      await axios.put(`/api/recetas/${id}/titulo`, { titulo: receta.titulo });
+      await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/titulo`, { titulo: receta.titulo });
       setTituloEditable(false);
       } catch (error) {
       console.error('Error al guardar el título', error);
@@ -119,7 +119,7 @@ const DetalleReceta = () => {
     // Guardar ingredientes
     const guardarIngredientes = async () => {
         try {
-          await axios.put(`/api/recetas/${id}/ingredientesCantidades`, { ingredientesCantidades });
+          await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/ingredientesCantidades`, { ingredientesCantidades });
           setIngredientesEditable(false);
         } catch (error) {
         console.error('Error al guardar ingredientes', error);
@@ -133,7 +133,7 @@ const DetalleReceta = () => {
         const pasosFormateados = pasosEditados.join('\r\n');
 
         // Usa una URL relativa para evitar clavar localhost
-        const response = await axios.put(`/api/recetas/${id}/pasos`, {
+        const response = await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/pasos`, {
             pasos: pasosFormateados
         });
 
@@ -158,7 +158,7 @@ const DetalleReceta = () => {
     console.log('Usuario en sesión:', usuarioEnSesion);
 
     try {
-      const response = await axios.post(`/api/recetas/${id}/comentarios`, {
+      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
           comentario: nuevoComentario,
           usuario: usuarioEnSesion._id
       });
@@ -220,7 +220,7 @@ const DetalleReceta = () => {
   const manejarValoracion = async (valor) => {
     try {
       // Si está en modo de edición o es una nueva valoración
-      await axios.post('/api/valoraciones', {
+      await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
         recetaId: id,
         usuarioId: usuarioEnSesion._id,
         valor,
@@ -271,7 +271,7 @@ const DetalleReceta = () => {
   
   const eliminarReceta = async () => {
     try {
-      await axios.delete(`/api/recetas/${id}`, {
+      await axios.delete(`https://javicook-mern.onrender.com/api/recetas/${id}`, {
         data: { usuarioId: usuarioEnSesion._id }
       });
       
