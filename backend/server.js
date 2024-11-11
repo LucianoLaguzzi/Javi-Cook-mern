@@ -41,7 +41,7 @@ const startServer = async () => {
 startServer();
 
 // Rutas de prueba
-app.get('https://javicook-mern.onrender.com/', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Servidor funcionando correctamente');
 });
 
