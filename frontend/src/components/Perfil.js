@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 
+// Asegúrate de que las credenciales se envíen en cada solicitud
+axios.defaults.withCredentials = true;
 
 const Perfil = () => {
     const [usuario, setUsuario] = useState(null);

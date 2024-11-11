@@ -3,6 +3,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Importar el hook useNavigate
 import '../style.css';
 
+
+// Asegúrate de que las credenciales se envíen en cada solicitud
+axios.defaults.withCredentials = true;
+
 function Login() {
     const [usuario, setUsuario] = useState('');
     const [contrasenia, setContrasenia] = useState('');
