@@ -65,7 +65,7 @@ const Inicio = () => {
 
     //Traer las recetas para las tarjetas
     useEffect(() => {
-        axios.get('/api/recetas')
+        axios.get('https://javicook-mern.onrender.com/api/recetas')
         .then(response => {
             setRecetas(response.data);
             setRecetasFiltradas(response.data); // Inicialmente mostrar todas
@@ -77,7 +77,7 @@ const Inicio = () => {
         });
 
         // Cargar el top 3 de recetas
-        axios.get('/api/recetas/top3')
+        axios.get('https://javicook-mern.onrender.com/api/recetas/top3')
         .then(response => {
             setTopRecetas(response.data);
         })
@@ -88,7 +88,7 @@ const Inicio = () => {
         // Obtener recetas favoritas del usuario
         // Verificar si hay un usuario en sesión antes de obtener favoritos
         if (usuarioEnSesion) {
-            axios.get(`/api/usuarios/${usuarioEnSesion._id}/favoritos`)
+            axios.get(`https://javicook-mern.onrender.com/api/usuarios/${usuarioEnSesion._id}/favoritos`)
                 .then(response => {
                     setFavoritos(response.data.map(receta => receta._id));  // Guardar solo IDs
                 })
@@ -265,14 +265,14 @@ const Inicio = () => {
     
         if (isFavorito) {
             // Eliminar de favoritos
-            axios.delete(`/api/usuarios/${usuarioEnSesion._id}/favoritos`, { data: { recetaId } })
+            axios.delete(`https://javicook-mern.onrender.com/api/usuarios/${usuarioEnSesion._id}/favoritos`, { data: { recetaId } })
                 .then(response => {
                     setFavoritos(prevFavoritos => prevFavoritos.filter(fav => fav !== recetaId)); // Eliminar de favoritos localmente
                 })
                 .catch(error => console.error('Error al eliminar de favoritos:', error));
         } else {
             // Agregar a favoritos
-            axios.post(`/api/usuarios/${usuarioEnSesion._id}/favoritos`, { recetaId }) // Hacer POST para agregar a favoritos
+            axios.post(`https://javicook-mern.onrender.com/api/usuarios/${usuarioEnSesion._id}/favoritos`, { recetaId }) // Hacer POST para agregar a favoritos
                 .then(response => {
                     setFavoritos(prevFavoritos => [...prevFavoritos, recetaId]); // Agregar a favoritos localmente
                 })
@@ -429,7 +429,7 @@ const Inicio = () => {
         formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
     
         // Enviar la receta al servidor
-        axios.post('/api/recetas', formData, {
+        axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

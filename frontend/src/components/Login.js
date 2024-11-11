@@ -14,7 +14,7 @@ function Login() {
         e.preventDefault();
         setMostrarError(false); // Ocultar el mensaje de error cuando se intenta nuevamente
         try {
-            const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/login', {
+            const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/login', { //antes de /api va la url del backend
                 nombre: usuario,
                 contrasenia
             });         
