@@ -51,9 +51,9 @@ app.use('https://javicook-mern.onrender.com/uploads', express.static(path.join(_
 app.use('https://javicook-mern.onrender.com/images', express.static(path.join(__dirname, 'https://javicook-mern.onrender.com/images')));
 
 // Rutas de la aplicación
-app.use('https://javicook-mern.onrender.com/api/usuarios', usuarioRoutes);
-app.use('https://javicook-mern.onrender.com/api/recetas', recetaRoutes);
-app.use('https://javicook-mern.onrender.com/api/detalles', detalleRoutes);
-app.use('https://javicook-mern.onrender.com/api/recetas', comentarioRoutes);
-app.use('https://javicook-mern.onrender.com/api/valoraciones', valoracionRoutes);
-app.use('https://javicook-mern.onrender.com/api/recuperar', usuarioRoutes);
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/recetas', recetaRoutes);
+app.use('/api/detalles', detalleRoutes);
+app.use('/api/recetas', comentarioRoutes);
+app.use('/api/valoraciones', valoracionRoutes);
+app.use('/api/recuperar', usuarioRoutes);
