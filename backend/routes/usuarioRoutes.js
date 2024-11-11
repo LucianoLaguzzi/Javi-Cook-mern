@@ -95,7 +95,7 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
 // Cambiar foto de perfil:
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = 'images/perfil';
+    const dir = 'https://javicook-mern.onrender.com/images/perfil';
     
     // Verificar si la carpeta existe, si no, crearla
     if (!fs.existsSync(dir)) {

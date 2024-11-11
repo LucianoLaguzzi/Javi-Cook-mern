@@ -41,19 +41,19 @@ const startServer = async () => {
 startServer();
 
 // Rutas de prueba
-app.get('/', (req, res) => {
+app.get('https://javicook-mern.onrender.com/', (req, res) => {
   res.send('Servidor funcionando correctamente');
 });
 
 // Configurar la ruta para servir archivos estáticos
 const __dirname = path.resolve();
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('https://javicook-mern.onrender.com/uploads', express.static(path.join(__dirname, 'https://javicook-mern.onrender.com/uploads')));
+app.use('https://javicook-mern.onrender.com/images', express.static(path.join(__dirname, 'https://javicook-mern.onrender.com/images')));
 
 // Rutas de la aplicación
-app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/recetas', recetaRoutes);
-app.use('/api/detalles', detalleRoutes);
-app.use('/api/recetas', comentarioRoutes);
-app.use('/api/valoraciones', valoracionRoutes);
-app.use('/api/recuperar', usuarioRoutes);
+app.use('https://javicook-mern.onrender.com/api/usuarios', usuarioRoutes);
+app.use('https://javicook-mern.onrender.com/api/recetas', recetaRoutes);
+app.use('https://javicook-mern.onrender.com/api/detalles', detalleRoutes);
+app.use('https://javicook-mern.onrender.com/api/recetas', comentarioRoutes);
+app.use('https://javicook-mern.onrender.com/api/valoraciones', valoracionRoutes);
+app.use('https://javicook-mern.onrender.com/api/recuperar', usuarioRoutes);
