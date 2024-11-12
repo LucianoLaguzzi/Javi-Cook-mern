@@ -41,7 +41,7 @@ router.get('/usuario/:id', async (req, res) => {
 
 
 // Ruta para crear una nueva receta con imagen
-router.post('/', async (req, res) => {
+router.post('/', upload.single('imagen'), async (req, res) => {
     try {
         const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario, imagen } = req.body;
 
