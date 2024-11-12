@@ -57,20 +57,6 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 // Habilitar acceso público a la carpeta donde están las imágenes de perfil
 app.use('/images/perfil', express.static(path.join(__dirname, 'images', 'perfil')));
 
-
-
-// Servir archivos estáticos en producción
-if (process.env.NODE_ENV === 'production') {
-  // Sirve los archivos estáticos construidos de React
-  app.use(express.static(path.join(__dirname, 'client', 'build')));
-
-  // Redirige todas las rutas no encontradas a `index.html`
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-  });
-}
-
-
 // Rutas de la aplicación
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/recetas', recetaRoutes);
