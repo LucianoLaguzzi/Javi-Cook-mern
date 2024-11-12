@@ -341,7 +341,7 @@ const DetalleReceta = () => {
 
  // Crear la URL absoluta de la imagen
  //const imageUrl = `${window.location.origin}/${receta.imagen?.replace('\\', '/')}`;
- const imageUrl = `https://javicook-mern.onrender.com/${receta.imagen?.replace('\\', '/')}`;
+ const imageUrl = receta.imagen;
 
     return (
       <div>
