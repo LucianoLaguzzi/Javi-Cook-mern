@@ -78,35 +78,23 @@ const Perfil = () => {
 
   
    // Función para guardar la imagen de perfil
-   const guardarImagen = async () => {
-    if (!imagenPerfil) {
+    const guardarImagen = async () => {
+        const formData = new FormData();
+        formData.append('imagenPerfil', imagenPerfil);
 
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('imagenPerfil', imagenPerfil);
-
-    try {
-        const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`,formData, { 
-            headers: { 
-                'Content-Type': 'multipart/form-data' } 
-            }
-        );
-
-        console.log('Imagen de perfil actualizada:', response.data);
-
-        // Actualizar la imagen de perfil en el estado
-        setUsuario({ ...usuario, imagenPerfil: response.data.imagenPerfil });
-
-        // Ocultar el botón "Guardar" después de actualizar la imagen
-        setMostrandoBotonGuardar(false);
-
-    } catch (error) {
-        console.error('Error al guardar la imagen:', error);
-
-    }
-};
+        try {
+            const response = await axios.put(
+                `https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`,
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+            console.log('Imagen de perfil actualizada:', response.data);
+            setUsuario({ ...usuario, imagenPerfil: response.data.imagenPerfil });
+            setMostrandoBotonGuardar(false);
+        } catch (error) {
+            console.error('Error al guardar la imagen:', error.response ? error.response.data : error);
+        }
+    };
 
     
     

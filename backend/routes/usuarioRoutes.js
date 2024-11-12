@@ -99,10 +99,13 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
 
 
 // Configurar multer para guardar la imagen temporalmente en el servidor
-// Configuración de Multer para manejar los archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-      cb(null, 'uploads/perfil'); // Asegúrate de tener esta carpeta en tu servidor
+      const uploadPath = 'uploads/perfil';
+      if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });  // Crear la carpeta si no existe
+      }
+      cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
       cb(null, `${req.params.usuarioId}-profile-${Date.now()}.${file.mimetype.split('/')[1]}`);
@@ -117,7 +120,7 @@ const upload = multer({ storage });
 // Ruta para subir imagen de perfil
 router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (req, res) => {
   try {
-      const { usuarioId } = req.params;
+      console.log("Archivo recibido:", req.file); // Agrega un log para ver si el archivo se recibe correctamente
 
       if (!req.file) {
           return res.status(400).json({ mensaje: 'No se ha enviado ningún archivo.' });
@@ -126,13 +129,15 @@ router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (re
       // Subir la imagen a Cloudinary
       const resultado = await cloudinary.v2.uploader.upload(req.file.path, {
           folder: 'perfil',
-          public_id: `${usuarioId}-profile`,
+          public_id: `${req.params.usuarioId}-profile`,
           overwrite: true,
       });
 
+      console.log("Resultado de Cloudinary:", resultado); // Log para ver si la subida es exitosa
+
       // Actualizar la URL de la imagen en la base de datos
       const usuario = await Usuario.findByIdAndUpdate(
-          usuarioId,
+          req.params.usuarioId,
           { imagenPerfil: resultado.secure_url },
           { new: true }
       );
@@ -147,7 +152,7 @@ router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (re
       });
   } catch (error) {
       console.error('Error al actualizar la imagen de perfil:', error);
-      res.status(500).json({ mensaje: 'Error al actualizar la imagen de perfil.' });
+      res.status(500).json({ mensaje: 'Error al actualizar la imagen de perfil.', error: error.message });
   }
 });
 
