@@ -201,7 +201,7 @@ const Perfil = () => {
                             <div className="image-container">
                                 <img
                                     id="imagePreview"
-                                    src={usuario && usuario.imagenPerfil ? `https://javicook-mern.onrender.com${usuario.imagenPerfil}` : '/default-imagen-perfil.jpg'}
+                                    src={usuario && usuario.imagenPerfil ? `${usuario.imagenPerfil}` : '/default-imagen-perfil.jpg'}
                                     alt="Imagen de Perfil"
                                     className="imagen-perfil"
                                 />
