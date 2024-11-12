@@ -38,46 +38,49 @@ router.get('/usuario/:id', async (req, res) => {
   
 
 
-/*// Verificamos si la carpeta 'uploads' existe, si no, la creamos
-const uploadDir = 'uploads/';
+// Verificar si la carpeta temporal existe, si no, crearla
+const uploadDir = './uploads/recetas';
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir); // Crea la carpeta si no existe
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configuración de multer para almacenar imágenes
+// Configuración de almacenamiento de multer
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir); // Carpeta donde se guardarán las imágenes
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname); // Nombre único del archivo
-    }
+  destination: (req, file, cb) => {
+    cb(null, uploadDir); // Guardar archivos en la carpeta temporal
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Mantener la extensión original
+  },
 });
 
-const upload = multer({ storage }); // Definimos el middleware 'upload'
+const upload = multer({ storage: storage });
 
-
-*/
+module.exports = upload;
 
 
 
 // ruta para crear una nueva receta con imagen
-router.post('/', async (req, res) => {
+router.post('/', upload.single('imagen'), async (req, res) => {
     try {
-        const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario, imagen } = req.body;
+        const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
 
 
         // Validación de campos
-        if (!titulo || !ingredientesCantidades || !pasos || !imagen || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
+        if (!titulo || !ingredientesCantidades || !pasos  || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
-        
+
+        // Aquí obtienes la URL de la imagen subiendo a Cloudinary
+        const imagenUrl = req.file ? req.file.path : null;
+
         // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({
             titulo,
             ingredientesCantidades,
             pasos,
-            imagen, // Guardamos la URL de la imagen de Cloudinary
+            imagen: imagenUrl, // Guardamos la URL de la imagen de Cloudinary
             dificultad,
             categoria,
             tiempoPreparacion,
