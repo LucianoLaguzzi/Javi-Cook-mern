@@ -38,7 +38,23 @@ router.get('/usuario/:id', async (req, res) => {
   
 
 
+// Verificamos si la carpeta 'uploads' existe, si no, la creamos
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir); // Crea la carpeta si no existe
+}
 
+// Configuración de multer para almacenar imágenes
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir); // Carpeta donde se guardarán las imágenes
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname); // Nombre único del archivo
+    }
+});
+
+const upload = multer({ storage }); // Definimos el middleware 'upload'
 
 // Ruta para crear una nueva receta con imagen
 router.post('/', upload.single('imagen'), async (req, res) => {
