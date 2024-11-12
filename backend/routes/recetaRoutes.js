@@ -57,8 +57,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-module.exports = upload;
-
 
 
 // ruta para crear una nueva receta con imagen
