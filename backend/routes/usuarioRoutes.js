@@ -9,6 +9,7 @@ import nodemailer from 'nodemailer'; // usar para enviar el correo
 import { randomBytes } from 'crypto'; // Importa randomBytes aquí
 
 import cloudinary from 'cloudinary';
+import streamifier from 'streamifier';
 
 const router = express.Router();
 
@@ -94,35 +95,51 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
 });
 
 
+
+// Configurar multer para almacenar temporalmente la imagen en el servidor antes de subirla a Cloudinary
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 // Ruta para subir imagen de perfil
 router.put('/imagen-perfil/:usuarioId', async (req, res) => {
   try {
     const { usuarioId } = req.params;
-    const { imagenPerfil } = req.files; // Asegúrate de enviar el archivo en la solicitud como "imagenPerfil"
+    const { file } = req; // Obtenemos el archivo a través de multer
 
-    if (!imagenPerfil) {
+    if (!file) {
       return res.status(400).json({ mensaje: 'No se ha proporcionado ninguna imagen.' });
     }
 
     // Subir la imagen a Cloudinary
-    const resultado = await cloudinary.v2.uploader.upload(imagenPerfil.path, {
-      folder: 'perfil',
-      public_id: usuarioId,
-      overwrite: true,
-    });
+    const resultado = await cloudinary.v2.uploader.upload_stream(
+      {
+        folder: 'perfil',
+        public_id: usuarioId,
+        overwrite: true,
+      },
+      async (error, result) => {
+        if (error) {
+          console.error('Error al subir la imagen a Cloudinary:', error);
+          return res.status(500).json({ mensaje: 'Error al subir la imagen.' });
+        }
 
-    // Actualizar la URL de la imagen en la base de datos
-    const usuario = await Usuario.findByIdAndUpdate(
-      usuarioId,
-      { imagenPerfil: resultado.secure_url }, // Guardar la URL de Cloudinary
-      { new: true }
+        // Actualizar la URL de la imagen en la base de datos
+        const usuario = await Usuario.findByIdAndUpdate(
+          usuarioId,
+          { imagenPerfil: result.secure_url }, // Guardar la URL de Cloudinary
+          { new: true }
+        );
+
+        if (!usuario) {
+          return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+        }
+
+        res.status(200).json({ mensaje: 'Imagen de perfil actualizada con éxito.', imagenPerfil: usuario.imagenPerfil });
+      }
     );
 
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
-    }
-
-    res.status(200).json({ mensaje: 'Imagen de perfil actualizada con éxito.', imagenPerfil: usuario.imagenPerfil });
+    // Escribir la imagen en el stream de Cloudinary
+    streamifier.createReadStream(file.buffer).pipe(resultado);
   } catch (error) {
     console.error('Error al actualizar la imagen de perfil:', error);
     res.status(500).json({ mensaje: 'Error al actualizar la imagen de perfil.' });

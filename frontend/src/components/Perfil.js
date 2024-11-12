@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
+import streamifier from 'streamifier';
 
 
 const Perfil = () => {
@@ -19,6 +20,8 @@ const Perfil = () => {
 
     const [mostrarRecetas, setMostrarRecetas] = useState(false);
     const [mostrandoBotonGuardar, setMostrandoBotonGuardar] = useState(false);
+
+    
 
 
 
@@ -72,30 +75,31 @@ const manejarImagen = (event) => {
     // Mostrar el botón de "Guardar" al seleccionar una nueva imagen
     setMostrandoBotonGuardar(true);
   };
+
   
   // Guardar la imagen en el backend
-  const guardarImagen = async () => {
-    const formData = new FormData();
-    formData.append('imagenPerfil', imagenPerfil);
-  
-    try {
-      const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-  
-      console.log('Imagen de perfil actualizada:', response.data);
-      
-      // Actualizar la imagen de perfil en el estado
-      setUsuario({ ...usuario, imagenPerfil: response.data.imagenPerfil });
-  
-      // Ocultar el botón "Guardar" después de actualizar la imagen
-      setMostrandoBotonGuardar(false);
-    } catch (error) {
-      console.error('Error al guardar la imagen:', error);
-    }
-  };
+    const guardarImagen = async () => {
+        const formData = new FormData();
+        formData.append('imagenPerfil', imagenPerfil);
+
+        try {
+            const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log('Imagen de perfil actualizada:', response.data);
+            
+            // Actualizar la imagen de perfil en el estado
+            setUsuario({ ...usuario, imagenPerfil: response.data.imagenPerfil });
+
+            // Ocultar el botón "Guardar" después de actualizar la imagen
+            setMostrandoBotonGuardar(false);
+        } catch (error) {
+            console.error('Error al guardar la imagen:', error);
+        }
+    };
 
     
     
