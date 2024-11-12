@@ -338,7 +338,7 @@ const Inicio = () => {
     //Envio del formulario para dar de alta receta
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         setErrorTitulo("");
         setErrorIngredientesCantidades(""); 
         setErrorPasos(""); 
@@ -347,12 +347,11 @@ const Inicio = () => {
         setErrorCategoria("");
         setErrorTiempo("");
         setErrorIngredientes("");
-
+    
         // Variable para rastrear si hay errores
         let hasError = false;
-
-
-        //Manejo de errores en los campos
+    
+        // Manejo de errores en los campos
         if (!titulo) {
             setErrorTitulo("Por favor, ingrese el nombre de la receta.");
             tituloRef.current.focus(); // Foco en el primer campo con error
@@ -393,12 +392,10 @@ const Inicio = () => {
             ingredientesRef.current.focus();
             hasError = true;
         } 
-
+    
         // Si hay algún error, termina la función aquí
         if (hasError) return;
-
-  
-
+    
         const nuevaReceta = {
             titulo,
             cantidadIngrediente,
@@ -415,59 +412,50 @@ const Inicio = () => {
             formData.append(key, nuevaReceta[key]);
         }
     
-       // Aquí obtenemos la imagen recortada
-       const croppedImage = await getCroppedImg();
-       if (croppedImage) {
+        // Aquí obtenemos la imagen recortada
+        const croppedImage = await getCroppedImg();
+        if (croppedImage) {
             // Cambia el nombre de 'receta.jpg' por el nombre que deseas
             const nombreReceta = nuevaReceta.titulo || 'receta'; // Asegúrate de que el título esté disponible
             const nombreArchivo = `${nombreReceta.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.jpg`;
-
-
-
+    
             // Subir la imagen a Cloudinary
             const formDataImagen = new FormData();
             formDataImagen.append('file', croppedImage);
             formDataImagen.append('upload_preset', 'recipe_images');
+            formDataImagen.append('folder', 'recetas');  // Especificamos la carpeta 'recetas'
             formDataImagen.append('public_id', nombreArchivo);  // Usamos el nombre que hemos generado
-
-
-            const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
-            const imagenUrl = response.data.secure_url;
-
-            // Añadir la URL de la imagen al FormData
-            formData.append('imagen', imagenUrl);
-
-            
-        }
-
-
-        
-
-
-
-
-        // Asegúrate de que ingredientesCantidades tenga el valor correcto
-        const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
-        formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
     
-        // Enviar la receta al servidor
-        axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        })
-        .then(response => {
-            setRecetas(prevRecetas => [response.data, ...prevRecetas]);
-            setRecetasFiltradas(prevRecetas => [response.data, ...prevRecetas]);
-
-            cerrarModal();
-            resetFormulario();
-        })
-        .catch(error => {
-            console.error("Error al guardar la receta", error.response ? error.response.data : error);
-            alert("Hubo un error al guardar la receta. Por favor, intenta de nuevo.");
-        });
+            try {
+                const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
+                const imagenUrl = response.data.secure_url;
+    
+                // Añadir la URL de la imagen al FormData
+                formData.append('imagen', imagenUrl);
+    
+                // Asegúrate de que ingredientesCantidades tenga el valor correcto
+                const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
+                formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
+    
+                // Enviar la receta al servidor
+                await axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+    
+                setRecetas(prevRecetas => [response.data, ...prevRecetas]);
+                setRecetasFiltradas(prevRecetas => [response.data, ...prevRecetas]);
+    
+                cerrarModal();
+                resetFormulario();
+            } catch (error) {
+                console.error("Error al guardar la receta", error.response ? error.response.data : error);
+                alert("Hubo un error al guardar la receta. Por favor, intenta de nuevo.");
+            }
+        }
     };
+    
 
 
     

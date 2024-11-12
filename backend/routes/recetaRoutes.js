@@ -38,7 +38,7 @@ router.get('/usuario/:id', async (req, res) => {
   
 
 
-// Verificamos si la carpeta 'uploads' existe, si no, la creamos
+/*// Verificamos si la carpeta 'uploads' existe, si no, la creamos
 const uploadDir = 'uploads/';
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir); // Crea la carpeta si no existe
@@ -56,17 +56,22 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage }); // Definimos el middleware 'upload'
 
-// Ruta para crear una nueva receta con imagen
-router.post('/', upload.single('imagen'), async (req, res) => {
+
+*/
+
+
+
+// ruta para crear una nueva receta con imagen
+router.post('/', async (req, res) => {
     try {
         const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario, imagen } = req.body;
 
-        // El path de la imagen se puede acceder a través de req.file.path
+        // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({
             titulo,
             ingredientesCantidades,
             pasos,
-            imagen, // Guardamos la URL de la imagen de Cloudinary en lugar del path local
+            imagen, // Guardamos la URL de la imagen de Cloudinary
             dificultad,
             categoria,
             tiempoPreparacion,
@@ -76,11 +81,8 @@ router.post('/', upload.single('imagen'), async (req, res) => {
 
         const recetaGuardada = await nuevaReceta.save();
 
-
         // Poblar el campo 'usuario' para obtener toda la información del usuario
         const recetaConUsuario = await Receta.findById(recetaGuardada._id).populate('usuario');
-
-
 
         res.status(201).json(recetaConUsuario);
     } catch (error) {

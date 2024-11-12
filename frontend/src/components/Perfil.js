@@ -64,42 +64,49 @@ const Perfil = () => {
 
 
     // Manejar la selección de la imagen
-const manejarImagen = (event) => {
-    const archivo = event.target.files[0];
-    setImagenPerfil(archivo);
-    
-    // Crear una URL temporal para mostrar una vista previa de la imagen
-    const vistaPrevia = URL.createObjectURL(archivo);
-    document.getElementById('imagePreview').src = vistaPrevia;
-    
-    // Mostrar el botón de "Guardar" al seleccionar una nueva imagen
-    setMostrandoBotonGuardar(true);
-  };
+    const manejarImagen = (event) => {  
+        const archivo = event.target.files[0];
+        setImagenPerfil(archivo);
+        
+        // Crear una URL temporal para mostrar una vista previa de la imagen
+        const vistaPrevia = URL.createObjectURL(archivo);
+        document.getElementById('imagePreview').src = vistaPrevia;
+        
+        // Mostrar el botón de "Guardar" al seleccionar una nueva imagen
+        setMostrandoBotonGuardar(true);
+    };
 
   
-  // Guardar la imagen en el backend
-    const guardarImagen = async () => {
-        const formData = new FormData();
-        formData.append('imagenPerfil', imagenPerfil);
+   // Función para guardar la imagen de perfil
+   const guardarImagen = async () => {
+    if (!imagenPerfil) {
 
-        try {
-            const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+        return;
+    }
 
-            console.log('Imagen de perfil actualizada:', response.data);
-            
-            // Actualizar la imagen de perfil en el estado
-            setUsuario({ ...usuario, imagenPerfil: response.data.imagenPerfil });
+    const formData = new FormData();
+    formData.append('imagenPerfil', imagenPerfil);
 
-            // Ocultar el botón "Guardar" después de actualizar la imagen
-            setMostrandoBotonGuardar(false);
-        } catch (error) {
-            console.error('Error al guardar la imagen:', error);
-        }
-    };
+    try {
+        const response = await axios.put(
+            `https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+
+        console.log('Imagen de perfil actualizada:', response.data);
+
+        // Actualizar la imagen de perfil en el estado
+        setUsuario({ ...usuario, imagenPerfil: response.data.imagenPerfil });
+
+        // Ocultar el botón "Guardar" después de actualizar la imagen
+        setMostrandoBotonGuardar(false);
+
+    } catch (error) {
+        console.error('Error al guardar la imagen:', error);
+
+    }
+};
 
     
     
