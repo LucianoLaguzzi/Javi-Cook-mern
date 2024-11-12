@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 
-// Asegúrate de que las credenciales se envíen en cada solicitud
-axios.defaults.withCredentials = true;
 
 const Perfil = () => {
     const [usuario, setUsuario] = useState(null);
@@ -82,6 +80,10 @@ const Perfil = () => {
         formData.append('imagenPerfil', imagenPerfil);
         formData.append('usuarioId', usuario._id); // Enviar el ID del usuario
         
+        // Verificar que el archivo se está agregando correctamente
+        console.log("Formulario enviado:", formData);
+
+
         try {
             const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`, formData, {
                 headers: {
