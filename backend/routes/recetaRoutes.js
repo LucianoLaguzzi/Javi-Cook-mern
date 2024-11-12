@@ -66,6 +66,12 @@ router.post('/', async (req, res) => {
     try {
         const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario, imagen } = req.body;
 
+
+        // Validación de campos
+        if (!titulo || !ingredientesCantidades || !pasos || !imagen || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
+            return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+        }
+        
         // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({
             titulo,
