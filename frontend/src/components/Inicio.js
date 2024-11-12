@@ -65,7 +65,7 @@ const Inicio = () => {
 
     //Traer las recetas para las tarjetas
     useEffect(() => {
-        axios.get('/api/recetas')
+        axios.get('https://javicook-mern.onrender.com/api/recetas')
         .then(response => {
             setRecetas(response.data);
             setRecetasFiltradas(response.data); // Inicialmente mostrar todas
@@ -77,7 +77,7 @@ const Inicio = () => {
         });
 
         // Cargar el top 3 de recetas
-        axios.get('/api/recetas/top3')
+        axios.get('https://javicook-mern.onrender.com/api/recetas/top3')
         .then(response => {
             setTopRecetas(response.data);
         })
@@ -88,7 +88,7 @@ const Inicio = () => {
         // Obtener recetas favoritas del usuario
         // Verificar si hay un usuario en sesión antes de obtener favoritos
         if (usuarioEnSesion) {
-            axios.get(`/api/usuarios/${usuarioEnSesion._id}/favoritos`)
+            axios.get(`https://javicook-mern.onrender.com/api/usuarios/${usuarioEnSesion._id}/favoritos`)
                 .then(response => {
                     setFavoritos(response.data.map(receta => receta._id));  // Guardar solo IDs
                 })
