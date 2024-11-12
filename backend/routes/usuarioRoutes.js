@@ -9,7 +9,7 @@ import nodemailer from 'nodemailer'; // usar para enviar el correo
 import { randomBytes } from 'crypto'; // Importa randomBytes aquí
 
 import cloudinary from 'cloudinary';
-import streamifier from 'streamifier';
+
 
 const router = express.Router();
 

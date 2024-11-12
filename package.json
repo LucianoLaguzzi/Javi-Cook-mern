@@ -22,7 +22,6 @@
     "open": "^10.1.0",
     "react-easy-crop": "^5.1.0",
     "react-helmet": "^6.1.0",
-    "streamifier": "^0.1.1",
     "sweetalert2": "^11.14.3"
   }
 }
