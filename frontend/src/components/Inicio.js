@@ -429,7 +429,7 @@ const Inicio = () => {
         formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
     
         // Enviar la receta al servidor
-        axios.post('/api/recetas', formData, {
+        axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
