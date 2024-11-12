@@ -88,10 +88,10 @@ const Perfil = () => {
     formData.append('imagenPerfil', imagenPerfil);
 
     try {
-        const response = await axios.put(
-            `https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`,
-            formData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
+        const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`,formData, { 
+            headers: { 
+                'Content-Type': 'multipart/form-data' } 
+            }
         );
 
         console.log('Imagen de perfil actualizada:', response.data);

@@ -99,28 +99,41 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
 
 
 // Configurar multer para guardar la imagen temporalmente en el servidor
+// Configuración de Multer para manejar los archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/perfil'); // Asegúrate de tener esta carpeta en tu servidor
+  },
+  filename: (req, file, cb) => {
+      cb(null, `${req.params.usuarioId}-profile-${Date.now()}.${file.mimetype.split('/')[1]}`);
+  },
+});
+
+const upload = multer({ storage });
 
 
 
 
-
-// Ruta para actualizar la imagen de perfil
-router.put('/imagen-perfil/:usuarioId', async (req, res) => {
+// Ruta para subir imagen de perfil
+router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (req, res) => {
   try {
       const { usuarioId } = req.params;
-      const { imagenPerfil } = req.files; // Imagen enviada desde el frontend
 
-      // Subir la imagen a Cloudinary con un nombre específico basado en el usuario
-      const resultado = await cloudinary.uploader.upload(imagenPerfil.tempFilePath, {
+      if (!req.file) {
+          return res.status(400).json({ mensaje: 'No se ha enviado ningún archivo.' });
+      }
+
+      // Subir la imagen a Cloudinary
+      const resultado = await cloudinary.v2.uploader.upload(req.file.path, {
           folder: 'perfil',
-          public_id: `${usuarioId}-profile`, // Nombre único para evitar conflictos
-          overwrite: true, // Sobrescribir si ya existe
+          public_id: `${usuarioId}-profile`,
+          overwrite: true,
       });
 
       // Actualizar la URL de la imagen en la base de datos
       const usuario = await Usuario.findByIdAndUpdate(
           usuarioId,
-          { imagenPerfil: resultado.secure_url }, // Guardar la URL de Cloudinary
+          { imagenPerfil: resultado.secure_url },
           { new: true }
       );
 
@@ -128,7 +141,10 @@ router.put('/imagen-perfil/:usuarioId', async (req, res) => {
           return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
       }
 
-      res.status(200).json({ mensaje: 'Imagen de perfil actualizada con éxito.', imagenPerfil: usuario.imagenPerfil });
+      res.status(200).json({
+          mensaje: 'Imagen de perfil actualizada con éxito.',
+          imagenPerfil: usuario.imagenPerfil,
+      });
   } catch (error) {
       console.error('Error al actualizar la imagen de perfil:', error);
       res.status(500).json({ mensaje: 'Error al actualizar la imagen de perfil.' });
