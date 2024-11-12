@@ -118,7 +118,7 @@ router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (re
     // Subir la imagen a Cloudinary
     const resultado = await cloudinary.v2.uploader.upload(path, {
       folder: 'perfil',
-      public_id: usuarioId,
+      public_id: `${usuario.nombre.toLowerCase().replace(/\s+/g, '-')}-profile`,
       overwrite: true,
     });
 

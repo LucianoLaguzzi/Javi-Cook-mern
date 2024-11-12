@@ -420,9 +420,31 @@ const Inicio = () => {
        if (croppedImage) {
             // Cambia el nombre de 'receta.jpg' por el nombre que deseas
             const nombreReceta = nuevaReceta.titulo || 'receta'; // Asegúrate de que el título esté disponible
-            const nombreArchivo = `${Date.now()}-${nombreReceta}.jpg`; // Nombre único para el archivo
-            formData.append('imagen', croppedImage, nombreArchivo); // Añade la imagen recortada al FormData
-       }
+            const nombreArchivo = `${nombreReceta.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.jpg`;
+
+
+
+            // Subir la imagen a Cloudinary
+            const formDataImagen = new FormData();
+            formDataImagen.append('file', croppedImage);
+            formDataImagen.append('upload_preset', 'recipe_images');
+            formDataImagen.append('public_id', nombreArchivo);  // Usamos el nombre que hemos generado
+
+
+            const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
+            const imagenUrl = response.data.secure_url;
+
+            // Añadir la URL de la imagen al FormData
+            formData.append('imagen', imagenUrl);
+
+            
+        }
+
+
+        
+
+
+
 
         // Asegúrate de que ingredientesCantidades tenga el valor correcto
         const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
@@ -447,6 +469,8 @@ const Inicio = () => {
         });
     };
 
+
+    
 
 
     const capitalizarPrimeraLetra = (texto) => {
