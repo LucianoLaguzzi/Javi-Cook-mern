@@ -8,6 +8,8 @@ import Token from '../models/Token.js'; // el modelo de token que creaste
 import nodemailer from 'nodemailer'; // usar para enviar el correo
 import { randomBytes } from 'crypto'; // Importa randomBytes aquí
 
+import cloudinary from 'cloudinary';
+
 const router = express.Router();
 
 // Ruta para crear un nuevo usuario (registrar)
@@ -92,57 +94,35 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
 });
 
 
-// Cambiar foto de perfil:
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = 'images/perfil';
-    
-    // Verificar si la carpeta existe, si no, crearla
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: async (req, file, cb) => {
-    const usuarioId = req.params.usuarioId;
-    
-    try {
-      const usuario = await Usuario.findById(usuarioId); // Obtener los detalles del usuario
-      if (!usuario) {
-        return cb(new Error('Usuario no encontrado'));
-      }
-
-      const extension = path.extname(file.originalname); // Obtener la extensión del archivo
-      const nombreUsuario = usuario.nombre.toLowerCase().replace(/\s+/g, '-'); // Formatear el nombre del usuario
-
-      cb(null, `${nombreUsuario}-profile${extension}`); // Usar el nombre de usuario en el nombre del archivo
-    } catch (error) {
-      console.error('Error al obtener el nombre del usuario:', error);
-      cb(new Error('Error al obtener el nombre del usuario'));
-    }
-  }
-});
-
-const upload = multer({ storage });
-
-router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (req, res) => {
+// Ruta para subir imagen de perfil
+router.put('/imagen-perfil/:usuarioId', async (req, res) => {
   try {
-    const usuarioId = req.params.usuarioId;
-    if (!usuarioId) {
-      return res.status(400).json({ mensaje: 'No se proporcionó un ID de usuario válido.' });
+    const { usuarioId } = req.params;
+    const { imagenPerfil } = req.files; // Asegúrate de enviar el archivo en la solicitud como "imagenPerfil"
+
+    if (!imagenPerfil) {
+      return res.status(400).json({ mensaje: 'No se ha proporcionado ninguna imagen.' });
     }
 
-    // Obtener el usuario y actualizar su imagen de perfil
-    const usuario = await Usuario.findById(usuarioId);
+    // Subir la imagen a Cloudinary
+    const resultado = await cloudinary.v2.uploader.upload(imagenPerfil.path, {
+      folder: 'perfil',
+      public_id: usuarioId,
+      overwrite: true,
+    });
+
+    // Actualizar la URL de la imagen en la base de datos
+    const usuario = await Usuario.findByIdAndUpdate(
+      usuarioId,
+      { imagenPerfil: resultado.secure_url }, // Guardar la URL de Cloudinary
+      { new: true }
+    );
+
     if (!usuario) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
     }
 
-    // Guardar la ruta de la nueva imagen en la base de datos
-    usuario.imagenPerfil = `/images/perfil/${usuario.nombre.toLowerCase().replace(/\s+/g, '-')}-profile${path.extname(req.file.originalname)}`;
-    await usuario.save();
-
-    return res.status(200).json({ mensaje: 'Imagen de perfil actualizada con éxito.', imagenPerfil: usuario.imagenPerfil });
+    res.status(200).json({ mensaje: 'Imagen de perfil actualizada con éxito.', imagenPerfil: usuario.imagenPerfil });
   } catch (error) {
     console.error('Error al actualizar la imagen de perfil:', error);
     res.status(500).json({ mensaje: 'Error al actualizar la imagen de perfil.' });

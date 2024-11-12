@@ -13,6 +13,18 @@ import valoracionRoutes from './routes/valoracionRoutes.js';
 //import fs from 'fs';
 //import https from 'https';
 
+
+// Importa e inicializa Cloudinary
+import cloudinary from 'cloudinary';
+
+cloudinary.v2.config({
+  cloud_name: 'dzaqvpxqk',
+  api_key: '544975191984281',
+  api_secret: 'Y2qo_mmEgNMBSO30OMFlAIu-BWM'
+});
+
+
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
