@@ -46,7 +46,7 @@ router.get('/usuario/:id', async (req, res) => {
 // ruta para crear una nueva receta con imagen
 router.post('/', async (req, res) => {
     try {
-        const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
+        const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes,imagen, usuario } = req.body;
 
 
         // Validación de campos

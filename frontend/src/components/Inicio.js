@@ -426,6 +426,16 @@ const Inicio = () => {
             formDataImagen.append('folder', 'recetas');  // Especificamos la carpeta 'recetas'
             formDataImagen.append('public_id', nombreArchivo);  // Usamos el nombre que hemos generado
     
+
+
+
+
+
+            console.log('Datos antes de enviar:', nuevaReceta);
+
+
+            
+
             try {
                 const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
                 const imagenUrl = response.data.secure_url;
