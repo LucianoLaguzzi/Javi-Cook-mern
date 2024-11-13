@@ -32,10 +32,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: 'https://javicook-mern-front.onrender.com', // Especifica el origen exacto del frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // Si estás utilizando cookies, añadir esto
+  allowedHeaders: ['Content-Type'],
 }));
 app.use(express.json());
+
+// Middleware para formularios con archivos (multipart/form-data)
+app.use(express.urlencoded({ extended: true }));
 
 // Conexión a MongoDB
 const startServer = async () => {
