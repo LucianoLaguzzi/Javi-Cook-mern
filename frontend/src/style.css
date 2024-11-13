@@ -431,7 +431,7 @@ h1.titulo-registrar{
 }
 
 section{
-    background: #6b6661;
+    background: #2B3A42;
     margin-top: 20px;
     border-radius: 30px;
     width: 96%;
@@ -1055,6 +1055,11 @@ img.img-cerrar-sesion:hover {
     height: 650px; /* Puedes ajustar este valor */
     width: 100%;
     position: relative;
+    background-image: linear-gradient(to top, #2a3941, #3b4b56, #4d5d6c, #617082, #778399);
+}
+
+.tarjeta-receta:hover {
+    transform: scale(1.06);
 }
 
 .imagen-contenedor-chica {
