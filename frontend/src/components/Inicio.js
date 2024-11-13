@@ -405,7 +405,6 @@ const Inicio = () => {
             tiempoPreparacion,
             ingredientes,
             usuario: usuario._id,
-            imagen,
         };
     
         const formData = new FormData();
