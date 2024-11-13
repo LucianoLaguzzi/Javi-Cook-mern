@@ -417,7 +417,7 @@ const Inicio = () => {
         if (croppedImage) {
             // Cambia el nombre de 'receta.jpg' por el nombre que deseas
             const nombreReceta = nuevaReceta.titulo || 'receta'; // Asegúrate de que el título esté disponible
-            const nombreArchivo = `${nombreReceta.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.jpg`;
+            const nombreArchivo = `${nombreReceta.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
     
             // Subir la imagen a Cloudinary
             const formDataImagen = new FormData();
