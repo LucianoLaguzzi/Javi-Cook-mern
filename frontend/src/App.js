@@ -13,7 +13,6 @@ import LoadingScreen from './components/LoadingScreen'; // Importa el componente
 
 
 
-
 function App() {
     return (
         <Router>

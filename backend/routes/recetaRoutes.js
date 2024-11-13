@@ -70,7 +70,7 @@ router.post('/',  upload.single('file'), async (req, res) => {
     try {
 
         
-        const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes,imagen, usuario } = req.body;
+        const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
 
 
         // Validación de campos
@@ -79,14 +79,14 @@ router.post('/',  upload.single('file'), async (req, res) => {
         }
 
         // Aquí obtienes la URL de la imagen subiendo a Cloudinary
-        
+        const imagenURL = req.file ? `https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload/${req.file.filename}` : '';
 
         // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({
             titulo,
             ingredientesCantidades,
             pasos,
-            imagen, // Guardamos la URL de la imagen de Cloudinary
+            imagen:imagenURL, // Guardamos la URL de la imagen de Cloudinary
             dificultad,
             categoria,
             tiempoPreparacion,
