@@ -78,15 +78,14 @@ router.post('/',  upload.single('file'), async (req, res) => {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
 
-        // Aquí obtienes la URL de la imagen subiendo a Cloudinary
-        const imagenURL = req.file ? `https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload/${req.file.filename}` : '';
+      
 
         // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({
             titulo,
             ingredientesCantidades,
             pasos,
-            imagen:imagenURL, // Guardamos la URL de la imagen de Cloudinary
+            imagen: req.file ? req.file.path : null, // Si se ha subido una imagen
             dificultad,
             categoria,
             tiempoPreparacion,
