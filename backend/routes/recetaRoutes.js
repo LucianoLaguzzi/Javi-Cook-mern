@@ -39,28 +39,12 @@ router.get('/usuario/:id', async (req, res) => {
 
 
 // Verificar si la carpeta temporal existe, si no, crearla
-const uploadDir = './uploads/recetas';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
 
-// Configuración de almacenamiento de multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir); // Guardar archivos en la carpeta temporal
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Mantener la extensión original
-  },
-});
-
-const upload = multer({ storage: storage });
 
 
 
 // ruta para crear una nueva receta con imagen
-router.post('/', upload.single('imagen'), async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
 
@@ -71,14 +55,14 @@ router.post('/', upload.single('imagen'), async (req, res) => {
         }
 
         // Aquí obtienes la URL de la imagen subiendo a Cloudinary
-        const imagenUrl = req.file ? req.file.path : null;
+        
 
         // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({
             titulo,
             ingredientesCantidades,
             pasos,
-            imagen: imagenUrl, // Guardamos la URL de la imagen de Cloudinary
+            imagen, // Guardamos la URL de la imagen de Cloudinary
             dificultad,
             categoria,
             tiempoPreparacion,

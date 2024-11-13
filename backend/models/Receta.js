@@ -11,6 +11,7 @@ const RecetaSchema = new mongoose.Schema({
   },
   imagen: {
     type: String,
+    required: true,
   },
   fecha: {
     type: Date,
