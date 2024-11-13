@@ -22,7 +22,7 @@ const RecuperarContrasenia = () => {
             }
         });
 
-        axios.post('/api/usuarios/recuperar', { usuario })
+        axios.post('https://javicook-mern.onrender.com/api/usuarios/recuperar', { usuario })
         .then(response => {
             Swal.fire({
                 icon: 'success',
