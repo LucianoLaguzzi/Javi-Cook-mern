@@ -65,20 +65,14 @@ const upload = multer({ storage });
 // ruta para crear una nueva receta con imagen
 router.post('/',  upload.single('file'), async (req, res) => {
 
-    console.log('Apenas entro a el backend, recibo en el body:' + req.body); 
+    console.log('Apenas entro al backend, recibo en el body:', JSON.stringify(req.body)); 
 
     try {
-
-        
         const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
-
-
         // Validación de campos
         if (!titulo || !ingredientesCantidades || !pasos  || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
-
-      
 
         // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({

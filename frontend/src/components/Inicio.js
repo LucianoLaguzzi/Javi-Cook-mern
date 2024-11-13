@@ -434,7 +434,7 @@ const Inicio = () => {
             console.log('Datos antes de enviar:', nuevaReceta);
 
 
-            
+
 
             try {
                 const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
@@ -459,6 +459,7 @@ const Inicio = () => {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
+                    withCredentials: true, // Si usas autenticación o cookies
                 });
     
                 setRecetas(prevRecetas => [response.data, ...prevRecetas]);
