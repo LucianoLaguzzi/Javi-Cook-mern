@@ -430,6 +430,9 @@ const Inicio = () => {
                 const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
                 const imagenUrl = response.data.secure_url;
     
+                console.log('URL de la imagen:', imagenUrl);  // Agrega esto para confirmar
+
+
                 // Añadir la URL de la imagen al FormData
                 formData.append('imagen', imagenUrl);
     
@@ -437,6 +440,10 @@ const Inicio = () => {
                 const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
                 formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
     
+
+                //VERIFICACION DE DATOS ANTES DE MANDAR:
+                console.log('Contenido de formData:', Array.from(formData.entries()));
+
                 // Enviar la receta al servidor
                 await axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
                     headers: {
