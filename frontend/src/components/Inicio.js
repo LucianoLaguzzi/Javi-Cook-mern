@@ -446,7 +446,6 @@ const Inicio = () => {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                withCredentials: true, 
             });
 
             setRecetas(prevRecetas => [response.data, ...prevRecetas]);
