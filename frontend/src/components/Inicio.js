@@ -442,14 +442,14 @@ const Inicio = () => {
             
 
             // Enviar la receta al servidor
-            await axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
+            const resultado = await axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            setRecetas(prevRecetas => [response.data, ...prevRecetas]);
-            setRecetasFiltradas(prevRecetas => [response.data, ...prevRecetas]);
+            setRecetas(prevRecetas => [resultado.data, ...prevRecetas]);
+            setRecetasFiltradas(prevRecetas => [resultado.data, ...prevRecetas]);
 
             cerrarModal();
             resetFormulario();

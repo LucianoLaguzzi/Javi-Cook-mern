@@ -39,11 +39,11 @@ router.get('/usuario/:id', async (req, res) => {
 
 
 // Aqui iba el multer
-
+const upload = multer();
 
 
 // ruta para crear una nueva receta con imagen
-router.post('/', async (req, res) => {
+router.post('/', upload.none(), async (req, res) => {
 
     console.log('Apenas entro al backend, recibo en el body:', req.body); 
 
