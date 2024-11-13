@@ -38,39 +38,19 @@ router.get('/usuario/:id', async (req, res) => {
   
 
 
-// Verificar si la carpeta temporal existe, si no, crearla
-// Configuración de multer para el almacenamiento
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = 'uploads/';
-        
-        // Verificar si la carpeta existe, si no la crea
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true }); // Crea la carpeta si no existe
-        }
-
-        cb(null, uploadPath); // Establece el directorio donde guardarás los archivos
-    },
-    filename: (req, file, cb) => {
-        // Personaliza el nombre del archivo (puedes usar un timestamp o cualquier otra lógica)
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
-
-// Crear el middleware de multer con la configuración de almacenamiento
-const upload = multer({ storage });
+// Aqui iba el multer
 
 
 
 // ruta para crear una nueva receta con imagen
-router.post('/',  upload.single('file'), async (req, res) => {
+router.post('/', async (req, res) => {
 
-    console.log('Apenas entro al backend, recibo en el body:', JSON.stringify(req.body)); 
+    console.log('Apenas entro al backend, recibo en el body:', req.body); 
 
     try {
-        const { titulo, ingredientesCantidades, pasos, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
+        const { titulo, ingredientesCantidades, pasos, imagen, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
         // Validación de campos
-        if (!titulo || !ingredientesCantidades || !pasos  || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
+        if (!titulo || !ingredientesCantidades || !pasos  ||  !imagen || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
 
@@ -79,7 +59,7 @@ router.post('/',  upload.single('file'), async (req, res) => {
             titulo,
             ingredientesCantidades,
             pasos,
-            imagen: req.file ? req.file.path : null, // Si se ha subido una imagen
+            imagen, // Si se ha subido una imagen
             dificultad,
             categoria,
             tiempoPreparacion,

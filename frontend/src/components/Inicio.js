@@ -335,6 +335,9 @@ const Inicio = () => {
         const tiempoPreparacionRef = useRef();
         const ingredientesRef = useRef();
 
+
+
+
     //Envio del formulario para dar de alta receta
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -406,72 +409,56 @@ const Inicio = () => {
             ingredientes,
             usuario: usuario._id,
         };
-    
-        const formData = new FormData();
-        for (const key in nuevaReceta) {
-            formData.append(key, nuevaReceta[key]);
-        }
-    
-        // Aquí obtenemos la imagen recortada
-        const croppedImage = await getCroppedImg();
-        if (croppedImage) {
-            // Cambia el nombre de 'receta.jpg' por el nombre que deseas
+        
+
+        try {
+            // Subir la imagen a Cloudinary
+            const croppedImage = await getCroppedImg();
             const nombreReceta = nuevaReceta.titulo || 'receta'; // Asegúrate de que el título esté disponible
             const nombreArchivo = `${nombreReceta.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-    
-            // Subir la imagen a Cloudinary
             const formDataImagen = new FormData();
             formDataImagen.append('file', croppedImage);
             formDataImagen.append('upload_preset', 'recipe_images');
             formDataImagen.append('folder', 'recetas');  // Especificamos la carpeta 'recetas'
             formDataImagen.append('public_id', nombreArchivo);  // Usamos el nombre que hemos generado
-    
 
 
+            const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
+            const imagenUrl = response.data.secure_url;
 
+            // Añadir la URL de la imagen a los datos de la receta
+            nuevaReceta.imagen = imagenUrl;
 
+            const formData = new FormData();
+            for (const key in nuevaReceta) {
+                formData.append(key, nuevaReceta[key]);
+            }
 
             console.log('Datos antes de enviar:', nuevaReceta);
 
+            // Asegúrate de que ingredientesCantidades tenga el valor correcto
+            const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
+            formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
+            
 
+            // Enviar la receta al servidor
+            await axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                withCredentials: true, 
+            });
 
+            setRecetas(prevRecetas => [response.data, ...prevRecetas]);
+            setRecetasFiltradas(prevRecetas => [response.data, ...prevRecetas]);
 
-            try {
-                const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
-                const imagenUrl = response.data.secure_url;
-    
-                console.log('URL de la imagen:', imagenUrl);  // Agrega esto para confirmar
-
-
-                // Añadir la URL de la imagen al FormData
-                formData.append('imagen', imagenUrl);
-    
-                // Asegúrate de que ingredientesCantidades tenga el valor correcto
-                const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
-                formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
-    
-
-                //VERIFICACION DE DATOS ANTES DE MANDAR:
-                console.log('Contenido de formData:', Array.from(formData.entries()));
-
-                // Enviar la receta al servidor
-                await axios.post('https://javicook-mern.onrender.com/api/recetas', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                    withCredentials: true, // Si usas autenticación o cookies
-                });
-    
-                setRecetas(prevRecetas => [response.data, ...prevRecetas]);
-                setRecetasFiltradas(prevRecetas => [response.data, ...prevRecetas]);
-    
-                cerrarModal();
-                resetFormulario();
-            } catch (error) {
-                console.error("Error al guardar la receta", error.response ? error.response.data : error);
-                alert("Hubo un error al guardar la receta. Por favor, intenta de nuevo.");
-            }
+            cerrarModal();
+            resetFormulario();
+        } catch (error) {
+            console.error("Error al guardar la receta", error.response ? error.response.data : error);
+            alert("Hubo un error al guardar la receta. Por favor, intenta de nuevo.");
         }
+        
     };
     
 

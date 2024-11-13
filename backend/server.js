@@ -13,9 +13,10 @@ import valoracionRoutes from './routes/valoracionRoutes.js';
 //import fs from 'fs';
 //import https from 'https';
 
-
 // Importa e inicializa Cloudinary
 import cloudinary from 'cloudinary';
+
+
 
 cloudinary.v2.config({
   cloud_name: 'dzaqvpxqk',
@@ -29,16 +30,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors({
-  origin: 'https://javicook-mern-front.onrender.com', // Especifica el origen exacto del frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // Si usas cookies o autenticación
-}));
+app.use(cors());
 app.use(express.json());
 
-// Middleware para formularios con archivos (multipart/form-data)
-app.use(express.urlencoded({ extended: true }));
 
 // Conexión a MongoDB
 const startServer = async () => {
