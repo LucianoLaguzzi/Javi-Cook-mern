@@ -4068,4 +4068,10 @@ i.fas.fa-undo {
 }
 
 
+.loading-message {
+    color: #333;
+    font-size: 1.2em;
+    text-align: center;
+    margin-top: 10px;
+}
 

@@ -11,9 +11,15 @@ function Login() {
     const [mostrarError, setMostrarError] = useState(false); // Estado para mostrar/ocultar el error
     const navigate = useNavigate(); // Hook para redireccionar
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setMostrarError(false); // Ocultar el mensaje de error cuando se intenta nuevamente
+
+        setIsLoading(true); // Activa el estado de carga
+
+
         try {
             const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/login', { //antes de /api va la url del backend
                 nombre: usuario,
@@ -24,12 +30,13 @@ function Login() {
             localStorage.setItem('usuario', JSON.stringify(response.data.usuario)); // Asumiendo que el usuario viene en la respuesta
 
             console.log('Login exitoso:', response.data);
-            // Redirecciona al usuario o guarda el token de sesión
-            navigate('/inicio'); // Cambia '/inicio' por la ruta que corresponda
+            navigate('/inicio');
 
         } catch (error) {
             setError('Usuario o contraseña incorrectos');
             setMostrarError(true); // Mostrar el mensaje de error
+        } finally {
+            setIsLoading(false); // Desactiva el estado de carga después de completar la solicitud
         }
     };
 
@@ -82,7 +89,9 @@ function Login() {
                         <i className="fas fa-lock"></i>
                     </div>
 
-                    <button type="submit" className="boton-iniciar-sesion">Iniciar sesión</button>
+                    <button type="submit" className="boton-iniciar-sesion" disabled={isLoading}>
+                        {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+                    </button>
 
                     <div className="panel-links">
                         <span className="mensaje-ir-registrar">
@@ -94,6 +103,9 @@ function Login() {
                         <a href="/recuperar" className="link">¿Olvidaste tu contraseña?</a>
                     </span>
                 </form>
+
+                {isLoading && <p className="loading-message">Por favor, espera un momento...</p>}
+                
             </section>
         </body>
     );
