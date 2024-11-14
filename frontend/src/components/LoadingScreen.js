@@ -18,7 +18,7 @@ const LoadingScreen = () => {
             <div className="loading-content">
                 <div className="logo-container">
                     <img src="../images/JaviCook_logo.png" alt="Logo de la App" className="logo" />
-                    <h1 className="app-title">Tu Recetas Favoritas</h1>
+                    <h1 className="app-title">Tus Recetas Favoritas</h1>
                 </div>
                 <p className="loading-message">¡Descubre, comparte y guarda tus mejores recetas!</p>
                 <div className="spinner2"></div>
