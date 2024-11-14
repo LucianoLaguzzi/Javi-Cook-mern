@@ -36,6 +36,7 @@ function Login() {
             setError('Usuario o contraseña incorrectos');
             setMostrarError(true); // Mostrar el mensaje de error
         } finally {
+            console.log("Bloque finally")
             setIsLoading(false); // Desactiva el estado de carga después de completar la solicitud
         }
     };
@@ -105,7 +106,7 @@ function Login() {
                 </form>
 
                 {isLoading && <p className="loading-message">Por favor, espera un momento...</p>}
-                
+
             </section>
         </body>
     );
