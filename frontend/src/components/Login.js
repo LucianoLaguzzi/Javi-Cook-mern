@@ -110,14 +110,12 @@ function Login() {
                     </span>
                 </form>
 
-
-                <div className="loading-container-login">
-                    <div className="spinner-login"></div>
-                    <p className="loading-message-login">Iniciando sesión...</p>
-                </div>
-
-
-                {isLoading && <p className="loading-message-login">Por favor, espera un momento...</p>}
+                {isLoading && 
+                    <div className="loading-container-login">
+                        <div className="spinner-login"></div>
+                        <p className="loading-message-login">Iniciando sesión...</p>
+                    </div>
+                }
 
             </section>
         </body>
