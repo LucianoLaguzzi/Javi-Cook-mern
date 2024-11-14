@@ -4083,15 +4083,21 @@ i.fas.fa-undo {
 
 
 .loading-message-login {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    border-radius: 5px;
-    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 25px 35px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     font-size: 1.2em;
     color: #333;
-    text-align: center;
+    max-width: 80%;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Detalles de estilo del texto */
+.loading-message-login p {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 10px 0 0;
 }
