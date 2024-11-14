@@ -90,7 +90,12 @@ function Login() {
                         <i className="fas fa-lock"></i>
                     </div>
 
-                    <button type="submit" className="boton-iniciar-sesion" disabled={isLoading}>
+
+                    <button
+                        type="submit"
+                        className={`boton-iniciar-sesion ${isLoading ? 'boton-disabled' : ''}`}
+                        disabled={isLoading}
+                    >
                         {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
                     </button>
 
@@ -105,7 +110,9 @@ function Login() {
                     </span>
                 </form>
 
-                {isLoading && <p className="loading-message">Por favor, espera un momento...</p>}
+                <p className="loading-message-login">Iniciando sesión... por favor espera un momento, puede tomar unos segundos</p>
+
+                {isLoading && <p className="loading-message-login">Por favor, espera un momento...</p>}
 
             </section>
         </body>

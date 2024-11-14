@@ -157,6 +157,20 @@ header p {
     background-color: #45a049;
 }
 
+/* Estilo adicional para el botón desactivado */
+.boton-disabled {
+    padding: 10px;
+    font-size: 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+    display: block;
+    width: 100%;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
 .bienvenido-text {
     height: 73px;
@@ -4068,7 +4082,7 @@ i.fas.fa-undo {
 }
 
 
-.loading-message {
+.loading-message-login {
     position: absolute;
     top: 50%;
     left: 50%;
