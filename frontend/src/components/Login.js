@@ -111,9 +111,9 @@ function Login() {
                 </form>
 
 
-                <div className="loading-container">
-                    <div className="spinner"></div>
-                    <p className="loading-message-login">Iniciando sesión... por favor espera un momento, puede tomar unos segundos</p>
+                <div className="loading-container-login">
+                    <div className="spinner-login"></div>
+                    <p className="loading-message-login">Iniciando sesión...</p>
                 </div>
 
 
