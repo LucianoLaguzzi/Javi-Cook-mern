@@ -4086,7 +4086,7 @@ i.fas.fa-undo {
 
 
 /*Espera en login*/
-loading-container-login{
+.loading-container-login{
     font-size: 1.3em;
     color: #fff;
     font-weight: 500;
@@ -4102,7 +4102,7 @@ loading-container-login{
     animation: shine 3s infinite linear;
 }
 
-loading-message-login{
+.loading-message-login{
     font-size: 1.6em;
     color: #fff;
     font-weight: 500;
