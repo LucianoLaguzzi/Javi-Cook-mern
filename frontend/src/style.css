@@ -3554,7 +3554,6 @@ i.fas.fa-undo {
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
-    width: 36%;
     align-self: center;
 }
 
@@ -3592,21 +3591,6 @@ i.fas.fa-undo {
     cursor: pointer;
     display: none;
 }
-
-@media (max-width: 700px) {
-    .edit-icon {
-        margin-left: 4px;
-    }
-}
-
-@media (max-width: 450px) {
-    .edit-icon {
-        margin-left: 20px;
-    }
-}
-
-
-
 
 .image-container:hover .edit-icon {
     display: block;
