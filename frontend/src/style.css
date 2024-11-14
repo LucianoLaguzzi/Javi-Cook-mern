@@ -3999,11 +3999,11 @@ i.fas.fa-undo {
 }
 
 .logo {
-    width: 280px;
+    width: 265px;
     height: auto;
     animation: bounce 2s infinite;
-    margin-bottom: 50px;
-    margin-top: 25%;
+    margin-bottom: 35px;
+    margin-top: 20%;
 }
 
 @media (max-width: 700px) {
@@ -4031,13 +4031,12 @@ i.fas.fa-undo {
     margin-top: 5px;
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 1px 1px 8px rgba(255, 255, 255, 0.5);
-   /* margin-bottom: 15px;*/
-   margin-bottom: 5%;
+   margin-bottom: 2%;
 }
 
 @media (max-width: 700px) {
     .loading-message {
-        margin-bottom: 20%;
+        margin-bottom: 6%;
     }
 }
 
