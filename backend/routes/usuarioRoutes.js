@@ -7,7 +7,6 @@ import fs from 'fs';
 import Token from '../models/Token.js'; // el modelo de token que creaste
 import nodemailer from 'nodemailer'; // usar para enviar el correo
 import { randomBytes } from 'crypto'; // Importa randomBytes aquí
-
 import cloudinary from 'cloudinary';
 
 

@@ -7,6 +7,7 @@ import Valoracion from  '../models/Valoracion.js';
 import Comentario from  '../models/Comentario.js';
 import Usuario from  '../models/Usuario.js';
 import path from 'path';
+import cloudinary from 'cloudinary';
 
 const router = express.Router();
 

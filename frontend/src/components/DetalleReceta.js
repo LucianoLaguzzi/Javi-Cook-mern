@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Swal from 'sweetalert2';
 
+
 const DetalleReceta = () => {
       
   const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
@@ -54,15 +55,9 @@ const DetalleReceta = () => {
         }
 
         setIngredientesCantidades(response.data.ingredientesCantidades.join('\r\n'));
-
         setPasos(response.data.pasos.join('\r\n'));
-
-        // Verificar la estructura de los comentarios
-        console.log('Comentarios obtenidos:', response.data.comentarios);
-
         setComentarios(response.data.comentarios || []); // Inicializar comentarios
 
-        
         // Obtener la valoración del usuario
         const valoracionResponse = await axios.get(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
         if (valoracionResponse.data.valoracionUsuario) {
