@@ -153,8 +153,6 @@ const DetalleReceta = () => {
   // Agregar comentario
   const agregarComentario = async () => {
     if (!nuevoComentario) return;
-
-    console.log('Comentario a enviar:', nuevoComentario);
     console.log('Usuario en sesión:', usuarioEnSesion);
 
     try {

@@ -130,9 +130,6 @@ const Inicio = () => {
         // Actualiza el input oculto
         const hiddenInput = document.querySelector(".inputOcultoIngredientesCantidades");
         hiddenInput.value = value;  // Guardamos el valor del textarea en el input oculto
-
-        // Verifica el valor
-        console.log("Valor de ingredientes y cantidades:", value);
     };
     
 
@@ -265,14 +262,14 @@ const Inicio = () => {
     
         if (isFavorito) {
             // Eliminar de favoritos
-            axios.delete(`/api/usuarios/${usuarioEnSesion._id}/favoritos`, { data: { recetaId } })
+            axios.delete(`https://javicook-mern.onrender.com/api/usuarios/${usuarioEnSesion._id}/favoritos`, { data: { recetaId } })
                 .then(response => {
                     setFavoritos(prevFavoritos => prevFavoritos.filter(fav => fav !== recetaId)); // Eliminar de favoritos localmente
                 })
                 .catch(error => console.error('Error al eliminar de favoritos:', error));
         } else {
             // Agregar a favoritos
-            axios.post(`/api/usuarios/${usuarioEnSesion._id}/favoritos`, { recetaId }) // Hacer POST para agregar a favoritos
+            axios.post(`https://javicook-mern.onrender.com/api/usuarios/${usuarioEnSesion._id}/favoritos`, { recetaId }) // Hacer POST para agregar a favoritos
                 .then(response => {
                     setFavoritos(prevFavoritos => [...prevFavoritos, recetaId]); // Agregar a favoritos localmente
                 })
