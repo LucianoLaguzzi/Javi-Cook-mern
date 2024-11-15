@@ -266,7 +266,7 @@ const DetalleReceta = () => {
       }
     });
   };
-  
+   
   const eliminarReceta = async () => {
     try {
       await axios.delete(`https://javicook-mern.onrender.com/api/recetas/${id}`, {

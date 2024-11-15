@@ -5,6 +5,7 @@ import fs from 'fs'; // Importamos el módulo fs para manejar el sistema de arch
 import Receta from '../models/Receta.js'; // Ajusta la ruta al modelo
 import Valoracion from  '../models/Valoracion.js';
 import Comentario from  '../models/Comentario.js';
+import Usuario from  '../models/Usuario.js';
 import path from 'path';
 
 const router = express.Router();
@@ -175,12 +176,17 @@ router.delete('/:recetaId', async (req, res) => {
       
         // Eliminar comentarios asociados a la receta
         await Comentario.deleteMany({ receta: recetaId });
+
+        // Eliminar la receta de los favoritos de los usuarios
+        await Usuario.updateMany(
+            { recetasFavoritas: recetaId }, // Busca usuarios que tengan esta receta en sus favoritos
+            { $pull: { recetasFavoritas: recetaId } } // Elimina la receta de la lista de favoritos
+        );
       
         // Eliminar la imagen asociada a la receta si existe
-        // Eliminar la imagen asociada
         if (receta.imagen) {
             console.log('Intentando eliminar la imagen:', receta.imagen); // Imprime el valor
-            await eliminarImagen(receta.imagen);
+            await eliminarImagenCloudinary (receta.imagen);
         }
       
         // Finalmente, eliminar la receta
@@ -196,24 +202,19 @@ router.delete('/:recetaId', async (req, res) => {
 
 
 
-// Función para eliminar una imagen del servidor
-export const eliminarImagen = (rutaImagen) => {
-    return new Promise((resolve, reject) => {
-        const __dirname = path.resolve(); // Asegura la correcta referencia del directorio raíz
-        const rutaCompleta = path.join(__dirname, rutaImagen); // Ruta completa a la imagen
-    
-        fs.unlink(rutaCompleta, (err) => {
-            if (err) {
-                console.error('Error al eliminar la imagen:', err);
-                return reject(err);
-            } else {
-                console.log('Imagen eliminada con éxito.');
-                return resolve();
-            }
-        });
-    });
-};
-
+// Función para eliminar la imagen en cloudinary
+const eliminarImagenCloudinary = async (urlImagen) => {
+    try {
+      // Extraer el `public_id` de la URL de Cloudinary
+      const publicId = urlImagen.split('/').slice(-2).join('/').split('.')[0]; // Ejemplo: recetas/abc123
+  
+      await cloudinary.uploader.destroy(publicId);
+      console.log('Imagen eliminada con éxito de Cloudinary.');
+    } catch (error) {
+      console.error('Error al eliminar la imagen de Cloudinary:', error);
+      throw error;
+    }
+  };
 
 
 //Top 3
