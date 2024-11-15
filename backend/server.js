@@ -73,15 +73,3 @@ app.use('/api/detalles', detalleRoutes);
 app.use('/api/recetas', comentarioRoutes);
 app.use('/api/valoraciones', valoracionRoutes);
 app.use('/api/recuperar', usuarioRoutes);
-
-
-// Configuración para servir el frontend en producción
-if (process.env.NODE_ENV === 'production') {
-  // Sirve los archivos estáticos del frontend
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-
-  // Redirige todas las demás solicitudes a `index.html` del frontend
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
-  });
-}
