@@ -73,3 +73,13 @@ app.use('/api/detalles', detalleRoutes);
 app.use('/api/recetas', comentarioRoutes);
 app.use('/api/valoraciones', valoracionRoutes);
 app.use('/api/recuperar', usuarioRoutes);
+
+
+// Configuración para servir el frontend en producción
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}

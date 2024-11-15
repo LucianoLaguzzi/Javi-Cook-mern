@@ -14,7 +14,7 @@ const Registro = () => {
     e.preventDefault(); // Evitar que el formulario se envíe de manera convencional
 
     try {
-      const response = await axios.post('/api/usuarios/registrar', {
+      const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/registrar', {
         nombre,
         contrasenia,
         email,
