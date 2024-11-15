@@ -3624,7 +3624,8 @@ i.fas.fa-undo {
     position: relative;
     min-width: 200px;
     padding-bottom: 5px;
-    background: #c50808;
+    /*background: #c50808;*/
+    background: #7e1919
 }
 
 .top-recetas-titulo{
@@ -3646,7 +3647,8 @@ i.fas.fa-undo {
 }
 
 .top3 > .panel-recetas > .tarjeta-receta{
-    background: #680404;
+    /*background: #680404;*/
+    background-image: linear-gradient(0deg, #4d1212, #5a1616, #be0000, #c41a1a, #e24747);
 }
 
 @media (max-width: 1920px) {
@@ -3692,7 +3694,13 @@ i.fas.fa-undo {
     position: relative;
     min-width: 200px;
     padding-bottom: 5px;
-    background: #145d0a;
+    /*background: #145d0a;*/
+    background:#0c4b03
+}
+
+.favoritos > .panel-recetas > .tarjeta-receta{
+    /*background: #680404;*/
+    background-image: linear-gradient(0deg, #092d0c, #155c33, #206a3c, #238a50, #34cf69);
 }
 
 .favoritos-titulo{
