@@ -26,14 +26,13 @@ const DetalleReceta = () => {
   const [pasosEditable, setPasosEditable] = useState(false);
   // Estado para manejar los pasos en edición
   const [pasosEditados, setPasosEditados] = useState(pasos.split('\r\n'));
-
   //Valoraciones
   const [valoracionUsuario, setValoracionUsuario] = useState(0); // Valor del usuario actual
   const [yaValorado, setYaValorado] = useState(false); // Para verificar si ya valoró
   const [valoracionHover, setValoracionHover] = useState(0); // Valoración temporal para hover
-
   const [edicionActiva, setEdicionActiva] = useState(false);  // Controla si la edición está activa
 
+  const [loading, setLoading] = useState(false); // Estado para el cartel de carga
 
 
 
@@ -264,6 +263,10 @@ const DetalleReceta = () => {
    
   const eliminarReceta = async () => {
     try {
+
+      // Activa el estado de loading
+      setLoading(true);
+
       await axios.delete(`https://javicook-mern.onrender.com/api/recetas/${id}`, {
         data: { usuarioId: usuarioEnSesion._id }
       });
@@ -288,7 +291,11 @@ const DetalleReceta = () => {
     } catch (error) {
       console.error('Error al eliminar la receta:', error);
       alert('Hubo un problema al eliminar la receta.');
+    } finally {
+      // Desactiva el estado de loading
+      setLoading(false);
     }
+    
   };
 
   
@@ -564,13 +571,23 @@ const DetalleReceta = () => {
                 <hr className='divider'></hr>
               )}
 
-                                      {/* Eliminar receta */}
-              {esPropietario && (
-                <button className="link-eliminar-receta" onClick={confirmarEliminar}>
-                  <i className="fas fa-trash-alt" title="Eliminar receta"></i>
-                </button>
-              )}
+              {/* Eliminar receta */}
+              
+                {esPropietario && (
+                  <button className="link-eliminar-receta" onClick={confirmarEliminar}>
+                    <i className="fas fa-trash-alt" title="Eliminar receta"></i>
+                  </button>
+                )}
 
+                {/* Mostrar un cartel de carga si está eliminando */}
+                {!loading && (
+                   <div className="loading-container-eliminar">
+                    <div className="spinner-eliminar"></div>
+                    <p className="loading-message-eliminar">Eliminando receta...</p>
+                  </div>
+                )}
+
+              
 
               <div className="detalles-comentarios">
                 <i class="far fa-comment-alt"></i>
