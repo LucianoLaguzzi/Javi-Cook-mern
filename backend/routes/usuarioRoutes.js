@@ -302,10 +302,17 @@ router.post('/cambiar-contrasenia', async (req, res) => {
 
       // Actualizar la contraseña del usuario
       usuario.contrasenia = contraseniaEncriptada;
-      await usuario.save();
+
+
+      // Guardar el usuario con la nueva contraseña
+      const usuarioActualizado = await usuario.save();
+      if (!usuarioActualizado) {
+          return res.status(500).json({ error: "Error al actualizar la contraseña" });
+      }
 
       // Eliminar el token después de usarlo
       await Token.deleteOne({ token });
+      console.log('Token eliminado');
 
       res.status(200).json({ mensaje: "Contraseña cambiada con éxito" });
   } catch (error) {

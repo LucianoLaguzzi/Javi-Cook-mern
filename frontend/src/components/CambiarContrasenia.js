@@ -27,27 +27,33 @@ const CambiarContrasenia = () => {
         }
 
         try {
-            await axios.post('https://javicook-mern-front.onrender.com/api/usuarios/cambiar-contrasenia', // Ruta relativa
+            const response = await axios.post('https://javicook-mern-front.onrender.com/api/usuarios/cambiar-contrasenia', // Ruta relativa
                 { token, nuevaContrasenia },
                 { headers: { 'Content-Type': 'application/json' } }
             );
-            Swal.fire({
-                icon: 'success',
-                title: '¡Contraseña cambiada!',
-                text: 'Tu contraseña ha sido cambiada con éxito.',
-                confirmButtonText: 'OK',
 
-                customClass: {
-                    popup: 'swal-envio-exitoso',
-                    title: 'swal-small-title',
-                    content: 'swal-small-text',
-                    confirmButton: 'swal-small-button',
-                }
-            });
+            // Verificar si el mensaje es el esperado
+            if (response.status === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Contraseña cambiada!',
+                    text: 'Tu contraseña ha sido cambiada con éxito.',
+                    confirmButtonText: 'OK',
 
-            // Limpiar los campos después de un envío exitoso
-            setNuevaContrasenia('');
-            setConfirmarContrasenia('');
+                    customClass: {
+                        popup: 'swal-envio-exitoso',
+                        title: 'swal-small-title',
+                        content: 'swal-small-text',
+                        confirmButton: 'swal-small-button',
+                    }
+                });
+
+                // Limpiar los campos después de un envío exitoso
+                setNuevaContrasenia('');
+                setConfirmarContrasenia('');
+            } else {
+                throw new Error('Error al cambiar la contraseña');
+            }
             
         } catch (error) {
             console.error('Error al cambiar la contraseña:', error.response || error);
