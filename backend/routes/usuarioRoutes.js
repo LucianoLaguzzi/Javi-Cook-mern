@@ -284,6 +284,7 @@ router.post('/cambiar-contrasenia', async (req, res) => {
   const { token, nuevaContrasenia } = req.body;
 
   try {
+    console.log("Token recibido:", token);
       // Verificar el token
       const tokenRegistro = await Token.findOne({ token });
       if (!tokenRegistro) {
@@ -293,6 +294,7 @@ router.post('/cambiar-contrasenia', async (req, res) => {
       // Buscar al usuario
       const usuario = await Usuario.findById(tokenRegistro.userId);
       if (!usuario) {
+        console.error("Usuario no encontrado para el token:", tokenRegistro.userId);
           return res.status(404).json({ error: "Usuario no encontrado" });
       }
 
@@ -302,13 +304,9 @@ router.post('/cambiar-contrasenia', async (req, res) => {
 
       // Actualizar la contraseña del usuario
       usuario.contrasenia = contraseniaEncriptada;
-
-
-      // Guardar el usuario con la nueva contraseña
-      const usuarioActualizado = await usuario.save();
-      if (!usuarioActualizado) {
-          return res.status(500).json({ error: "Error al actualizar la contraseña" });
-      }
+      await usuario.save(); // Guardar el usuario con la nueva contraseña
+      console.log("Contraseña actualizada para el usuario:", usuario.email);
+     
 
       // Eliminar el token después de usarlo
       await Token.deleteOne({ token });
