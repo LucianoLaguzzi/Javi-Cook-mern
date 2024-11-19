@@ -88,8 +88,15 @@ const Perfil = () => {
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
+
             console.log('Imagen de perfil actualizada:', response.data);
-            setUsuario({ ...usuario, imagenPerfil: response.data.imagenPerfil });
+
+            // Actualizar el estado y el localStorage
+            const usuarioActualizado = { ...usuario, imagenPerfil: response.data.imagenPerfil };
+            setUsuario(usuarioActualizado);
+            localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+
+
             setMostrandoBotonGuardar(false);
         } catch (error) {
             console.error('Error al guardar la imagen:', error.response ? error.response.data : error);
