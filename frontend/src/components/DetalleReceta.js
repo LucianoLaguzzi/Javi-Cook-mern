@@ -580,7 +580,7 @@ const DetalleReceta = () => {
                 )}
 
                 {/* Mostrar un cartel de carga si está eliminando */}
-                {!loading && (
+                {loading && (
                    <div className="loading-container-eliminar">
                     <div className="spinner-eliminar"></div>
                     <p className="loading-message-eliminar">Eliminando receta...</p>
