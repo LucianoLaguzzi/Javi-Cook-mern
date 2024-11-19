@@ -1170,13 +1170,15 @@ img.img-cerrar-sesion:hover {
 
 /* Contenido del modal */
 .modal-content {
-    background-color: #fefefeeb;
+    /*background-color: #fefefeeb;*/
     margin: 15% auto; /* Centrado verticalmente y 15% desde el borde superior */
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Ancho del modal */
     border-radius: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    color: #e0e0e0;
+    background: linear-gradient(135deg, rgb(77 113 149 / 95%), rgb(24 56 88 / 90%));
 }
 
 @media (max-width: 1200px) {
