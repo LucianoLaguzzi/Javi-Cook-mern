@@ -242,8 +242,8 @@ router.post('/recuperar', async (req, res) => {
       const transporter = nodemailer.createTransport({
           service: 'gmail', // o el servicio que uses
           auth: {
-              user: 'javicook.app@gmail.com',
-              pass: 'tdhqvpfqpzqhrbys' // Asegúrate de que esto sea seguro
+            user: process.env.EMAIL_USER, // Accede a la variable de entorno
+            pass: process.env.EMAIL_PASS  // Accede a la variable de entorno
           }
       });
 
