@@ -3386,9 +3386,16 @@ i.fas.fa-undo {
     outline: 1px solid #6c6c6c;
     border-radius: 10px;
     color: white;
-    padding: 5px 10px 5px 10px;
+    /*padding: 5px 10px 5px 10px;*/
     width: 70%;
     margin-left: 15px;
+    padding-left: 8px;
+}
+
+@media (max-width: 700px) {
+    .input-nuevo-nombre{
+        font-size: 13px;
+    }
 }
 
 .output-nombre-usuario{
@@ -3439,9 +3446,16 @@ i.fas.fa-undo {
     outline: 1px solid #6c6c6c;
     border-radius: 10px;
     color: white;
-    padding: 5px 10px 5px 10px;
+    /*padding: 5px 10px 5px 10px;*/
     width: 70%;
     margin-left: 15px;
+    padding-left: 8px;
+}
+
+@media (max-width: 700px) {
+    .input-nuevo-email{
+        font-size: 13px;
+    }
 }
 
 
@@ -3470,7 +3484,13 @@ i.fas.fa-undo {
     flex-direction: row-reverse;
     padding-left: 25px;
     gap: 25px;
-    font-size: 20px;
+    font-size: 16px;
+}
+
+@media (max-width: 700px) {
+    .cancel-ok{
+        font-size: 13px;
+    }
 }
 
 .fa-times-circle {
