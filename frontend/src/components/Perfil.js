@@ -223,92 +223,93 @@ const Perfil = () => {
                             )}
                         </div>
 
-
-                        <div className="perfil-usuario">
-                            {/* Sección del nombre de usuario */}
-                            <div className="perfil-inputs">
-                                <div className="div-label-perfil">
-                                    <label className="perfil-label-usuario">Usuario:</label>
-                                </div>
-
-                                {/* Muestra el nombre o el input de edición */}
-                                {editandoNombre ? (
-                                    <input
-                                        type="text"
-                                        value={nuevoNombre}
-                                        onChange={(e) => setNuevoNombre(e.target.value)}
-                                        className="input-nuevo-nombre"
-                                    />
-                                ) : (<div className='output-nombre-usuario'>
-                                        <span className="output-nombre-usuario-texto">{usuario ? usuario.nombre : 'Cargando...'}</span>
+                        <div className='inputs-perfil'>
+                            <div className="perfil-usuario">
+                                {/* Sección del nombre de usuario */}
+                                <div className="perfil-inputs">
+                                    <div className="div-label-perfil">
+                                        <label className="perfil-label-usuario">Usuario:</label>
                                     </div>
-                                )}
 
-                               </div> 
+                                    {/* Muestra el nombre o el input de edición */}
+                                    {editandoNombre ? (
+                                        <input
+                                            type="text"
+                                            value={nuevoNombre}
+                                            onChange={(e) => setNuevoNombre(e.target.value)}
+                                            className="input-nuevo-nombre"
+                                        />
+                                    ) : (<div className='output-nombre-usuario'>
+                                            <span className="output-nombre-usuario-texto">{usuario ? usuario.nombre : 'Cargando...'}</span>
+                                        </div>
+                                    )}
 
-                                {/* Botón para editar nombre */}
-                                {!editandoNombre && (
-                                    <a className="btn-editar-user" title="Editar Usuario" onClick={() => setEditandoNombre(true)}>
-                                        <i className="fas fa-pencil-alt"></i>
-                                    </a>
-                                )}
-                            
+                                </div> 
 
-                            {/* Botones de cancelar y guardar solo si está editando */}
-                            {editandoNombre && (
-                                <div className="cancel-ok">
-                                    <a className="btn-cancelar-user" title="Cancelar" onClick={cancelarNombre}>
-                                        <i className="fas fa-times-circle"></i>
-                                    </a>
-                                    <a className="btn-guardar-icon" title="Guardar" onClick={guardarNombre}>
-                                        <i className="fas fa-check-circle"></i>
-                                    </a>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className='perfil-email'>
-                            {/* Sección del email del usuario */}
-                            <div className="perfil-inputs">
-                                <div className="div-label-perfil">
-                                    <label className="perfil-label-email">Email:</label>
-                                </div>
-
-                                {/* Muestra el email o el input de edición */}
-                                {editandoEmail ? (
-                                    <input
-                                        type="text"
-                                        value={nuevoEmail}
-                                        onChange={(e) => setNuevoEmail(e.target.value)}
-                                        className="input-nuevo-email"
-                                    />
-                                ) : (
-                                    <div className='output-email-usuario'>
-                                        <span className="output-email-usuario-texto">{usuario ? usuario.email : 'Cargando...'}</span>
-                                    </div>
-                                )}
+                                    {/* Botón para editar nombre */}
+                                    {!editandoNombre && (
+                                        <a className="btn-editar-user" title="Editar Usuario" onClick={() => setEditandoNombre(true)}>
+                                            <i className="fas fa-pencil-alt"></i>
+                                        </a>
+                                    )}
                                 
-                                </div>
 
-                                {/* Botón para editar email */}
-                                {!editandoEmail && (
-                                    <a className="btn-editar-email" title="Editar Email" onClick={() => setEditandoEmail(true)}>
-                                        <i className="fas fa-pencil-alt"></i>
-                                    </a>
+                                {/* Botones de cancelar y guardar solo si está editando */}
+                                {editandoNombre && (
+                                    <div className="cancel-ok">
+                                        <a className="btn-cancelar-user" title="Cancelar" onClick={cancelarNombre}>
+                                            <i className="fas fa-times-circle"></i>
+                                        </a>
+                                        <a className="btn-guardar-icon" title="Guardar" onClick={guardarNombre}>
+                                            <i className="fas fa-check-circle"></i>
+                                        </a>
+                                    </div>
                                 )}
-                            
+                            </div>
 
-                            {/* Botones de cancelar y guardar solo si está editando */}
-                            {editandoEmail && (
-                                <div className="cancel-ok">
-                                    <a className="btn-cancelar-email" title="Cancelar" onClick={cancelarEmail}>
-                                        <i className="fas fa-times-circle"></i>
-                                    </a>
-                                    <a className="btn-guardar-icon" title="Guardar" onClick={guardarEmail}>
-                                        <i className="fas fa-check-circle"></i>
-                                    </a>
-                                </div>
-                            )}
+                            <div className='perfil-email'>
+                                {/* Sección del email del usuario */}
+                                <div className="perfil-inputs">
+                                    <div className="div-label-perfil">
+                                        <label className="perfil-label-email">Email:</label>
+                                    </div>
+
+                                    {/* Muestra el email o el input de edición */}
+                                    {editandoEmail ? (
+                                        <input
+                                            type="text"
+                                            value={nuevoEmail}
+                                            onChange={(e) => setNuevoEmail(e.target.value)}
+                                            className="input-nuevo-email"
+                                        />
+                                    ) : (
+                                        <div className='output-email-usuario'>
+                                            <span className="output-email-usuario-texto">{usuario ? usuario.email : 'Cargando...'}</span>
+                                        </div>
+                                    )}
+                                    
+                                    </div>
+
+                                    {/* Botón para editar email */}
+                                    {!editandoEmail && (
+                                        <a className="btn-editar-email" title="Editar Email" onClick={() => setEditandoEmail(true)}>
+                                            <i className="fas fa-pencil-alt"></i>
+                                        </a>
+                                    )}
+                                
+
+                                {/* Botones de cancelar y guardar solo si está editando */}
+                                {editandoEmail && (
+                                    <div className="cancel-ok">
+                                        <a className="btn-cancelar-email" title="Cancelar" onClick={cancelarEmail}>
+                                            <i className="fas fa-times-circle"></i>
+                                        </a>
+                                        <a className="btn-guardar-icon" title="Guardar" onClick={guardarEmail}>
+                                            <i className="fas fa-check-circle"></i>
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className="div-recetas-usuario">
