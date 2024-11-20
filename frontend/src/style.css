@@ -519,6 +519,64 @@ font-weight: bold;
     z-index: 12;
 }
 
+
+.barra-secundaria{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #222;
+    color: #fff;
+    padding: 5px 0;
+    border-bottom: 1px solid #444;
+    font-size: 18px;
+}
+
+/* Estilo de los enlaces */
+.link-secundario {
+    color: #ccc;
+    text-decoration: none;
+    padding: 10px 20px;
+    transition: color 0.3s, border-color 0.3s;
+    position: relative;
+    font-weight: bold;
+}
+
+.link-secundario:hover {
+    color: #fff;
+}
+
+/* Separadores estilizados (líneas verticales) */
+.link-secundario:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 60%;
+    background-color: #444;
+}
+
+/* Adaptación para móviles */
+@media (max-width: 768px) {
+    .barra-secundaria {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 0;
+    }
+
+    .link-secundario {
+        padding: 15px;
+    }
+
+    .link-secundario:not(:last-child)::after {
+        display: none; /* No se muestran las líneas en móviles */
+    }
+}
+
+
+
+
 .logo-principal{
     width: 191px;
     height: 150px;

@@ -636,8 +636,13 @@ const Inicio = () => {
                         </div>
                     </div>
 
+                    <div className="barra-secundaria">
+                        <a href="#recetas" className="link-secundario">Recetas</a>
+                        <a href="#top3" className="link-secundario">Top 3</a>
+                        <a href="#favoritos" className="link-secundario">Favoritos</a>
+                    </div>
+
                     <main className="principal">
-                 
                        {/* Sección de filtro */}
                         <section className="filtro">
                             <h2>Buscá tus recetas por ingredientes</h2>
@@ -645,7 +650,7 @@ const Inicio = () => {
                                 <input 
                                     type="text" 
                                     className="text-filtro" 
-                                    placeholder="Buscar por ingrediente/s ..." 
+                                    placeholder="Buscar por ingrediente/s o nombre ..." 
                                     onChange={(e) => manejarFiltroIngredientes(e.target.value)} // Filtrado en tiempo real
                                     ref={inputRef}
                                 />
@@ -657,7 +662,7 @@ const Inicio = () => {
                         </section>
 
                         {/* Sección de recetas disponibles */}
-                        <section className="recetas">
+                        <section id='recetas' className="recetas">
                             <div className="titulo-section-recetas">
                                 <h2>Recetas disponibles</h2>
                             </div>
@@ -971,7 +976,7 @@ const Inicio = () => {
 
 
                         {/* Sección de Top 3 Recetas */}
-                        <section className="top3">
+                        <section id='top3' className="top3">
                             <p className="top-recetas-titulo">Top 3 Recetas</p>
                             <div className="panel-recetas">
                                 {topRecetas.map((receta) => (
