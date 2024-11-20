@@ -524,10 +524,11 @@ font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #222;
+    background-color: #611e0cc7;
     color: #fff;
     padding: 5px 0;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #f7f7f7;
+    border-top: 1px solid #f7f7f7;
     font-size: 18px;
 }
 
@@ -558,9 +559,9 @@ font-weight: bold;
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 1px;
+    width: 2px;
     height: 60%;
-    background-color: #444;
+    background-color: #766161;
 }
 
 
