@@ -519,49 +519,70 @@ font-weight: bold;
     z-index: 12;
 }
 
-
-.barra-secundaria{
+/*Barra secundaria para ir a sections*/
+/* Barra secundaria general */
+.barra-secundaria {
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #222;
     color: #fff;
-    padding: 5px 0;
+    height: 60px;
+    padding: 5px 20px;
     border-bottom: 1px solid #444;
+    position: sticky;
+    top: 160px; /* Justo debajo de la barra principal */
+    z-index: 1000;
+    gap: 10px; /* Espaciado entre los elementos */
     font-size: 18px;
 }
 
-@media (max-width: 700px) {
-    .barra-secundaria  {
-        font-size: 13px;
-    }
-}
-
-/* Estilo de los enlaces */
+/* Estilo general de los enlaces */
 .link-secundario {
-    color: #ccc;
+    color: #fff;
     text-decoration: none;
     padding: 10px 20px;
-    transition: color 0.3s, border-color 0.3s;
-    position: relative;
+    border-radius: 5px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     font-weight: bold;
 }
 
+/* Efecto hover en todos los enlaces */
 .link-secundario:hover {
-    color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Separadores estilizados (líneas verticales) */
-.link-secundario:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1px;
-    height: 60%;
-    background-color: #444;
+/* Fondos diferenciados */
+.fondo-recetas {
+    background: linear-gradient(135deg, #6c63ff, #3b4fff); /* Morado-azul */
 }
+
+.fondo-top3 {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Naranja a rosado */
+}
+
+.fondo-favoritos {
+    background: linear-gradient(135deg, #43cea2, #185a9d); /* Verde a azul oscuro */
+}
+
+/* Adaptación para móviles */
+@media (max-width: 768px) {
+    .barra-secundaria {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 0;
+        gap: 5px; /* Menos espacio entre elementos */
+    }
+
+    .link-secundario {
+        width: 90%; /* Los enlaces ocupan casi todo el ancho */
+        text-align: center;
+    }
+}
+
+
+
 
 
 

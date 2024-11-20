@@ -637,9 +637,9 @@ const Inicio = () => {
                     </div>
 
                     <div className="barra-secundaria">
-                        <a href="#recetas" className="link-secundario">Recetas</a>
-                        <a href="#top3" className="link-secundario">Top 3</a>
-                        <a href="#favoritos" className="link-secundario">Favoritos</a>
+                        <a href="#recetas" className="link-secundario fondo-recetas">Recetas</a>
+                        <a href="#top3" className="link-secundario fondo-top3" >Top 3</a>
+                        <a href="#favoritos" className="link-secundario fondo-favoritos">Favoritos</a>
                     </div>
 
                     <main className="principal">
