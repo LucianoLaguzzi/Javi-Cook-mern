@@ -43,6 +43,8 @@ const Inicio = () => {
     const [errorTiempo, setErrorTiempo] = useState("");
     const [errorIngredientes, setErrorIngredientes] = useState("");
 
+    const [menuVisible, setMenuVisible] = useState(false);
+
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
 
 
@@ -315,6 +317,16 @@ const Inicio = () => {
         }
     };
     
+
+    const obtenerRecetaAleatoria = async (categoria) => {
+        try {
+            const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoria}`);
+            navigate(`/detalle-receta/${response.data._id}`);
+        } catch (error) {
+            console.error("Error al obtener receta aleatoria:", error);
+            alert("No se pudo obtener una receta aleatoria.");
+        }
+    };
 
 
     
@@ -636,11 +648,56 @@ const Inicio = () => {
                         </div>
                     </div>
 
+
+
+
+
+
                     <div className="barra-secundaria">
                         <a href="#recetas" className="link-secundario">Recetas</a>
                         <a href="#top3" className="link-secundario">Top 3</a>
                         <a href="#favoritos" className="link-secundario">Favoritos</a>
+
+
+
+
+                        <div 
+                            className="dropdown"
+                            onMouseEnter={() => setMenuVisible(true)}
+                            onMouseLeave={() => setMenuVisible(false)}
+                        >
+                            <a href="#" className="link-secundario">Aleatorio</a>
+                            {menuVisible && (
+                                <div className="dropdown-menu">
+                                    <button onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")}>Desayuno/Merienda</button>
+                                    <button onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")}>Almuerzo/Cena</button>
+                                    <button onClick={() => obtenerRecetaAleatoria("Brunch")}>Brunch</button>
+                                    <button onClick={() => obtenerRecetaAleatoria("Bebida/Trago")}>Bebida/Trago</button>
+                                    <button onClick={() => obtenerRecetaAleatoria("Veggie")}>Veggie</button>
+                                    <button onClick={() => obtenerRecetaAleatoria("Guarnición")}>Guarnición</button>
+                                    <button onClick={() => obtenerRecetaAleatoria("Postre")}>Postre</button>
+                                    
+                                </div>
+                            )}
+                        </div>
+
+
+
+
+
+
                     </div>
+
+
+
+
+
+
+
+
+
+
+
 
                     <main className="principal">
                        {/* Sección de filtro */}

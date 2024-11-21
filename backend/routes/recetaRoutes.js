@@ -234,6 +234,26 @@ router.get('/top3', async (req, res) => {
 });
 
 
+//Obtener receta altearoia por categoria
+router.get('/random/:categoria', async (req, res) => {
+    try {
+        const { categoria } = req.params;
+        const recetas = await Receta.find({ categoria });
+
+        if (recetas.length === 0) {
+            return res.status(404).json({ message: 'No hay recetas disponibles en esta categoría.' });
+        }
+
+        // Seleccionar receta aleatoria
+        const recetaAleatoria = recetas[Math.floor(Math.random() * recetas.length)];
+        res.json(recetaAleatoria);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener receta aleatoria.' });
+    }
+});
+
+
 
 
 export default router;

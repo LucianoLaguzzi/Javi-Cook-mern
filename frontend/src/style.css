@@ -4281,3 +4281,38 @@ i.fas.fa-undo {
     height: 50px;
     animation: spin 1s linear infinite;
 }
+
+/*Random categorias*/
+
+/* Estilo del enlace Aleatorio */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #611e0cc7;
+    padding: 10px;
+    border: 1px solid #f7f7f7;
+    z-index: 1000;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-menu button:hover {
+    background-color: #f7c6c6;
+    color: #611e0c;
+}
