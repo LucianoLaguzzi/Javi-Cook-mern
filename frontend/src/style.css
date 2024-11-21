@@ -4318,7 +4318,6 @@ i.fas.fa-undo {
 }
 
 
-
 .sweet-popup-random{
     background-color: #611e0cc7; /* Fondo similar al dropdown */
     color: #fff; /* Texto blanco */
@@ -4348,7 +4347,40 @@ i.fas.fa-undo {
 }
 
 
-.sweet-popup-random:hover {
+.sweet-button-random:hover {
     background-color: #fff; /* Fondo blanco al pasar el mouse */
     color: #611e0c;
+}
+
+
+/*Efecto de brillo categoria random*/
+/* Efecto de destello */
+.shine-effect {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.shine-effect:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: scaleX(0);
+    transform-origin: right;
+    animation: shine 0.5s ease-out;
+}
+
+@keyframes shine {
+    0% {
+        transform: scaleX(0);
+    }
+    100% {
+        transform: scaleX(1);
+    }
 }

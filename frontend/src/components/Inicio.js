@@ -320,40 +320,53 @@ const Inicio = () => {
 
     const obtenerRecetaAleatoria = async (categoria) => {
         try {
-            const categoriaCodificada = encodeURIComponent(categoria);
-            const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoriaCodificada}`);
-
-            // Si no hay recetas disponibles
-            if (!response.data._id) {
-                Swal.fire({
-                title: '¡Ups!',
-                text: 'No hay recetas disponibles en esta categoría.',
-                icon: 'info',
+            // Buscar el botón correspondiente utilizando el atributo data-categoria
+            const categoriaBoton = document.querySelector(`[data-categoria="${categoria}"]`);
+            
+            // Añadir la clase para el efecto de destello
+            categoriaBoton.classList.add('shine-effect');
+            
+            // Esperar un momento para ver el efecto antes de realizar la acción
+            setTimeout(async () => {
+                const categoriaCodificada = encodeURIComponent(categoria);
+                const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoriaCodificada}`);
+    
+                // Si no hay recetas disponibles
+                if (!response.data._id) {
+                    Swal.fire({
+                        title: '¡Ups!',
+                        text: 'No hay recetas disponibles en esta categoría.',
+                        icon: 'info',
+                        confirmButtonText: 'Entendido',
+                        customClass: {
+                            popup: 'sweet-popup-random',
+                            title: 'sweet-title-random',
+                            confirmButton: 'sweet-button-random',
+                        },
+                    });
+                    // Eliminar el efecto después de mostrar el SweetAlert
+                    categoriaBoton.classList.remove('shine-effect');
+                    return;
+                }
+    
+                // Si hay una receta, redirigir al detalle
+                navigate(`/detalle-receta/${response.data._id}`);
+                // Eliminar el efecto después de la redirección
+                categoriaBoton.classList.remove('shine-effect');
+            }, 2000);
+    
+        } catch (error) {
+            console.error("Error al obtener receta aleatoria:", error);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo obtener una receta aleatoria. Intenta nuevamente.',
+                icon: 'error',
                 confirmButtonText: 'Entendido',
                 customClass: {
                     popup: 'sweet-popup-random',
                     title: 'sweet-title-random',
                     confirmButton: 'sweet-button-random',
                 },
-                });
-                return;
-            }
-
-
-            navigate(`/detalle-receta/${response.data._id}`);
-        } catch (error) {
-            console.error("Error al obtener receta aleatoria:", error);
-            console.error("Error al obtener receta aleatoria:", error);
-            Swal.fire({
-              title: 'Error',
-              text: 'No se pudo obtener una receta aleatoria. Intenta nuevamente.',
-              icon: 'error',
-              confirmButtonText: 'Entendido',
-              customClass: {
-                popup: 'sweet-popup-random',
-                title: 'sweet-title-random',
-                confirmButton: 'sweet-button-random',
-              },
             });
         }
     };
@@ -701,13 +714,13 @@ const Inicio = () => {
                             <a href="#" className="link-secundario">Aleatorio</a>
                             {menuVisible && (
                                 <div className="dropdown-menu">
-                                    <button onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")}>Desayuno/Merienda</button>
-                                    <button onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")}>Almuerzo/Cena</button>
-                                    <button onClick={() => obtenerRecetaAleatoria("Brunch")}>Brunch</button>
-                                    <button onClick={() => obtenerRecetaAleatoria("Bebida/Trago")}>Bebida/Trago</button>
-                                    <button onClick={() => obtenerRecetaAleatoria("Veggie")}>Veggie</button>
-                                    <button onClick={() => obtenerRecetaAleatoria("Guarnición")}>Guarnición</button>
-                                    <button onClick={() => obtenerRecetaAleatoria("Postre")}>Postre</button>
+                                    <button data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")}>Desayuno/Merienda</button>
+                                    <button data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")}>Almuerzo/Cena</button>
+                                    <button data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")}>Brunch</button>
+                                    <button data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")}>Bebida/Trago</button>
+                                    <button data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")}>Veggie</button>
+                                    <button data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")}>Guarnición</button>
+                                    <button data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")}>Postre</button>
                                     
                                 </div>
                             )}
