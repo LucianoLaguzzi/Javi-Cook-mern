@@ -4313,7 +4313,7 @@ i.fas.fa-undo {
 }
 
 .dropdown-menu button:hover {
-    background-color: #f7c6c6;
+    /*background-color: #f7c6c6;*/
     color: #611e0c;
 }
 
