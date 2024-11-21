@@ -714,13 +714,13 @@ const Inicio = () => {
                             <a href="#" className="link-secundario">Aleatorio</a>
                             {menuVisible && (
                                 <div className="dropdown-menu">
-                                    <button data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")}>Desayuno/Merienda</button>
-                                    <button data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")}>Almuerzo/Cena</button>
-                                    <button data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")}>Brunch</button>
-                                    <button data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")}>Bebida/Trago</button>
-                                    <button data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")}>Veggie</button>
-                                    <button data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")}>Guarnición</button>
-                                    <button data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")}>Postre</button>
+                                    <button  className="shine-effect" data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")}>Desayuno/Merienda</button>
+                                    <button  className="shine-effect" data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")}>Almuerzo/Cena</button>
+                                    <button  className="shine-effect" data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")}>Brunch</button>
+                                    <button  className="shine-effect" data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")}>Bebida/Trago</button>
+                                    <button  className="shine-effect" data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")}>Veggie</button>
+                                    <button  className="shine-effect" data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")}>Guarnición</button>
+                                    <button  className="shine-effect" data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")}>Postre</button>
                                     
                                 </div>
                             )}
