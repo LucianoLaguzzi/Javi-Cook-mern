@@ -320,13 +320,16 @@ const Inicio = () => {
 
     const obtenerRecetaAleatoria = async (categoria) => {
         try {
-            const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoria}`);
+            const categoriaCodificada = encodeURIComponent(categoria);
+            const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoriaCodificada}`);
             navigate(`/detalle-receta/${response.data._id}`);
         } catch (error) {
             console.error("Error al obtener receta aleatoria:", error);
             alert("No se pudo obtener una receta aleatoria.");
         }
     };
+
+    
 
 
     
@@ -951,6 +954,7 @@ const Inicio = () => {
                                                 value={categoria} 
                                                 onChange={(e) => setCategoria(e.target.value)} 
                                                 >
+                                                    {/* Si agrego cateogoria nueva aca tengo que agregarla al random seleccionable tambien*/}
                                                     <option value="">Seleccione...</option>
                                                     <option value="Desayuno/Merienda">Desayuno/Merienda</option>
                                                     <option value="Almuerzo/Cena">Almuerzo/Cena</option>
