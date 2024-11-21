@@ -4316,3 +4316,39 @@ i.fas.fa-undo {
     background-color: #f7c6c6;
     color: #611e0c;
 }
+
+
+
+.sweet-popup-random{
+    background-color: #611e0cc7; /* Fondo similar al dropdown */
+    color: #fff; /* Texto blanco */
+    border: 1px solid #f7f7f7;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+}
+
+.sweet-title-random{
+    font-size: 20px;
+    font-weight: bold;
+    color: #f7f7f7;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.sweet-button-random{
+    background-color: #f7c6c6; /* Fondo del botón en hover del dropdown */
+    color: #611e0c; /* Texto similar al hover del botón */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.sweet-popup-random:hover {
+    background-color: #fff; /* Fondo blanco al pasar el mouse */
+    color: #611e0c;
+}

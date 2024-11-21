@@ -241,7 +241,7 @@ router.get('/random/:categoria', async (req, res) => {
         const recetas = await Receta.find({ categoria });
 
         if (recetas.length === 0) {
-            return res.status(404).json({ message: 'No hay recetas disponibles en esta categoría.' });
+            return res.status(200).json({ message: 'No hay recetas disponibles en esta categoría.' });
         }
 
         // Seleccionar receta aleatoria

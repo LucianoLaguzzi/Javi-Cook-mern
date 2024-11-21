@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Cropper from 'react-easy-crop'; // Importa el componente de recorte
+import Swal from 'sweetalert2';
 
 const Inicio = () => {
     // Recupera la información del usuario del localStorage
@@ -33,7 +34,6 @@ const Inicio = () => {
     const [crop, setCrop] = useState({ x: 0, y: 0 }); // Coordenadas de recorte
     const [zoom, setZoom] = useState(1); // Nivel de zoom para el recorte
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null); // Área recortada
-
     const [errorTitulo, setErrorTitulo] = useState("");
     const [errorIngredientesCantidades, setErrorIngredientesCantidades] = useState("");
     const [errorPasos, setErrorPasos] = useState("");
@@ -42,8 +42,8 @@ const Inicio = () => {
     const [errorCategoria, setErrorCategoria] = useState("");
     const [errorTiempo, setErrorTiempo] = useState("");
     const [errorIngredientes, setErrorIngredientes] = useState("");
-
     const [menuVisible, setMenuVisible] = useState(false);
+    
 
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
 
@@ -322,10 +322,39 @@ const Inicio = () => {
         try {
             const categoriaCodificada = encodeURIComponent(categoria);
             const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoriaCodificada}`);
+
+            // Si no hay recetas disponibles
+            if (!response.data._id) {
+                Swal.fire({
+                title: '¡Ups!',
+                text: 'No hay recetas disponibles en esta categoría.',
+                icon: 'info',
+                confirmButtonText: 'Entendido',
+                customClass: {
+                    popup: 'sweet-popup-random',
+                    title: 'sweet-title-random',
+                    confirmButton: 'sweet-button-random',
+                },
+                });
+                return;
+            }
+
+
             navigate(`/detalle-receta/${response.data._id}`);
         } catch (error) {
             console.error("Error al obtener receta aleatoria:", error);
-            alert("No se pudo obtener una receta aleatoria.");
+            console.error("Error al obtener receta aleatoria:", error);
+            Swal.fire({
+              title: 'Error',
+              text: 'No se pudo obtener una receta aleatoria. Intenta nuevamente.',
+              icon: 'error',
+              confirmButtonText: 'Entendido',
+              customClass: {
+                popup: 'sweet-popup-random',
+                title: 'sweet-title-random',
+                confirmButton: 'sweet-button-random',
+              },
+            });
         }
     };
 
