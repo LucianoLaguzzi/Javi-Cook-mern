@@ -565,11 +565,16 @@ font-weight: bold;
 }
 
 .link-secundario:active {
-    color: #f7c6c6; /* Un rojo claro */
-    transform: scale(0.95); /* Efecto de reducción leve */
+    color: #e2aa41;
+    transform: scale(0.9);
+    animation: rebote 0.2s ease;
 }
 
-
+@keyframes rebote {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
 
 
 
