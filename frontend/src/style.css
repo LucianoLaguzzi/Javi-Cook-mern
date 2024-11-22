@@ -4283,7 +4283,6 @@ i.fas.fa-undo {
 }
 
 /*Random categorias*/
-
 /* Estilo del enlace Aleatorio */
 .dropdown {
     position: relative;
@@ -4319,7 +4318,7 @@ i.fas.fa-undo {
 
 
 .sweet-popup-random{
-    background-color: #611e0cc7; /* Fondo similar al dropdown */
+    background-color:#611e0cf5; /* Fondo similar al dropdown */
     color: #fff; /* Texto blanco */
     border: 1px solid #f7f7f7;
     border-radius: 8px;
