@@ -353,7 +353,7 @@ const Inicio = () => {
                 navigate(`/detalle-receta/${response.data._id}`);
                 // Eliminar el efecto después de la redirección
                 categoriaBoton.classList.remove('shine-effect');
-            }, 2000);
+            }, 1000);
     
         } catch (error) {
             console.error("Error al obtener receta aleatoria:", error);
