@@ -755,7 +755,7 @@ const Inicio = () => {
                         {isLoading && (
                             <div className="loading-container-eliminar">
                                 <div className="spinner-eliminar"></div>
-                                <p className="loading-message-eliminar">Creando receta...</p>
+                                <p className="loading-message-eliminar">Obteniendo receta aleatoria...</p>
                             </div>
                         )}
 
