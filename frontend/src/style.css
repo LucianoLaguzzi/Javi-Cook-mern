@@ -4214,22 +4214,6 @@ i.fas.fa-undo {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*Espera en login*/
 .loading-container-eliminar {
     position: fixed;
@@ -4295,15 +4279,21 @@ i.fas.fa-undo {
     flex-direction: column;
     position: absolute;
     top: 100%;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     background-color: #611e0cc7;
     padding: 10px;
     border: 1px solid #f7f7f7;
     z-index: 1000;
-    max-width: 200px; /* Máximo ancho para evitar que se expanda demasiado */
-    min-width: 150px; /* Ancho mínimo para que no se vea demasiado estrecho */
-    box-sizing: border-box; /* Asegura que el padding no rompa el layout */
-    border-radius: 8px;
+    width: auto;
+    max-width: 250px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 750px) {
+    .dropdown-menu {
+        left: 35%;
+    }
 }
 
 .dropdown-menu button {
