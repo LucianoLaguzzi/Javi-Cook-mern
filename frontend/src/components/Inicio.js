@@ -329,34 +329,34 @@ const Inicio = () => {
             categoriaBoton.classList.add('shine-effect');
             
             // Esperar un momento para ver el efecto antes de realizar la acción
-            setTimeout(async () => {
-                const categoriaCodificada = encodeURIComponent(categoria);
-                const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoriaCodificada}`);
-    
-                // Si no hay recetas disponibles
-                if (!response.data._id) {
-                    Swal.fire({
-                        title: '¡Ups!',
-                        text: 'No hay recetas disponibles en esta categoría.',
-                        icon: 'info',
-                        confirmButtonText: 'Entendido',
-                        customClass: {
-                            popup: 'sweet-popup-random',
-                            title: 'sweet-title-random',
-                            confirmButton: 'sweet-button-random',
-                        },
-                    });
-                    // Eliminar el efecto después de mostrar el SweetAlert
-                    categoriaBoton.classList.remove('shine-effect');
-                    setIsLoading(false); // Ocultar loading si no hay receta
-                    return;
-                }
-    
-                // Si hay una receta, redirigir al detalle
-                navigate(`/detalle-receta/${response.data._id}`);
-                // Eliminar el efecto después de la redirección
+           
+            const categoriaCodificada = encodeURIComponent(categoria);
+            const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoriaCodificada}`);
+
+            // Si no hay recetas disponibles
+            if (!response.data._id) {
+                Swal.fire({
+                    title: '¡Ups!',
+                    text: 'No hay recetas disponibles en esta categoría.',
+                    icon: 'info',
+                    confirmButtonText: 'Entendido',
+                    customClass: {
+                        popup: 'sweet-popup-random',
+                        title: 'sweet-title-random',
+                        confirmButton: 'sweet-button-random',
+                    },
+                });
+                // Eliminar el efecto después de mostrar el SweetAlert
                 categoriaBoton.classList.remove('shine-effect');
-            }, 1000);
+                setIsLoading(false); // Ocultar loading si no hay receta
+                return;
+            }
+
+            // Si hay una receta, redirigir al detalle
+            navigate(`/detalle-receta/${response.data._id}`);
+            // Eliminar el efecto después de la redirección
+            categoriaBoton.classList.remove('shine-effect');
+           
     
         } catch (error) {
             console.error("Error al obtener receta aleatoria:", error);
@@ -750,7 +750,7 @@ const Inicio = () => {
 
 
                     <main className="principal">
-                        
+
                         {/* Mostrar un cartel de carga hasta q se traigan los datos o vuelva de inactividad */}
                         {isLoading && (
                             <div className="loading-container-eliminar">
