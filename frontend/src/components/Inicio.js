@@ -707,10 +707,6 @@ const Inicio = () => {
                         <a href="#recetas" className="link-secundario">Recetas</a>
                         <a href="#top3" className="link-secundario">Top 3</a>
                         <a href="#favoritos" className="link-secundario">Favoritos</a>
-
-
-
-
                         <div 
                             className="dropdown"
                             onMouseEnter={() => setMenuVisible(true)}
@@ -730,24 +726,7 @@ const Inicio = () => {
                                 </div>
                             )}
                         </div>
-
-
-
-
-
-
                     </div>
-
-
-
-
-
-
-
-
-
-
-
 
                     <main className="principal">
 
