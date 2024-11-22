@@ -32,7 +32,8 @@ const DetalleReceta = () => {
   const [valoracionHover, setValoracionHover] = useState(0); // Valoración temporal para hover
   const [edicionActiva, setEdicionActiva] = useState(false);  // Controla si la edición está activa
 
-  const [loading, setLoading] = useState(false); // Estado para el cartel de carga
+  const [loading, setLoading] = useState(false); // Estado para el cartel de carga al eliminar
+  const [isLoading, setIsLoading] = useState(true); // Nuevo estado para loading de carga de recetas 
 
 
 
@@ -44,6 +45,8 @@ const DetalleReceta = () => {
     // Obtener detalles de la receta desde el backend usando Axios
     const obtenerReceta = async () => {
       try {
+        setIsLoading(true); // Activa el loading antes de empezar
+
         const response = await axios.get(`https://javicook-mern.onrender.com/api/detalles/${id}`);
         setReceta(response.data);
 
@@ -67,6 +70,8 @@ const DetalleReceta = () => {
 
       } catch (error) {
         console.error('Error al cargar la receta', error);
+       } finally {
+        setIsLoading(false); // Desactiva el loading después de completar la carga
       }
     };
     obtenerReceta();
@@ -370,8 +375,21 @@ const DetalleReceta = () => {
           <main className="principal">
             <section className="tarjeta-grande">
               <div className="panel-detalles">
+
+
+              {/* Mostrar un cartel de carga hasta q se traigan los datos */}
+              {isLoading && (
+                   <div className="loading-container-eliminar">
+                    <div className="spinner-eliminar"></div>
+                    <p className="loading-message-eliminar">Creando receta...</p>
+                  </div>
+                )}
+
+
+
+
+
                 <div className="div-detalles-titulo">
-                  
                   {!tituloEditable ? (
                     <>
                       <p className='detalles-titulo'>
