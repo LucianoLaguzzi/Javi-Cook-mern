@@ -709,7 +709,7 @@ const Inicio = () => {
                         <div 
                             className="dropdown"
                             onMouseEnter={() => setMenuVisible(true)}
-                            onMouseLeave={() => setMenuVisible(true)}
+                            onMouseLeave={() => setMenuVisible(false)}
                         >
                             <a href="#" className="link-secundario">Aleatorio</a>
                             {menuVisible && (
