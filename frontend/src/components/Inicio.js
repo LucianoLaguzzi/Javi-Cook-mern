@@ -43,7 +43,7 @@ const Inicio = () => {
     const [errorTiempo, setErrorTiempo] = useState("");
     const [errorIngredientes, setErrorIngredientes] = useState("");
     const [menuVisible, setMenuVisible] = useState(false);
-    
+    const [isLoading, setIsLoading] = useState(false); // Estado de carga al seleccionar aleatoriamente
 
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
 
@@ -320,6 +320,8 @@ const Inicio = () => {
 
     const obtenerRecetaAleatoria = async (categoria) => {
         try {
+            setIsLoading(true); // Mostrar loading antes de la solicitud
+
             // Buscar el botón correspondiente utilizando el atributo data-categoria
             const categoriaBoton = document.querySelector(`[data-categoria="${categoria}"]`);
             
@@ -346,6 +348,7 @@ const Inicio = () => {
                     });
                     // Eliminar el efecto después de mostrar el SweetAlert
                     categoriaBoton.classList.remove('shine-effect');
+                    setIsLoading(false); // Ocultar loading si no hay receta
                     return;
                 }
     
@@ -368,6 +371,8 @@ const Inicio = () => {
                     confirmButton: 'sweet-button-random',
                 },
             });
+        } finally {
+            setIsLoading(false); // Ocultar loading en cualquier caso
         }
     };
 
@@ -745,6 +750,16 @@ const Inicio = () => {
 
 
                     <main className="principal">
+                        
+                        {/* Mostrar un cartel de carga hasta q se traigan los datos o vuelva de inactividad */}
+                        {isLoading && (
+                            <div className="loading-container-eliminar">
+                                <div className="spinner-eliminar"></div>
+                                <p className="loading-message-eliminar">Creando receta...</p>
+                            </div>
+                        )}
+
+
                        {/* Sección de filtro */}
                         <section className="filtro">
                             <h2>Buscá tus recetas por ingredientes</h2>
