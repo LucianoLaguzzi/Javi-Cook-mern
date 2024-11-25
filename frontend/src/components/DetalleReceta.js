@@ -98,10 +98,18 @@ const DetalleReceta = () => {
   //Metodos para el temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) setActivo(true);
+    const reloj = document.querySelector('.reloj-tempo');
+    if (reloj) {
+      reloj.classList.remove('pausa');
+    }
   };
 
   const pausarTemporizador = () => {
     setActivo(false);
+    const reloj = document.querySelector('.reloj-tempo');
+    if (reloj) {
+      reloj.classList.add('pausa');
+    }
   };
 
   const reiniciarTemporizador = () => {
