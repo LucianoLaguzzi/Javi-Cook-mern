@@ -4553,7 +4553,7 @@ i.fas.fa-undo {
 
 /* Estilo para el popup de SweetAlert2 */
 .swal2-popup.mi-alerta-temporizador {
-    background-color: #3c3939 !important;  /* Color más claro que el fondo de las tarjetas */
+    background-color: #c5c8ca !important;  /* Color más claro que el fondo de las tarjetas */
     border-radius: 15px !important;        /* Bordes redondeados como en el diseño */
     box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4) !important; /* Sombra suave */
     padding: 20px !important;
@@ -4561,7 +4561,8 @@ i.fas.fa-undo {
 
 @media (max-width: 600px) {
     .swal2-popup.mi-alerta-temporizador {
-        top: 7%;
-        width: 93%;
+        top: 5%;
+        width: 85%;
+        font-size: 13px;
     }
 }
