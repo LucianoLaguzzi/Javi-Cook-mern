@@ -31,10 +31,12 @@ const DetalleReceta = () => {
   const [yaValorado, setYaValorado] = useState(false); // Para verificar si ya valoró
   const [valoracionHover, setValoracionHover] = useState(0); // Valoración temporal para hover
   const [edicionActiva, setEdicionActiva] = useState(false);  // Controla si la edición está activa
-
   const [loading, setLoading] = useState(false); // Estado para el cartel de carga al eliminar
   const [isLoading, setIsLoading] = useState(true); // Nuevo estado para loading de carga de recetas 
 
+
+  const [tiempo, setTiempo] = useState(0); // Tiempo en segundos
+  const [activo, setActivo] = useState(false); // Estado para iniciar/pausar el temporizador
 
 
 
@@ -77,8 +79,42 @@ const DetalleReceta = () => {
     obtenerReceta();
   }, [id]);
 
+  //Temporizador
+  useEffect(() => {
+    let intervalo;
+    if (activo && tiempo > 0) {
+      intervalo = setInterval(() => {
+        setTiempo((prevTiempo) => prevTiempo - 1);
+      }, 1000);
+    } else if (tiempo === 0 && activo) {
+      setActivo(false);
+      alert("¡El tiempo ha terminado!");
+    }
+    return () => clearInterval(intervalo);
+  }, [activo, tiempo]);
 
+
+  //Metodos para el temporizador
+  const iniciarTemporizador = () => {
+    if (tiempo > 0) setActivo(true);
+  };
+
+  const pausarTemporizador = () => {
+    setActivo(false);
+  };
+
+  const reiniciarTemporizador = () => {
+    setActivo(false);
+    setTiempo(0);
+  };
+
+  const handleTiempoInput = (e) => {
+    const valor = parseInt(e.target.value, 10);
+    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
+  };
  
+
+
   // Manejar la edición del título
   const cambiarTitulo = () => {
     setTituloOriginal(receta.titulo); // Guarda el título original
@@ -653,6 +689,34 @@ const DetalleReceta = () => {
             </section>
           </main>
         </div>
+
+
+
+
+
+        <div className="temporizador">
+          <h4 style={{ margin: "0 0 10px" }}>Temporizador</h4>
+          <p>
+            Tiempo restante: {Math.floor(tiempo / 60)}:
+            {String(tiempo % 60).padStart(2, "0")}
+          </p>
+          <input
+            type="number"
+            placeholder="Minutos"
+            onChange={handleTiempoInput}
+            style={{ width: "100%", marginBottom: "10px", padding: "5px" }}
+          />
+          <button onClick={iniciarTemporizador} style={{ marginRight: "5px" }}>
+            Iniciar
+          </button>
+          <button onClick={pausarTemporizador} style={{ marginRight: "5px" }}>
+            Pausar
+          </button>
+          <button onClick={reiniciarTemporizador}>Reiniciar</button>
+        </div>
+
+
+
       
       </div>
       );
