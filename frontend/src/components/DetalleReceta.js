@@ -95,8 +95,6 @@ const DetalleReceta = () => {
         text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
         icon: "info", // Puedes cambiar esto a "success", "error", "warning", etc.
         confirmButtonText: "Aceptar",
-        timer: 5000, // Opcional: duración de la alerta en milisegundos
-        timerProgressBar: true, // Muestra la barra de progreso del temporizador
         customClass: {
           popup: "mi-alerta-temporizador", // Puedes agregar clases personalizadas
         },
