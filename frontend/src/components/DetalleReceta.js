@@ -38,6 +38,7 @@ const DetalleReceta = () => {
   const [tiempo, setTiempo] = useState(0); // Tiempo en segundos
   const [activo, setActivo] = useState(false); // Estado para iniciar/pausar el temporizador
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
+  const [inputValor, setInputValor] = useState(""); // Valor del input en minutos
 
 
 
@@ -97,21 +98,25 @@ const DetalleReceta = () => {
 
   //Metodos para el temporizador
   const iniciarTemporizador = () => {
-    if (tiempo > 0) setActivo(true);
+    if (inputValor > 0 && !activo) {
+      setTiempo(inputValor * 60); // Convertimos minutos a segundos al iniciar
+      setActivo(true);
+    }
   };
   
   const pausarTemporizador = () => {
     setActivo(false);
   };
-
+  
   const reiniciarTemporizador = () => {
     setActivo(false);
-    setTiempo(0);
+    setTiempo(0); // Reinicia el temporizador
+    setInputValor(""); // Limpia el input
   };
 
   const handleTiempoInput = (e) => {
     const valor = parseInt(e.target.value, 10);
-    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
+    setInputValor(isNaN(valor) ? "" : valor); // Guardamos el valor en minutos
   };
 
 
@@ -723,7 +728,7 @@ const DetalleReceta = () => {
               <input className='input-tempo'
                 type="number"
                 placeholder="Minutos"
-                value={tiempo > 0 ? Math.floor(tiempo / 60) : ""} // Convertir a minutos
+                value={activo ? "" : inputValor} // Solo muestra el valor mientras no está activo
                 onChange={handleTiempoInput}
               />
               <div className='contenedor-botones-tempo'>
