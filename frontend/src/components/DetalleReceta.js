@@ -38,7 +38,7 @@ const DetalleReceta = () => {
   const [tiempo, setTiempo] = useState(0); // Tiempo en segundos
   const [activo, setActivo] = useState(false); // Estado para iniciar/pausar el temporizador
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
-  const [inputValor, setInputValor] = useState(""); // Valor del input en minutos
+  const [inputTiempo, setInputTiempo] = useState(""); // Valor fijo del input en minutos
 
 
 
@@ -81,7 +81,7 @@ const DetalleReceta = () => {
     obtenerReceta();
   }, [id]);
 
-  //Temporizador
+  // Temporizador
   useEffect(() => {
     let intervalo;
     if (activo && tiempo > 0) {
@@ -95,28 +95,27 @@ const DetalleReceta = () => {
     return () => clearInterval(intervalo);
   }, [activo, tiempo]);
 
-
-  //Metodos para el temporizador
+  // Métodos del temporizador
   const iniciarTemporizador = () => {
-    if (inputValor > 0 && !activo) {
-      setTiempo(inputValor * 60); // Convertimos minutos a segundos al iniciar
+    if (tiempo > 0) {
       setActivo(true);
     }
   };
-  
+
   const pausarTemporizador = () => {
     setActivo(false);
   };
-  
+
   const reiniciarTemporizador = () => {
     setActivo(false);
-    setTiempo(0); // Reinicia el temporizador
-    setInputValor(""); // Limpia el input
+    setTiempo(0);
+    setInputTiempo(""); // Borrar el input
   };
 
   const handleTiempoInput = (e) => {
     const valor = parseInt(e.target.value, 10);
-    setInputValor(isNaN(valor) ? "" : valor); // Guardamos el valor en minutos
+    setInputTiempo(e.target.value); // Actualizar el valor del input
+    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
   };
 
 
@@ -703,9 +702,10 @@ const DetalleReceta = () => {
 
 
 
-        <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`} >
+        <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`}>
           {/* Botón para desplegar/ocultar */}
-          <button className='boton-abre-tempo'
+          <button
+            className="boton-abre-tempo"
             onClick={() => setMostrarControles(!mostrarControles)}
             style={{
               marginBottom: mostrarControles ? "10px" : "0",
@@ -717,34 +717,32 @@ const DetalleReceta = () => {
           {/* Controles visibles solo si mostrarControles es true */}
           {mostrarControles && (
             <div>
-              <h4 className='titulo-tempo'>
-                Temporizador
-              </h4>
-              <p className="reloj-tempo">
-                <span className={!activo ? "pausa" : ""}>
-                  {Math.floor(tiempo / 60)}:{String(tiempo % 60).padStart(2, "0")}
+              <h4 className="titulo-tempo">Temporizador</h4>
+              <p
+                className={`reloj-tempo ${
+                  !activo && tiempo > 0 ? "parpadeo" : ""
+                }`}
+              >
+                <span>
+                  {Math.floor(tiempo / 60)}:
+                  {String(tiempo % 60).padStart(2, "0")}
                 </span>
               </p>
-              <input className='input-tempo'
+              <input
+                className="input-tempo"
                 type="number"
                 placeholder="Minutos"
-                value={activo ? "" : inputValor} // Solo muestra el valor mientras no está activo
+                value={inputTiempo} // Mostrar el valor fijo ingresado
                 onChange={handleTiempoInput}
               />
-              <div className='contenedor-botones-tempo'>
-                <button className='iniciar-tempo'
-                  onClick={iniciarTemporizador}
-                >
+              <div className="contenedor-botones-tempo">
+                <button className="iniciar-tempo" onClick={iniciarTemporizador}>
                   <i className="fas fa-play" style={{ color: "#0a7e1e" }}></i>
                 </button>
-                <button className='pausar-tempo' 
-                  onClick={pausarTemporizador}
-                >
+                <button className="pausar-tempo" onClick={pausarTemporizador}>
                   <i className="fas fa-pause" style={{ color: "#ce9b0f" }}></i>
                 </button>
-                <button className='reiniciar-tempo' 
-                  onClick={reiniciarTemporizador}
-                >
+                <button className="reiniciar-tempo" onClick={reiniciarTemporizador}>
                   <i className="fas fa-undo" style={{ color: "#b50a0a" }}></i>
                 </button>
               </div>
