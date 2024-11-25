@@ -723,6 +723,7 @@ const DetalleReceta = () => {
               <input className='input-tempo'
                 type="number"
                 placeholder="Minutos"
+                value={tiempo > 0 ? Math.floor(tiempo / 60) : ""} // Convertir a minutos
                 onChange={handleTiempoInput}
               />
               <div className='contenedor-botones-tempo'>
