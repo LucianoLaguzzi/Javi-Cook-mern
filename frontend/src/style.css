@@ -4473,16 +4473,16 @@ font-size: 16px;
     font-family: 'Courier New', Courier, monospace;
 }
 
-.reloj-tempo.pausa {
-    animation: parpadeo 1s infinite; /* Aplica el parpadeo */
+.reloj-tempo span.pausa {
+    animation: parpadeoTexto 1s infinite;
   }
   
-  @keyframes parpadeo {
+  @keyframes parpadeoTexto {
     0%, 100% {
-      opacity: 1;
+      color: black;
     }
     50% {
-      opacity: 0.5;
+      color: red; /* Color parpadeante */
     }
   }
 

@@ -98,18 +98,10 @@ const DetalleReceta = () => {
   //Metodos para el temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) setActivo(true);
-    const reloj = document.querySelector('.reloj-tempo');
-    if (reloj) {
-      reloj.classList.remove('pausa');
-    }
   };
-
+  
   const pausarTemporizador = () => {
     setActivo(false);
-    const reloj = document.querySelector('.reloj-tempo');
-    if (reloj) {
-      reloj.classList.add('pausa');
-    }
   };
 
   const reiniciarTemporizador = () => {
@@ -723,9 +715,10 @@ const DetalleReceta = () => {
               <h4 className='titulo-tempo'>
                 Temporizador
               </h4>
-              <p className='reloj-tempo'>
-                {Math.floor(tiempo / 60)}:
-                {String(tiempo % 60).padStart(2, "0")}
+              <p className="reloj-tempo">
+                <span className={!activo ? "pausa" : ""}>
+                  {Math.floor(tiempo / 60)}:{String(tiempo % 60).padStart(2, "0")}
+                </span>
               </p>
               <input className='input-tempo'
                 type="number"
@@ -736,17 +729,17 @@ const DetalleReceta = () => {
                 <button className='iniciar-tempo'
                   onClick={iniciarTemporizador}
                 >
-                  <i className="fas fa-play" style={{ color: "white" }}></i>
+                  <i className="fas fa-play" style={{ color: "#0a7e1e" }}></i>
                 </button>
                 <button className='pausar-tempo' 
                   onClick={pausarTemporizador}
                 >
-                  <i className="fas fa-pause" style={{ color: "white" }}></i>
+                  <i className="fas fa-pause" style={{ color: "#ce9b0f" }}></i>
                 </button>
                 <button className='reiniciar-tempo' 
                   onClick={reiniciarTemporizador}
                 >
-                  <i className="fas fa-undo" style={{ color: "white" }}></i>
+                  <i className="fas fa-undo" style={{ color: "#b50a0a" }}></i>
                 </button>
               </div>
             </div>
