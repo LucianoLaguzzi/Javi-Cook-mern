@@ -723,7 +723,7 @@ const DetalleReceta = () => {
                   !activo && tiempo > 0 ? "parpadeo" : ""
                 }`}
               >
-                <span>
+                 <span className={!activo ? "pausa" : ""}>
                   {Math.floor(tiempo / 60)}:
                   {String(tiempo % 60).padStart(2, "0")}
                 </span>
