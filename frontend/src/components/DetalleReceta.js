@@ -90,7 +90,17 @@ const DetalleReceta = () => {
       }, 1000);
     } else if (tiempo === 0 && activo) {
       setActivo(false);
-      alert("¡El tiempo ha terminado!");
+      Swal.fire({
+        title: "¡Tiempo terminado!",
+        text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
+        icon: "info", // Puedes cambiar esto a "success", "error", "warning", etc.
+        confirmButtonText: "Aceptar",
+        timer: 5000, // Opcional: duración de la alerta en milisegundos
+        timerProgressBar: true, // Muestra la barra de progreso del temporizador
+        customClass: {
+          popup: "mi-alerta-temporizador", // Puedes agregar clases personalizadas
+        },
+      });
     }
     return () => clearInterval(intervalo);
   }, [activo, tiempo]);

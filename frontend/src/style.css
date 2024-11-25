@@ -4397,41 +4397,48 @@ i.fas.fa-undo {
 
 /*Temporizador*/
 .temporizador {
-    position: fixed;
+    background: #2b3a42;
+    border: 1px solid #837d7d;
+    border-radius: 20px;
     bottom: 20px;
-    right: 20px;
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 5px;
-    z-index: 1000;
-    width: 250px;
     overflow: hidden;
-    transition: height 0.3s ease, padding 0.3s ease;
+    position: fixed;
+    right: 40px;
+    transition: height .3s ease, padding .3s ease;
+    width: 200px;
+    z-index: 9;
+    box-shadow: 3px 3px 3px #00000080;
+}
+
+@media (max-width: 750px) {
+    .temporizador {
+        bottom: 40px;
+        right: 10px;
+        width: 120px;
+    }
 }
   
 .temporizador.mostrar {
-height: auto; /* Ajusta dinámicamente */
-padding: 10px;
+    height: auto; /* Ajusta dinámicamente */
+    padding: 10px;
 }
 
 .temporizador button {
-cursor: pointer;
-transition: background-color 0.3s ease;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .temporizador button:hover {
-opacity: 0.9;
+    opacity: 0.9;
 }
 
 .temporizador input {
-border: 1px solid #ddd;
-border-radius: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .temporizador .fas {
-font-size: 16px;
+    font-size: 16px;
 }
 
 
@@ -4446,9 +4453,22 @@ font-size: 16px;
     text-align: center;
 }
 
+@media (max-width: 750px) {
+    .boton-abre-tempo {
+        font-size: 10px;
+    }
+}
+
 .titulo-tempo{
     margin: 0px 0px 5px;
     text-align: center;
+    color: #dad8d5;
+}
+
+@media (max-width: 750px) {
+    .titulo-tempo {
+        font-size: 14px;
+    }
 }
 
 .input-tempo{
@@ -4471,6 +4491,12 @@ font-size: 16px;
     transition: all 0.3s ease;
     margin-bottom: 15px;
     font-family: 'Courier New', Courier, monospace;
+}
+
+@media (max-width: 750px) {
+    .reloj-tempo {
+        font-size: 16px;
+    }
 }
 
 .reloj-tempo span.pausa {
@@ -4523,4 +4549,12 @@ font-size: 16px;
     display: flex;
     align-items: center;
     color: rgb(220, 53, 69);
+}
+
+/* Estilo para el popup de SweetAlert2 */
+.swal2-popup.mi-alerta-temporizador {
+    background-color: #ffe6e6; /* Fondo personalizado */
+    color: #333; /* Color del texto */
+    font-size: 1.2rem; /* Tamaño del texto */
+    border: 2px solid #ff4d4d; /* Borde personalizado */
 }
