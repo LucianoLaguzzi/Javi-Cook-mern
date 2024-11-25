@@ -113,6 +113,9 @@ const DetalleReceta = () => {
     const valor = parseInt(e.target.value, 10);
     setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
   };
+
+
+
  
 
 
@@ -697,79 +700,43 @@ const DetalleReceta = () => {
 
         <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`} >
           {/* Botón para desplegar/ocultar */}
-          <button
+          <button className='boton-abre-tempo'
             onClick={() => setMostrarControles(!mostrarControles)}
             style={{
-              background: "#28a745",
-              color: "white",
-              padding: "10px",
-              border: "none",
-              borderRadius: "10px",
-              cursor: "pointer",
-              width: "100%",
-              textAlign: "center",
               marginBottom: mostrarControles ? "10px" : "0",
             }}
           >
-            {mostrarControles ? "Cerrar Temporizador" : "Abrir Temporizador"}
+            {mostrarControles ? "Minimizar" : "Abrir Temporizador"}
           </button>
 
           {/* Controles visibles solo si mostrarControles es true */}
           {mostrarControles && (
             <div>
-              <h4 style={{ margin: "0 0 10px", textAlign: "center" }}>
+              <h4 className='titulo-tempo'>
                 Temporizador
               </h4>
-              <p style={{ textAlign: "center" }}>
-                Tiempo restante: {Math.floor(tiempo / 60)}:
+              <p className='reloj-tempo'>
+                {Math.floor(tiempo / 60)}:
                 {String(tiempo % 60).padStart(2, "0")}
               </p>
-              <input
+              <input className='input-tempo'
                 type="number"
                 placeholder="Minutos"
                 onChange={handleTiempoInput}
-                style={{
-                  width: "100%",
-                  marginBottom: "10px",
-                  padding: "5px",
-                  borderRadius: "5px",
-                  border: "1px solid #ddd",
-                }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <button
+              <div className='contenedor-botones-tempo'>
+                <button className='iniciar-tempo'
                   onClick={iniciarTemporizador}
-                  style={{
-                    background: "#28a745",
-                    border: "none",
-                    borderRadius: "5px",
-                    padding: "5px 10px",
-                    cursor: "pointer",
-                  }}
                 >
                   <i className="fas fa-play" style={{ color: "white" }}></i>
                 </button>
-                <button
+                <button className='pausar-tempo' 
                   onClick={pausarTemporizador}
-                  style={{
-                    background: "#ffc107",
-                    border: "none",
-                    borderRadius: "5px",
-                    padding: "5px 10px",
-                    cursor: "pointer",
-                  }}
                 >
                   <i className="fas fa-pause" style={{ color: "white" }}></i>
                 </button>
-                <button
+                <button className='reiniciar-tempo' 
                   onClick={reiniciarTemporizador}
-                  style={{
-                    background: "#dc3545",
-                    border: "none",
-                    borderRadius: "5px",
-                    padding: "5px 10px",
-                    cursor: "pointer",
-                  }}
                 >
                   <i className="fas fa-undo" style={{ color: "white" }}></i>
                 </button>
