@@ -4394,6 +4394,8 @@ i.fas.fa-undo {
 }
 
 
+
+/*Temporizador*/
 .temporizador {
     position: fixed;
     bottom: 20px;
@@ -4405,4 +4407,29 @@ i.fas.fa-undo {
     padding: 10px;
     z-index: 1000;
     width: 250px;
+    overflow: hidden;
+    transition: height 0.3s ease, padding 0.3s ease;
+  }
+  
+  .temporizador.mostrar {
+    height: auto; /* Ajusta dinámicamente */
+    padding: 10px;
+  }
+  
+  .temporizador button {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .temporizador button:hover {
+    opacity: 0.9;
+  }
+  
+  .temporizador input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .temporizador .fas {
+    font-size: 16px;
   }

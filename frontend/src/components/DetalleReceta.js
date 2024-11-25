@@ -37,6 +37,7 @@ const DetalleReceta = () => {
 
   const [tiempo, setTiempo] = useState(0); // Tiempo en segundos
   const [activo, setActivo] = useState(false); // Estado para iniciar/pausar el temporizador
+  const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
 
 
 
@@ -694,25 +695,87 @@ const DetalleReceta = () => {
 
 
 
-        <div className="temporizador">
-          <h4 style={{ margin: "0 0 10px" }}>Temporizador</h4>
-          <p>
-            Tiempo restante: {Math.floor(tiempo / 60)}:
-            {String(tiempo % 60).padStart(2, "0")}
-          </p>
-          <input
-            type="number"
-            placeholder="Minutos"
-            onChange={handleTiempoInput}
-            style={{ width: "100%", marginBottom: "10px", padding: "5px" }}
-          />
-          <button onClick={iniciarTemporizador} style={{ marginRight: "5px" }}>
-            Iniciar
+        <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`} >
+          {/* Botón para desplegar/ocultar */}
+          <button
+            onClick={() => setMostrarControles(!mostrarControles)}
+            style={{
+              background: "#28a745",
+              color: "white",
+              padding: "10px",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer",
+              width: "100%",
+              textAlign: "center",
+              marginBottom: mostrarControles ? "10px" : "0",
+            }}
+          >
+            {mostrarControles ? "Cerrar Temporizador" : "Abrir Temporizador"}
           </button>
-          <button onClick={pausarTemporizador} style={{ marginRight: "5px" }}>
-            Pausar
-          </button>
-          <button onClick={reiniciarTemporizador}>Reiniciar</button>
+
+          {/* Controles visibles solo si mostrarControles es true */}
+          {mostrarControles && (
+            <div>
+              <h4 style={{ margin: "0 0 10px", textAlign: "center" }}>
+                Temporizador
+              </h4>
+              <p style={{ textAlign: "center" }}>
+                Tiempo restante: {Math.floor(tiempo / 60)}:
+                {String(tiempo % 60).padStart(2, "0")}
+              </p>
+              <input
+                type="number"
+                placeholder="Minutos"
+                onChange={handleTiempoInput}
+                style={{
+                  width: "100%",
+                  marginBottom: "10px",
+                  padding: "5px",
+                  borderRadius: "5px",
+                  border: "1px solid #ddd",
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <button
+                  onClick={iniciarTemporizador}
+                  style={{
+                    background: "#28a745",
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <i className="fas fa-play" style={{ color: "white" }}></i>
+                </button>
+                <button
+                  onClick={pausarTemporizador}
+                  style={{
+                    background: "#ffc107",
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <i className="fas fa-pause" style={{ color: "white" }}></i>
+                </button>
+                <button
+                  onClick={reiniciarTemporizador}
+                  style={{
+                    background: "#dc3545",
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <i className="fas fa-undo" style={{ color: "white" }}></i>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
 
