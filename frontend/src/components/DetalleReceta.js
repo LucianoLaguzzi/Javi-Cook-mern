@@ -719,7 +719,7 @@ const DetalleReceta = () => {
               marginBottom: mostrarControles ? "10px" : "0",
             }}
           >
-            {mostrarControles ? "Minimizar" : "Abrir Temporizador"}
+            {mostrarControles ? "Minimizar" : "Temporizador"}
           </button>
 
           {/* Controles visibles solo si mostrarControles es true */}
