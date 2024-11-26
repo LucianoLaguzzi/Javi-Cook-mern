@@ -97,9 +97,10 @@ const DetalleReceta = () => {
         const tiempoRestante = tiempoInicial - elapsedTime;  // Calcular el tiempo restante
   
         if (tiempoRestante <= 0) {
-          // Si el tiempo llega a 0, detener el temporizador
+          // Si el tiempo llega a 0, detener el temporizador y actualizar el tiempo a 0
           clearInterval(interval);
           setActivo(false);
+          setTiempo(0); // Asegurarse de que el tiempo sea 0
           Swal.fire({
             title: "¡Tiempo terminado!",
             text: "El temporizador ha llegado a cero.",
@@ -116,25 +117,29 @@ const DetalleReceta = () => {
       return () => clearInterval(interval);  // Limpiar el intervalo al desmontar
     }
   }, [activo, ultimaActualizacion, tiempoInicial]);
-
+  
   // Métodos del temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) {
       setActivo(true);
-      setUltimaActualizacion(Date.now());  // Registrar el momento en que se inicia el temporizador
+      setUltimaActualizacion(Date.now());  // Registrar el momento en que se inicia o reanuda el temporizador
     }
   };
-
+  
   const pausarTemporizador = () => {
     setActivo(false);
+    // Guardar el tiempo transcurrido al pausar
+    const elapsedTime = Math.floor((Date.now() - ultimaActualizacion) / 1000);  // Tiempo transcurrido hasta el momento
+    setTiempoInicial(tiempoInicial - elapsedTime); // Actualizar el tiempo inicial con lo que queda
   };
-
+  
   const reiniciarTemporizador = () => {
     setActivo(false);
     setTiempo(0);
+    setTiempoInicial(0);  // Reiniciar también el tiempo inicial
     setInputTiempo(""); // Borrar el input
   };
-
+  
   const handleTiempoInput = (e) => {
     const valor = parseInt(e.target.value, 10);
     setInputTiempo(e.target.value);  // Actualizar el valor del input
