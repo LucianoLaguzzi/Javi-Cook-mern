@@ -716,6 +716,7 @@ const DetalleReceta = () => {
             onClick={() => setMostrarControles(!mostrarControles)}
             style={{
               marginBottom: mostrarControles ? "10px" : "0",
+              padding: mostrarControles ? "5px" : "17px",
             }}
           >
            {mostrarControles ? (
