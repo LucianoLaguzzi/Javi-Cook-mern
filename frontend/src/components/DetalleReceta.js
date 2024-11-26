@@ -40,7 +40,7 @@ const DetalleReceta = () => {
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
   const [inputTiempo, setInputTiempo] = useState(""); // Valor fijo del input en minutos
 
-  const [inicioTiempo, setInicioTiempo] = useState(null); 
+  const [inicio, setInicio] = useState(null); // Marca de tiempo cuando se inicia
 
 
 
@@ -83,7 +83,6 @@ const DetalleReceta = () => {
     obtenerReceta();
   }, [id]);
 
-
   
   // Temporizador
   useEffect(() => {
@@ -91,57 +90,53 @@ const DetalleReceta = () => {
   
     if (activo && tiempo > 0) {
       intervalo = setInterval(() => {
-        const ahora = Date.now();
-        const tiempoTranscurrido = Math.floor((ahora - inicioTiempo) / 1000); // Diferencia en segundos
-        const nuevoTiempoRestante = Math.max(0, tiempo - tiempoTranscurrido);
+        const ahora = Date.now(); // Hora actual en milisegundos
+        const tiempoTranscurrido = Math.floor((ahora - inicio) / 1000); // Segundos transcurridos
+        const tiempoRestante = Math.max(0, tiempo - tiempoTranscurrido); // Evita valores negativos
   
-        setTiempo(nuevoTiempoRestante);
+        setTiempo(tiempoRestante);
   
-        if (nuevoTiempoRestante === 0) {
+        // Si el tiempo llega a 0, detener y mostrar alerta
+        if (tiempoRestante === 0) {
           setActivo(false);
           Swal.fire({
             title: "¡Tiempo terminado!",
             text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
             icon: "info",
             confirmButtonText: "Aceptar",
-            customClass: {
-              popup: "mi-alerta-temporizador",
-            },
+            customClass: { popup: "mi-alerta-temporizador" },
           });
         }
       }, 1000);
     }
   
     return () => clearInterval(intervalo);
-  }, [activo, tiempo, inicioTiempo]);
-  
-  // Métodos actualizados
+  }, [activo, tiempo, inicio]);
+
+  // Métodos del temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) {
-      setInicioTiempo(Date.now()); // Guarda el momento exacto en que se inicia el temporizador
+      setInicio(Date.now()); // Guardar la marca de tiempo actual
       setActivo(true);
     }
   };
-  
+
   const pausarTemporizador = () => {
     setActivo(false);
-    // Actualiza el tiempo restante basado en el tiempo transcurrido
-    const ahora = Date.now();
-    const tiempoTranscurrido = Math.floor((ahora - inicioTiempo) / 1000);
-    setTiempo((prevTiempo) => Math.max(0, prevTiempo - tiempoTranscurrido));
   };
-  
+
   const reiniciarTemporizador = () => {
     setActivo(false);
     setTiempo(0);
-    setInputTiempo(""); // Limpia el input de minutos
-    setInicioTiempo(null);
+    setInicio(null); // Reiniciar la marca de tiempo
+    setInputTiempo("");
   };
-  
+
   const handleTiempoInput = (e) => {
     const valor = parseInt(e.target.value, 10);
-    setInputTiempo(e.target.value); // Actualiza el valor del input visible
-    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convierte minutos a segundos
+    setInputTiempo(e.target.value);
+    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
+    setInicio(null); // Reiniciar marca de tiempo al cambiar el input
   };
 
 
