@@ -255,47 +255,5 @@ router.get('/random/:categoria', async (req, res) => {
 
 
 
-                                                    //Para el temporizador de detalle receta
-let temporizador = {
-    tiempoRestante: 0, // Tiempo en segundos
-    activo: false,
-  };
-  
-  router.post('/iniciar-temporizador', (req, res) => {
-    const { tiempo } = req.body; // Tiempo en minutos enviado desde el cliente
-    temporizador.tiempoRestante = tiempo * 60; // Convertir a segundos
-    temporizador.activo = true;
-    temporizador.inicio = new Date(); // Guardar la hora de inicio
-    res.json({ mensaje: 'Temporizador iniciado', tiempoRestante: temporizador.tiempoRestante });
-  });
-  
-  router.post('/pausar-temporizador', (req, res) => {
-    temporizador.activo = false;
-    const ahora = new Date();
-    const tiempoTranscurrido = Math.floor((ahora - new Date(temporizador.inicio)) / 1000);
-    temporizador.tiempoRestante = Math.max(0, temporizador.tiempoRestante - tiempoTranscurrido);
-    res.json({ mensaje: 'Temporizador pausado', tiempoRestante: temporizador.tiempoRestante });
-  });
-  
-  router.get('/sincronizar-temporizador', (req, res) => {
-    if (temporizador.activo) {
-      const ahora = new Date();
-      const tiempoTranscurrido = Math.floor((ahora - new Date(temporizador.inicio)) / 1000);
-      temporizador.tiempoRestante = Math.max(0, temporizador.tiempoRestante - tiempoTranscurrido);
-  
-      if (temporizador.tiempoRestante <= 0) {
-        temporizador.activo = false;
-        temporizador.tiempoRestante = 0;
-      }
-    }
-    res.json({ tiempoRestante: temporizador.tiempoRestante, activo: temporizador.activo });
-  });
-  
-  router.post('/reiniciar-temporizador', (req, res) => {
-    temporizador = { tiempoRestante: 0, activo: false };
-    res.json({ mensaje: 'Temporizador reiniciado' });
-  });
-
-
 
 export default router;

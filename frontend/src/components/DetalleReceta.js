@@ -40,6 +40,9 @@ const DetalleReceta = () => {
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
   const [inputTiempo, setInputTiempo] = useState(""); // Valor fijo del input en minutos
 
+  const [inicio, setInicio] = useState(null);
+  const [tiempoRestante, setTiempoRestante] = useState(null); 
+
 
 
 
@@ -86,67 +89,55 @@ const DetalleReceta = () => {
   // Temporizador
   useEffect(() => {
     let intervalo;
-
+  
     if (activo) {
-      intervalo = setInterval(async () => {
-        try {
-          const { data } = await axios.get('https://javicook-mern.onrender.com/api/temporizador/sincronizar-temporizador');
-          setTiempo(data.tiempoRestante);
-
-          if (data.tiempoRestante <= 0) {
-            setActivo(false);
-            clearInterval(intervalo);
-            Swal.fire({
-              title: '¡Tiempo terminado!',
-              text: 'El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.',
-              icon: 'info',
-              confirmButtonText: 'Aceptar',
-            });
-          }
-        } catch (error) {
-          console.error('Error al sincronizar el temporizador:', error);
+      intervalo = setInterval(() => {
+        const ahora = Date.now();
+        const tiempoTranscurrido = Math.floor((ahora - inicio) / 1000);
+        const tiempoRestante = Math.max(tiempo - tiempoTranscurrido, 0);
+        setTiempoRestante(tiempoRestante);
+  
+        if (tiempoRestante === 0) {
+          setActivo(false);
+          clearInterval(intervalo);
+          Swal.fire({
+            title: "¡Tiempo terminado!",
+            text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
+            icon: "info",
+            confirmButtonText: "Aceptar",
+          });
         }
       }, 1000);
     }
-
+  
     return () => clearInterval(intervalo);
-  }, [activo]);
+  }, [activo, inicio, tiempo]);
 
-  const iniciarTemporizador = async () => {
+
+  
+  const iniciarTemporizador = () => {
     if (tiempo > 0) {
-      try {
-        await axios.post('https://javicook-mern.onrender.com/api/temporizador/iniciar-temporizador', { tiempo: tiempo / 60 });
-        setActivo(true);
-      } catch (error) {
-        console.error('Error al iniciar el temporizador:', error);
-      }
+      const ahora = Date.now();
+      setInicio(ahora);
+      setActivo(true);
     }
   };
 
-  const pausarTemporizador = async () => {
-    try {
-      await axios.post('https://javicook-mern.onrender.com/api/temporizador/pausar-temporizador');
-      setActivo(false);
-    } catch (error) {
-      console.error('Error al pausar el temporizador:', error);
-    }
+  const pausarTemporizador = () => {
+    setActivo(false);
   };
 
-  const reiniciarTemporizador = async () => {
-    try {
-      await axios.post('https://javicook-mern.onrender.com/api/temporizador/reiniciar-temporizador');
-      setActivo(false);
-      setTiempo(0);
-      setInputTiempo('');
-    } catch (error) {
-      console.error('Error al reiniciar el temporizador:', error);
-    }
+  const reiniciarTemporizador = () => {
+    setActivo(false);
+    setTiempo(0);
+    setTiempoRestante(null);
+    setInicio(null);
   };
-
+  
   const handleTiempoInput = (e) => {
     const valor = parseInt(e.target.value, 10);
-    setInputTiempo(e.target.value); // Actualizar el valor del input
-    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
+    setInputTiempo(e.target.value);
+    setTiempo(isNaN(valor) ? 0 : valor * 60);
   };
 
 
