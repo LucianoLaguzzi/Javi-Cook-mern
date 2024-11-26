@@ -81,49 +81,46 @@ const DetalleReceta = () => {
     obtenerReceta();
   }, [id]);
 
-  // Temporizador basado en timestamps
+
+  
+  // Temporizador
   useEffect(() => {
+    let lastTimestamp = 0;
     let intervalo;
-    let tiempoInicio = Date.now(); // Marcar el inicio
-    const tiempoObjetivo = tiempoInicio + tiempo * 1000; // Tiempo objetivo en milisegundos
-  
-    const actualizarTiempo = () => {
-      const ahora = Date.now();
-      const tiempoRestante = Math.max(tiempoObjetivo - ahora, 0);
-      setTiempo(Math.ceil(tiempoRestante / 1000));
-  
-      if (tiempoRestante <= 0) {
-        clearInterval(intervalo);
+
+    // Función que se ejecuta en cada frame de animación
+    const actualizarTiempo = (timestamp) => {
+      if (activo && tiempo > 0) {
+        if (lastTimestamp === 0) lastTimestamp = timestamp;
+        const delta = (timestamp - lastTimestamp) / 1000; // calculamos el tiempo en segundos
+        if (delta >= 1) {
+          setTiempo((prevTiempo) => prevTiempo - Math.floor(delta));
+          lastTimestamp = timestamp;
+        }
+        requestAnimationFrame(actualizarTiempo); // Seguimos llamando en cada frame
+      } else if (tiempo <= 0 && activo) {
         setActivo(false);
-        Swal.fire({
-          title: "¡Tiempo terminado!",
-          text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
-          icon: "info",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            popup: "mi-alerta-temporizador",
-          },
-        });
+          Swal.fire({
+            title: "¡Tiempo terminado!",
+            text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
+            icon: "info", // Puedes cambiar esto a "success", "error", "warning", etc.
+            confirmButtonText: "Aceptar",
+            customClass: {
+              popup: "mi-alerta-temporizador", // Puedes agregar clases personalizadas
+            },
+          });
       }
     };
-  
-    if (activo && tiempo > 0) {
-      intervalo = setInterval(actualizarTiempo, 1000);
-  
-      // Ajustar tiempo cuando la pestaña se vuelve visible
-      document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) {
-          actualizarTiempo();
-        }
-      });
+
+    if (activo) {
+      requestAnimationFrame(actualizarTiempo); // Comenzamos el ciclo
     }
-  
-    return () => {
-      clearInterval(intervalo);
-      document.removeEventListener("visibilitychange", actualizarTiempo);
-    };
+
+    return () => cancelAnimationFrame(intervalo); // Limpiamos al salir del efecto
   }, [activo, tiempo]);
-  
+
+
+
 
   // Métodos del temporizador
   const iniciarTemporizador = () => {
@@ -139,7 +136,7 @@ const DetalleReceta = () => {
   const reiniciarTemporizador = () => {
     setActivo(false);
     setTiempo(0);
-    setInputTiempo(""); // Limpiar el input
+    setInputTiempo(""); // Borrar el input
   };
 
   const handleTiempoInput = (e) => {
@@ -147,6 +144,7 @@ const DetalleReceta = () => {
     setInputTiempo(e.target.value); // Actualizar el valor del input
     setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
   };
+
 
 
  
