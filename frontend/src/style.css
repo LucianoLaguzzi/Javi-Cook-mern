@@ -4441,6 +4441,12 @@ i.fas.fa-undo {
     font-size: 16px;
 }
 
+@media (max-width: 750px) {
+    .temporizador .fas {
+        font-size: 13px;
+    }
+}
+
 
 .boton-abre-tempo{
     background: rgb(40, 167, 69);
@@ -4456,6 +4462,10 @@ i.fas.fa-undo {
 @media (max-width: 750px) {
     .boton-abre-tempo {
         font-size: 10px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
