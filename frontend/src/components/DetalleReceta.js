@@ -39,8 +39,7 @@ const DetalleReceta = () => {
   const [activo, setActivo] = useState(false); // Estado para iniciar/pausar el temporizador
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
   const [inputTiempo, setInputTiempo] = useState(""); // Valor fijo del input en minutos
-
-  const [intervalo, setIntervalo] = useState(null); // Para almacenar el intervalo y limpiarlo cuando sea necesario
+  
 
 
 
@@ -86,34 +85,30 @@ const DetalleReceta = () => {
   
   // Temporizador
   useEffect(() => {
-    // Si el temporizador está activo y queda tiempo
+    let intervalo;
     if (activo && tiempo > 0) {
-      const intervalId = setInterval(() => {
-        setTiempo((prevTiempo) => {
-          if (prevTiempo === 1) {
-            clearInterval(intervalId); // Detener el intervalo cuando llegue a 0
-            Swal.fire({
-              title: "¡Tiempo terminado!",
-              text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
-              icon: "info",
-              confirmButtonText: "Aceptar",
-              customClass: { popup: "mi-alerta-temporizador" },
-            });
-            return 0;
-          }
-          return prevTiempo - 1; // Restar 1 segundo
-        });
+      intervalo = setInterval(() => {
+        setTiempo((prevTiempo) => prevTiempo - 1);
       }, 1000);
-  
-      return () => clearInterval(intervalId); // Limpiar el intervalo al desmontarse o cambiar el estado
+    } else if (tiempo === 0 && activo) {
+      setActivo(false);
+      Swal.fire({
+        title: "¡Tiempo terminado!",
+        text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
+        icon: "info", // Puedes cambiar esto a "success", "error", "warning", etc.
+        confirmButtonText: "Aceptar",
+        customClass: {
+          popup: "mi-alerta-temporizador", // Puedes agregar clases personalizadas
+        },
+      });
     }
-  }, [activo, tiempo]); // Dependemos de `activo` y `tiempo` para manejar la actualización
-  
+    return () => clearInterval(intervalo);
+  }, [activo, tiempo]);
 
   // Métodos del temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) {
-      setActivo(true); // Iniciar el temporizador
+      setActivo(true);
     }
   };
 
