@@ -4473,6 +4473,14 @@ i.fas.fa-undo {
     }
 }
 
+.boton-abre-tempo img {
+    transition: transform 0.3s ease;
+  }
+  
+  .boton-abre-tempo:hover img {
+    transform: scale(1.1); /* Efecto de agrandamiento al pasar el mouse */
+  }
+
 .titulo-tempo{
     margin: 0px 0px 5px;
     text-align: center;

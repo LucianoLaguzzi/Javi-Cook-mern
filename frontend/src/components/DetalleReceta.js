@@ -712,14 +712,21 @@ const DetalleReceta = () => {
 
         <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`}>
           {/* Botón para desplegar/ocultar */}
-          <button
-            className="boton-abre-tempo"
+          <button className="boton-abre-tempo"
             onClick={() => setMostrarControles(!mostrarControles)}
             style={{
               marginBottom: mostrarControles ? "10px" : "0",
             }}
           >
-            {mostrarControles ? "Minimizar" : "Temporizador"}
+           {mostrarControles ? (
+              "Minimizar" // Texto cuando está desplegado
+            ) : (
+              <img 
+                src="../images/cronometro.png" // Ruta de la imagen
+                alt="Abrir Temporizador" 
+                style={{ width: "24px", height: "24px" }} // Ajusta el tamaño
+              />
+            )}
           </button>
 
           {/* Controles visibles solo si mostrarControles es true */}
