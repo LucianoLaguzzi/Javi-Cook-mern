@@ -4459,6 +4459,10 @@ i.fas.fa-undo {
     text-align: center;
 }
 
+.boton-abre-tempo:hover{
+    background: rgb(24, 124, 47);
+}
+
 @media (max-width: 750px) {
     .boton-abre-tempo {
         font-size: 10px;
