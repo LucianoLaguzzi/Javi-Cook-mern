@@ -40,9 +40,6 @@ const DetalleReceta = () => {
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
   const [inputTiempo, setInputTiempo] = useState(""); // Valor fijo del input en minutos
 
-  const [inicio, setInicio] = useState(null);
-  const [tiempoRestante, setTiempoRestante] = useState(null); 
-
 
 
 
@@ -85,40 +82,32 @@ const DetalleReceta = () => {
   }, [id]);
 
 
-
+  
   // Temporizador
   useEffect(() => {
     let intervalo;
-  
-    if (activo) {
+    if (activo && tiempo > 0) {
       intervalo = setInterval(() => {
-        const ahora = Date.now();
-        const tiempoTranscurrido = Math.floor((ahora - inicio) / 1000);
-        const tiempoRestante = Math.max(tiempo - tiempoTranscurrido, 0);
-        setTiempoRestante(tiempoRestante);
-  
-        if (tiempoRestante === 0) {
-          setActivo(false);
-          clearInterval(intervalo);
-          Swal.fire({
-            title: "¡Tiempo terminado!",
-            text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
-            icon: "info",
-            confirmButtonText: "Aceptar",
-          });
-        }
+        setTiempo((prevTiempo) => prevTiempo - 1);
       }, 1000);
+    } else if (tiempo === 0 && activo) {
+      setActivo(false);
+      Swal.fire({
+        title: "¡Tiempo terminado!",
+        text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
+        icon: "info", // Puedes cambiar esto a "success", "error", "warning", etc.
+        confirmButtonText: "Aceptar",
+        customClass: {
+          popup: "mi-alerta-temporizador", // Puedes agregar clases personalizadas
+        },
+      });
     }
-  
     return () => clearInterval(intervalo);
-  }, [activo, inicio, tiempo]);
+  }, [activo, tiempo]);
 
-
-  
+  // Métodos del temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) {
-      const ahora = Date.now();
-      setInicio(ahora);
       setActivo(true);
     }
   };
@@ -130,14 +119,13 @@ const DetalleReceta = () => {
   const reiniciarTemporizador = () => {
     setActivo(false);
     setTiempo(0);
-    setTiempoRestante(null);
-    setInicio(null);
+    setInputTiempo(""); // Borrar el input
   };
-  
+
   const handleTiempoInput = (e) => {
     const valor = parseInt(e.target.value, 10);
-    setInputTiempo(e.target.value);
-    setTiempo(isNaN(valor) ? 0 : valor * 60);
+    setInputTiempo(e.target.value); // Actualizar el valor del input
+    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
   };
 
 
