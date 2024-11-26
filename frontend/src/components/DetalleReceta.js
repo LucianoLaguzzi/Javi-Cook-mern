@@ -81,51 +81,62 @@ const DetalleReceta = () => {
     obtenerReceta();
   }, [id]);
 
-  // Temporizador
-  useEffect(() => {
-    let intervalo;
-    if (activo && tiempo > 0) {
-      intervalo = setInterval(() => {
-        setTiempo((prevTiempo) => prevTiempo - 1);
-      }, 1000);
-    } else if (tiempo === 0 && activo) {
-      setActivo(false);
-      Swal.fire({
-        title: "¡Tiempo terminado!",
-        text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
-        icon: "info", // Puedes cambiar esto a "success", "error", "warning", etc.
-        confirmButtonText: "Aceptar",
-        customClass: {
-          popup: "mi-alerta-temporizador", // Puedes agregar clases personalizadas
-        },
-      });
-    }
-    return () => clearInterval(intervalo);
-  }, [activo, tiempo]);
+  // Temporizador basado en timestamps
+useEffect(() => {
+  let intervalo;
 
-  // Métodos del temporizador
-  const iniciarTemporizador = () => {
-    if (tiempo > 0) {
-      setActivo(true);
-    }
-  };
+  if (activo && tiempo > 0) {
+    const tiempoInicio = Date.now(); // Marcar el inicio
+    const tiempoObjetivo = tiempo * 1000; // Convertir segundos a milisegundos
 
-  const pausarTemporizador = () => {
-    setActivo(false);
-  };
+    intervalo = setInterval(() => {
+      const tiempoTranscurrido = Date.now() - tiempoInicio;
+      const tiempoRestante = Math.max(tiempoObjetivo - tiempoTranscurrido, 0);
 
-  const reiniciarTemporizador = () => {
-    setActivo(false);
-    setTiempo(0);
-    setInputTiempo(""); // Borrar el input
-  };
+      setTiempo(Math.ceil(tiempoRestante / 1000)); // Convertir milisegundos a segundos
 
-  const handleTiempoInput = (e) => {
-    const valor = parseInt(e.target.value, 10);
-    setInputTiempo(e.target.value); // Actualizar el valor del input
-    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
-  };
+      if (tiempoRestante <= 0) {
+        clearInterval(intervalo);
+        setActivo(false);
+        // Mostrar alerta cuando el tiempo termine
+        Swal.fire({
+          title: "¡Tiempo terminado!",
+          text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
+          icon: "info", 
+          confirmButtonText: "Aceptar",
+          customClass: {
+            popup: "mi-alerta-temporizador", 
+          },
+        });
+      }
+    }, 1000);
+  }
 
+  return () => clearInterval(intervalo); // Limpiar el intervalo al desmontar o detener
+}, [activo, tiempo]);
+
+// Métodos del temporizador
+const iniciarTemporizador = () => {
+  if (tiempo > 0) {
+    setActivo(true);
+  }
+};
+
+const pausarTemporizador = () => {
+  setActivo(false);
+};
+
+const reiniciarTemporizador = () => {
+  setActivo(false);
+  setTiempo(0);
+  setInputTiempo(""); // Limpiar el input
+};
+
+const handleTiempoInput = (e) => {
+  const valor = parseInt(e.target.value, 10);
+  setInputTiempo(e.target.value); // Actualizar el valor del input
+  setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
+};
 
 
  
