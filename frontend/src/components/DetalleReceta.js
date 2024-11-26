@@ -40,7 +40,7 @@ const DetalleReceta = () => {
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
   const [inputTiempo, setInputTiempo] = useState(""); // Valor fijo del input en minutos
 
-  const [inicio, setInicio] = useState(null); // Marca de tiempo cuando se inicia
+  const [intervalo, setIntervalo] = useState(null); // Para almacenar el intervalo y limpiarlo cuando sea necesario
 
 
 
@@ -86,38 +86,34 @@ const DetalleReceta = () => {
   
   // Temporizador
   useEffect(() => {
-    let intervalo;
-  
+    // Si el temporizador está activo y queda tiempo
     if (activo && tiempo > 0) {
-      intervalo = setInterval(() => {
-        const ahora = Date.now(); // Hora actual en milisegundos
-        const tiempoTranscurrido = Math.floor((ahora - inicio) / 1000); // Segundos transcurridos
-        const tiempoRestante = Math.max(0, tiempo - tiempoTranscurrido); // Evita valores negativos
-  
-        setTiempo(tiempoRestante);
-  
-        // Si el tiempo llega a 0, detener y mostrar alerta
-        if (tiempoRestante === 0) {
-          setActivo(false);
-          Swal.fire({
-            title: "¡Tiempo terminado!",
-            text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
-            icon: "info",
-            confirmButtonText: "Aceptar",
-            customClass: { popup: "mi-alerta-temporizador" },
-          });
-        }
+      const intervalId = setInterval(() => {
+        setTiempo((prevTiempo) => {
+          if (prevTiempo === 1) {
+            clearInterval(intervalId); // Detener el intervalo cuando llegue a 0
+            Swal.fire({
+              title: "¡Tiempo terminado!",
+              text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
+              icon: "info",
+              confirmButtonText: "Aceptar",
+              customClass: { popup: "mi-alerta-temporizador" },
+            });
+            return 0;
+          }
+          return prevTiempo - 1; // Restar 1 segundo
+        });
       }, 1000);
-    }
   
-    return () => clearInterval(intervalo);
-  }, [activo, tiempo, inicio]);
+      return () => clearInterval(intervalId); // Limpiar el intervalo al desmontarse o cambiar el estado
+    }
+  }, [activo, tiempo]); // Dependemos de `activo` y `tiempo` para manejar la actualización
+  
 
   // Métodos del temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) {
-      setInicio(Date.now()); // Guardar la marca de tiempo actual
-      setActivo(true);
+      setActivo(true); // Iniciar el temporizador
     }
   };
 
@@ -128,15 +124,13 @@ const DetalleReceta = () => {
   const reiniciarTemporizador = () => {
     setActivo(false);
     setTiempo(0);
-    setInicio(null); // Reiniciar la marca de tiempo
-    setInputTiempo("");
+    setInputTiempo(""); // Borrar el input
   };
 
   const handleTiempoInput = (e) => {
     const valor = parseInt(e.target.value, 10);
-    setInputTiempo(e.target.value);
+    setInputTiempo(e.target.value); // Actualizar el valor del input
     setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
-    setInicio(null); // Reiniciar marca de tiempo al cambiar el input
   };
 
 
