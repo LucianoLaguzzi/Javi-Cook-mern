@@ -4397,15 +4397,15 @@ i.fas.fa-undo {
 
 /*Temporizador*/
 .temporizador {
-    background: #2b3a42;
-    border: 1px solid #837d7d;
+    /*background: #2b3a42;
+    border: 1px solid #837d7d;*/
     border-radius: 20px;
     bottom: 20px;
     overflow: hidden;
     position: fixed;
     right: 40px;
     transition: height .3s ease, padding .3s ease;
-    width: 200px;
+    /*width: 200px;*/
     z-index: 9;
     box-shadow: 3px 3px 3px #00000080;
 }
@@ -4414,14 +4414,23 @@ i.fas.fa-undo {
     .temporizador {
         bottom: 40px;
         right: 10px;
-        width: 120px;
+        /*width: 120px;*/
     }
 }
   
 .temporizador.mostrar {
     height: auto; /* Ajusta dinámicamente */
     padding: 10px;
+    background: #2b3a42;
+    border: 1px solid #837d7d;
 }
+
+@media (max-width: 750px) {
+    .temporizador.mostrar {
+        width: 120px;
+    }
+}
+
 
 .temporizador button {
     cursor: pointer;
@@ -4449,9 +4458,9 @@ i.fas.fa-undo {
 
 
 .boton-abre-tempo{
-    background: rgb(40, 167, 69);
+    background: #0d491b;
     color: white;
-    padding: 10px;
+    padding: 17px;
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -4478,7 +4487,7 @@ i.fas.fa-undo {
   }
   
   .boton-abre-tempo:hover img {
-    transform: scale(1.1); /* Efecto de agrandamiento al pasar el mouse */
+    transform: scale(1.5); /* Efecto de agrandamiento al pasar el mouse */
   }
 
 .titulo-tempo{

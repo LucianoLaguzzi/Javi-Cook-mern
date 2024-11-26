@@ -724,7 +724,7 @@ const DetalleReceta = () => {
               <img 
                 src="../images/cronometro.png" // Ruta de la imagen
                 alt="Abrir Temporizador" 
-                style={{ width: "24px", height: "24px" }} // Ajusta el tamaño
+                style={{ width: "25px", height: "25px" }} // Ajusta el tamaño
               />
             )}
           </button>
