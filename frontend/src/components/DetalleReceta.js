@@ -82,61 +82,71 @@ const DetalleReceta = () => {
   }, [id]);
 
   // Temporizador basado en timestamps
-useEffect(() => {
-  let intervalo;
-
-  if (activo && tiempo > 0) {
-    const tiempoInicio = Date.now(); // Marcar el inicio
-    const tiempoObjetivo = tiempo * 1000; // Convertir segundos a milisegundos
-
-    intervalo = setInterval(() => {
-      const tiempoTranscurrido = Date.now() - tiempoInicio;
-      const tiempoRestante = Math.max(tiempoObjetivo - tiempoTranscurrido, 0);
-
-      setTiempo(Math.ceil(tiempoRestante / 1000)); // Convertir milisegundos a segundos
-
+  useEffect(() => {
+    let intervalo;
+    let tiempoInicio = Date.now(); // Marcar el inicio
+    const tiempoObjetivo = tiempoInicio + tiempo * 1000; // Tiempo objetivo en milisegundos
+  
+    const actualizarTiempo = () => {
+      const ahora = Date.now();
+      const tiempoRestante = Math.max(tiempoObjetivo - ahora, 0);
+      setTiempo(Math.ceil(tiempoRestante / 1000));
+  
       if (tiempoRestante <= 0) {
         clearInterval(intervalo);
         setActivo(false);
-        // Mostrar alerta cuando el tiempo termine
         Swal.fire({
           title: "¡Tiempo terminado!",
           text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
-          icon: "info", 
+          icon: "info",
           confirmButtonText: "Aceptar",
           customClass: {
-            popup: "mi-alerta-temporizador", 
+            popup: "mi-alerta-temporizador",
           },
         });
       }
-    }, 1000);
-  }
+    };
+  
+    if (activo && tiempo > 0) {
+      intervalo = setInterval(actualizarTiempo, 1000);
+  
+      // Ajustar tiempo cuando la pestaña se vuelve visible
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          actualizarTiempo();
+        }
+      });
+    }
+  
+    return () => {
+      clearInterval(intervalo);
+      document.removeEventListener("visibilitychange", actualizarTiempo);
+    };
+  }, [activo, tiempo]);
+  
 
-  return () => clearInterval(intervalo); // Limpiar el intervalo al desmontar o detener
-}, [activo, tiempo]);
+  // Métodos del temporizador
+  const iniciarTemporizador = () => {
+    if (tiempo > 0) {
+      setActivo(true);
+    }
+  };
 
-// Métodos del temporizador
-const iniciarTemporizador = () => {
-  if (tiempo > 0) {
-    setActivo(true);
-  }
-};
+  const pausarTemporizador = () => {
+    setActivo(false);
+  };
 
-const pausarTemporizador = () => {
-  setActivo(false);
-};
+  const reiniciarTemporizador = () => {
+    setActivo(false);
+    setTiempo(0);
+    setInputTiempo(""); // Limpiar el input
+  };
 
-const reiniciarTemporizador = () => {
-  setActivo(false);
-  setTiempo(0);
-  setInputTiempo(""); // Limpiar el input
-};
-
-const handleTiempoInput = (e) => {
-  const valor = parseInt(e.target.value, 10);
-  setInputTiempo(e.target.value); // Actualizar el valor del input
-  setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
-};
+  const handleTiempoInput = (e) => {
+    const valor = parseInt(e.target.value, 10);
+    setInputTiempo(e.target.value); // Actualizar el valor del input
+    setTiempo(isNaN(valor) ? 0 : valor * 60); // Convertir minutos a segundos
+  };
 
 
  
