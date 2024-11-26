@@ -4444,6 +4444,9 @@ i.fas.fa-undo {
 .temporizador input {
     border: 1px solid #ddd;
     border-radius: 5px;
+    background: transparent;
+    color: white;
+    text-align: center;
 }
 
 .temporizador .fas {
@@ -4458,7 +4461,7 @@ i.fas.fa-undo {
 
 
 .boton-abre-tempo{
-    background: #0d491b;
+    background: #126825;
     color: white;
     padding: 17px;
     border: none;

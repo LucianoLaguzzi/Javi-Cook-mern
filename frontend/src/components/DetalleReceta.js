@@ -756,10 +756,10 @@ const DetalleReceta = () => {
                   <i className="fas fa-play" style={{ color: "#0a7e1e" }}></i>
                 </button>
                 <button className="pausar-tempo" onClick={pausarTemporizador}>
-                  <i className="fas fa-pause" style={{ color: "#ce9b0f" }}></i>
+                  <i className="fas fa-pause" style={{ color: "#fff" }}></i>
                 </button>
                 <button className="reiniciar-tempo" onClick={reiniciarTemporizador}>
-                  <i className="fas fa-undo" style={{ color: "#b50a0a" }}></i>
+                  <i class="fas fa-undo-alt" style={{ color: "#b50a0a" }}></i>
                 </button>
               </div>
             </div>
