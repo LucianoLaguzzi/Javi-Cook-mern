@@ -77,3 +77,4 @@ app.use('/api/detalles', detalleRoutes);
 app.use('/api/recetas', comentarioRoutes);
 app.use('/api/valoraciones', valoracionRoutes);
 app.use('/api/recuperar', usuarioRoutes);
+app.use('/api/temporizador', recetaRoutes);

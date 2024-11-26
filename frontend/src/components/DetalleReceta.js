@@ -82,61 +82,65 @@ const DetalleReceta = () => {
   }, [id]);
 
 
-  
+
   // Temporizador
   useEffect(() => {
-    let lastTimestamp = 0;
     let intervalo;
 
-    // Función que se ejecuta en cada frame de animación
-    const actualizarTiempo = (timestamp) => {
-      if (activo && tiempo > 0) {
-        if (lastTimestamp === 0) lastTimestamp = timestamp;
-        const delta = (timestamp - lastTimestamp) / 1000; // calculamos el tiempo en segundos
-        if (delta >= 1) {
-          setTiempo((prevTiempo) => prevTiempo - Math.floor(delta));
-          lastTimestamp = timestamp;
-        }
-        requestAnimationFrame(actualizarTiempo); // Seguimos llamando en cada frame
-      } else if (tiempo <= 0 && activo) {
-        setActivo(false);
-          Swal.fire({
-            title: "¡Tiempo terminado!",
-            text: "El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.",
-            icon: "info", // Puedes cambiar esto a "success", "error", "warning", etc.
-            confirmButtonText: "Aceptar",
-            customClass: {
-              popup: "mi-alerta-temporizador", // Puedes agregar clases personalizadas
-            },
-          });
-      }
-    };
-
     if (activo) {
-      requestAnimationFrame(actualizarTiempo); // Comenzamos el ciclo
+      intervalo = setInterval(async () => {
+        try {
+          const { data } = await axios.get('https://javicook-mern.onrender.com/api/temporizador/sincronizar-temporizador');
+          setTiempo(data.tiempoRestante);
+
+          if (data.tiempoRestante <= 0) {
+            setActivo(false);
+            clearInterval(intervalo);
+            Swal.fire({
+              title: '¡Tiempo terminado!',
+              text: 'El temporizador ha llegado a cero. Puedes reiniciarlo si lo deseas.',
+              icon: 'info',
+              confirmButtonText: 'Aceptar',
+            });
+          }
+        } catch (error) {
+          console.error('Error al sincronizar el temporizador:', error);
+        }
+      }, 1000);
     }
 
-    return () => cancelAnimationFrame(intervalo); // Limpiamos al salir del efecto
-  }, [activo, tiempo]);
+    return () => clearInterval(intervalo);
+  }, [activo]);
 
-
-
-
-  // Métodos del temporizador
-  const iniciarTemporizador = () => {
+  const iniciarTemporizador = async () => {
     if (tiempo > 0) {
-      setActivo(true);
+      try {
+        await axios.post('https://javicook-mern.onrender.com/api/temporizador/iniciar-temporizador', { tiempo: tiempo / 60 });
+        setActivo(true);
+      } catch (error) {
+        console.error('Error al iniciar el temporizador:', error);
+      }
     }
   };
 
-  const pausarTemporizador = () => {
-    setActivo(false);
+  const pausarTemporizador = async () => {
+    try {
+      await axios.post('https://javicook-mern.onrender.com/api/temporizador/pausar-temporizador');
+      setActivo(false);
+    } catch (error) {
+      console.error('Error al pausar el temporizador:', error);
+    }
   };
 
-  const reiniciarTemporizador = () => {
-    setActivo(false);
-    setTiempo(0);
-    setInputTiempo(""); // Borrar el input
+  const reiniciarTemporizador = async () => {
+    try {
+      await axios.post('https://javicook-mern.onrender.com/api/temporizador/reiniciar-temporizador');
+      setActivo(false);
+      setTiempo(0);
+      setInputTiempo('');
+    } catch (error) {
+      console.error('Error al reiniciar el temporizador:', error);
+    }
   };
 
   const handleTiempoInput = (e) => {
