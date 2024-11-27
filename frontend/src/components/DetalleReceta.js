@@ -131,6 +131,9 @@ const DetalleReceta = () => {
   
       return () => clearInterval(interval);  // Limpiar el intervalo al desmontar
     }
+    // Eliminar clases si no está activo
+    if (botonRef.current) botonRef.current.classList.remove("titileo", "fin");
+
   }, [activo, ultimaActualizacion, tiempoInicial]);
   
   // Métodos del temporizador

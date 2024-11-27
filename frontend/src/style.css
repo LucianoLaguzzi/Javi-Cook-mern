@@ -4616,7 +4616,7 @@ i.fas.fa-undo {
       background-color: #0a7e1e; /* Verde al principio */
     }
     50% {
-      background-color: #ff0000; /* Rojo en el medio */
+      background-color: #ae0f0f; /* Rojo en el medio */
     }
     100% {
       background-color: #0a7e1e; /* Verde al final */
@@ -4625,7 +4625,7 @@ i.fas.fa-undo {
   
   /* Cambio de color a rojo al finalizar */
   .boton-abre-tempo.fin {
-    background-color: #ff0000; /* Rojo cuando el tiempo se agote */
+    background-color: #ae0f0f; /* Rojo cuando el tiempo se agote */
   }
   
   /* Cambio de color para el reloj cuando está activo */
@@ -4640,5 +4640,5 @@ i.fas.fa-undo {
   
   /* Cambio de color del reloj a rojo cuando se agota el tiempo */
   .reloj-tempo.fin {
-    background-color: #ff0000; /* Rojo cuando el tiempo llega a 0 */
+    background-color: #ae0f0f; /* Rojo cuando el tiempo llega a 0 */
   }
