@@ -101,6 +101,11 @@ const DetalleReceta = () => {
           clearInterval(interval);
           setActivo(false);
           setTiempo(0); // Asegurarse de que el tiempo sea 0
+
+          // Reproducir alarma
+          const sonido = new Audio("../sounds/timer-alert.mp3");
+          sonido.play();
+
           Swal.fire({
             title: "¡Tiempo terminado!",
             text: "El temporizador ha llegado a cero.",
@@ -733,7 +738,7 @@ const DetalleReceta = () => {
 
         <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`}>
           {/* Botón para desplegar/ocultar */}
-          <button className="boton-abre-tempo"
+          <button className="boton-abre-tempo"title='Temporizador'
             onClick={() => setMostrarControles(!mostrarControles)}
             style={{
               marginBottom: mostrarControles ? "10px" : "0",
