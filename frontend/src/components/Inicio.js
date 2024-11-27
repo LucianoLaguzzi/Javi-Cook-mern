@@ -376,7 +376,11 @@ const Inicio = () => {
         }
     };
 
-    
+    // Función para reproducir el sonido al pasar por los items
+    const reproducirSonido = () => {
+        const sonido = new Audio("../sounds/item.mp3");
+        sonido.play();
+    };
 
 
     
@@ -704,9 +708,9 @@ const Inicio = () => {
 
 
                     <div className="barra-secundaria">
-                        <a href="#recetas" className="link-secundario">Recetas</a>
-                        <a href="#top3" className="link-secundario">Top 3</a>
-                        <a href="#favoritos" className="link-secundario">Favoritos</a>
+                        <a href="#recetas" className="link-secundario" onMouseEnter={reproducirSonido}>Recetas</a>
+                        <a href="#top3" className="link-secundario" onMouseEnter={reproducirSonido}>Top 3</a>
+                        <a href="#favoritos" className="link-secundario" onMouseEnter={reproducirSonido}>Favoritos</a>
                         <div 
                             className="dropdown"
                             onMouseEnter={() => setMenuVisible(true)}
@@ -715,13 +719,13 @@ const Inicio = () => {
                             <a href="#" className="link-secundario">Aleatorio</a>
                             {menuVisible && (
                                 <div className="dropdown-menu">
-                                    <button  className="shine-effect" data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")}>Desayuno/Merienda</button>
-                                    <button  className="shine-effect" data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")}>Almuerzo/Cena</button>
-                                    <button  className="shine-effect" data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")}>Brunch</button>
-                                    <button  className="shine-effect" data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")}>Bebida/Trago</button>
-                                    <button  className="shine-effect" data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")}>Veggie</button>
-                                    <button  className="shine-effect" data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")}>Guarnición</button>
-                                    <button  className="shine-effect" data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")}>Postre</button>
+                                    <button  className="shine-effect" data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")} onMouseEnter={reproducirSonido}>Desayuno/Merienda</button>
+                                    <button  className="shine-effect" data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")} onMouseEnter={reproducirSonido}>Almuerzo/Cena</button>
+                                    <button  className="shine-effect" data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")} onMouseEnter={reproducirSonido}>Brunch</button>
+                                    <button  className="shine-effect" data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")} onMouseEnter={reproducirSonido}>Bebida/Trago</button>
+                                    <button  className="shine-effect" data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")} onMouseEnter={reproducirSonido}>Veggie</button>
+                                    <button  className="shine-effect" data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")} onMouseEnter={reproducirSonido}>Guarnición</button>
+                                    <button  className="shine-effect" data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")} onMouseEnter={reproducirSonido}>Postre</button>
                                     
                                 </div>
                             )}
