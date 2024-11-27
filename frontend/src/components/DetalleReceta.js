@@ -44,7 +44,7 @@ const DetalleReceta = () => {
   const [ultimaActualizacion, setUltimaActualizacion] = useState(Date.now());  // Registrar la última actualización
 
 
-
+  const botonRef = useRef(null);
 
   
 
@@ -88,7 +88,7 @@ const DetalleReceta = () => {
   // Temporizador
   useEffect(() => {
     let interval;
-  
+
     if (activo) {
       // Iniciar el temporizador
       interval = setInterval(() => {
@@ -101,6 +101,9 @@ const DetalleReceta = () => {
           clearInterval(interval);
           setActivo(false);
           setTiempo(0); // Asegurarse de que el tiempo sea 0
+
+          // Agregar clase de color rojo al finalizar
+          if (botonRef.current) botonRef.current.classList.add("fin");
 
           // Reproducir alarma
           const sonido = new Audio("../sounds/timer-alert.mp3");
@@ -116,6 +119,13 @@ const DetalleReceta = () => {
         } else {
           // Actualizar el estado con el tiempo restante
           setTiempo(tiempoRestante);
+
+          // Agregar titileo si quedan 10 segundos o menos
+          if (tiempoRestante <= 10) {
+            if (botonRef.current) botonRef.current.classList.add("titileo");
+          }
+
+
         }
       }, 1000);  // Actualizar cada segundo
   
@@ -738,7 +748,7 @@ const DetalleReceta = () => {
 
         <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`}>
           {/* Botón para desplegar/ocultar */}
-          <button className="boton-abre-tempo"title='Temporizador'
+          <button  ref={botonRef} className="boton-abre-tempo"title='Temporizador'
             onClick={() => setMostrarControles(!mostrarControles)}
             style={{
               marginBottom: mostrarControles ? "10px" : "0",
@@ -760,7 +770,7 @@ const DetalleReceta = () => {
           {mostrarControles && (
             <div>
               <h4 className="titulo-tempo">Temporizador</h4>
-              <p
+              <p 
                 className={`reloj-tempo ${
                   !activo && tiempo > 0 ? "parpadeo" : ""
                 }`}

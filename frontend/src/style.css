@@ -4602,3 +4602,43 @@ i.fas.fa-undo {
         font-size: 13px;
     }
 }
+
+
+
+
+/* Titileo para el botón flotante */
+.boton-abre-tempo.titileo {
+    animation: titileo 1s infinite;
+  }
+  
+  @keyframes titileo {
+    0% {
+      background-color: #0a7e1e; /* Verde al principio */
+    }
+    50% {
+      background-color: #ff0000; /* Rojo en el medio */
+    }
+    100% {
+      background-color: #0a7e1e; /* Verde al final */
+    }
+  }
+  
+  /* Cambio de color a rojo al finalizar */
+  .boton-abre-tempo.fin {
+    background-color: #ff0000; /* Rojo cuando el tiempo se agote */
+  }
+  
+  /* Cambio de color para el reloj cuando está activo */
+  .reloj-tempo.activo {
+    background-color: #0a7e1e; /* Verde cuando está activo */
+  }
+  
+  /* Titileo del reloj cuando está cerca de finalizar */
+  .reloj-tempo.titileo {
+    animation: titileo 1s infinite;
+  }
+  
+  /* Cambio de color del reloj a rojo cuando se agota el tiempo */
+  .reloj-tempo.fin {
+    background-color: #ff0000; /* Rojo cuando el tiempo llega a 0 */
+  }
