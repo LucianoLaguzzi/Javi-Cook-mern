@@ -388,6 +388,21 @@ const Inicio = () => {
         sonido.play();
     };
 
+    // Función para reproducir el sonido al pasar por los subitems
+    const reproducirSonidoMagic = () => {
+        const sonido = new Audio("../sounds/click-subitem.mp3");
+        sonido.play();
+    };
+
+    // Función para reproducir el sonido al pasar por los subitems
+    const reproducirSonidoPopup = () => {
+        const sonido = new Audio("../sounds/popup-item.mp3");
+        sonido.play();
+    };
+    
+
+    
+
     
 
 
@@ -709,13 +724,13 @@ const Inicio = () => {
 
 
 
-
+                    
 
 
                     <div className="barra-secundaria">
-                        <a href="#recetas" className="link-secundario" onMouseEnter={reproducirSonido}>Recetas</a>
-                        <a href="#top3" className="link-secundario" onMouseEnter={reproducirSonido}>Top 3</a>
-                        <a href="#favoritos" className="link-secundario" onMouseEnter={reproducirSonido}>Favoritos</a>
+                        <a href="#recetas" className="link-secundario" onMouseEnter={reproducirSonido} onMouseUp={reproducirSonidoPopup}>Recetas</a>
+                        <a href="#top3" className="link-secundario" onMouseEnter={reproducirSonido} onMouseUp={reproducirSonidoPopup}>Top 3</a>
+                        <a href="#favoritos" className="link-secundario" onMouseEnter={reproducirSonido} onMouseUp={reproducirSonidoPopup}>Favoritos</a>
                         <div 
                             className="dropdown"
                             onMouseEnter={() => setMenuVisible(true)}
@@ -724,13 +739,13 @@ const Inicio = () => {
                             <a href="#" className="link-secundario" onMouseEnter={reproducirSonido}>Aleatorio</a>
                             {menuVisible && (
                                 <div className="dropdown-menu">
-                                    <button  className="shine-effect" data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")} onMouseEnter={reproducirSonidoSubitem}>Desayuno/Merienda</button>
-                                    <button  className="shine-effect" data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")} onMouseEnter={reproducirSonidoSubitem}>Almuerzo/Cena</button>
-                                    <button  className="shine-effect" data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")} onMouseEnter={reproducirSonidoSubitem}>Brunch</button>
-                                    <button  className="shine-effect" data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")} onMouseEnter={reproducirSonidoSubitem}>Bebida/Trago</button>
-                                    <button  className="shine-effect" data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")} onMouseEnter={reproducirSonidoSubitem}>Veggie</button>
-                                    <button  className="shine-effect" data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")} onMouseEnter={reproducirSonidoSubitem}>Guarnición</button>
-                                    <button  className="shine-effect" data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")} onMouseEnter={reproducirSonidoSubitem}>Postre</button>
+                                    <button  className="shine-effect" data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Desayuno/Merienda</button>
+                                    <button  className="shine-effect" data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Almuerzo/Cena</button>
+                                    <button  className="shine-effect" data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Brunch</button>
+                                    <button  className="shine-effect" data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Bebida/Trago</button>
+                                    <button  className="shine-effect" data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Veggie</button>
+                                    <button  className="shine-effect" data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Guarnición</button>
+                                    <button  className="shine-effect" data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Postre</button>
                                     
                                 </div>
                             )}
