@@ -1107,7 +1107,7 @@ const Inicio = () => {
                             <p className="top-recetas-titulo">Top 3 Recetas</p>
                             <div className="panel-recetas">
                                 {topRecetas.map((receta) => (
-                                    <div key={receta.id} className="tarjeta-receta">
+                                    <div key={receta.id} className="tarjeta-receta" onMouseEnter={reproducirSonidoCarta}>
                                         <div className="imagen-contenedor-chica">
                                             <img src={receta.imagen} alt={receta.titulo} />
                                             <div className="info-imagen">
@@ -1149,7 +1149,7 @@ const Inicio = () => {
                             ) : (
                                 <div className="panel-recetas">
                                     {recetas.filter(receta => favoritos.map(fav => fav.toString()).includes(receta._id)).map(receta => (
-                                        <div key={receta._id} className="tarjeta-receta">
+                                        <div key={receta._id} className="tarjeta-receta" onMouseEnter={reproducirSonidoCarta}>
                                             <div className="imagen-contenedor-chica">
                                                 <img src={receta.imagen} alt={receta.titulo} />
                                                 <div className="info-imagen">
