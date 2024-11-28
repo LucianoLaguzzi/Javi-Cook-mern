@@ -495,7 +495,7 @@ const DetalleReceta = () => {
                       )}
                       {esPropietario && (
                         <a className="btn-editar-titulo" onClick={cambiarTitulo}>
-                          <i className="fas fa-pencil-alt"></i>
+                          <i className="fas fa-pencil-alt" title='Editar titulo'></i>
                         </a>
                       )}
                     </>
@@ -553,7 +553,7 @@ const DetalleReceta = () => {
                           </div>
                           {esPropietario && (
                               <a className='btn-editar-ingredientes' onClick={cambiarIngredientes}>
-                                  <i className="fas fa-pencil-alt"></i>
+                                  <i className="fas fa-pencil-alt" title='Editar ingredientes'></i>
                               </a>
                           )}
                       </>
@@ -592,7 +592,7 @@ const DetalleReceta = () => {
 
                         {esPropietario && (
                             <a className='btn-editar-pasos' onClick={() => setPasosEditable(true)}>
-                                <i className="fas fa-pencil-alt"></i>
+                                <i className="fas fa-pencil-alt" title='Editar pasos'></i>
                             </a>
                         )}
                       </>
@@ -681,7 +681,6 @@ const DetalleReceta = () => {
               )}
 
               {/* Eliminar receta */}
-              
                 {esPropietario && (
                   <button className="link-eliminar-receta" onClick={confirmarEliminar}>
                     <i className="fas fa-trash-alt" title="Eliminar receta"></i>
