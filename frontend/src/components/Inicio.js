@@ -400,6 +400,12 @@ const Inicio = () => {
         sonido.play();
     };
     
+    // Función para reproducir el sonido de carta
+    const reproducirSonidoCarta = () => {
+        const sonido = new Audio("../sounds/card.mp3");
+        sonido.play();
+    };
+    
 
     
 
@@ -799,7 +805,7 @@ const Inicio = () => {
                                     recetasActuales.length > 0 ? ( // Si hay recetas, y recetasActuales tiene coincidencias
                                         <div className="panel-recetas">
                                             {recetasActuales.map((receta) => (
-                                                <div key={receta.id} className="tarjeta-receta">
+                                                <div key={receta.id} className="tarjeta-receta" onMouseUp={reproducirSonidoCarta}>
                                                     <div className="imagen-contenedor-chica">
                                                         <img src={receta.imagen} alt={receta.titulo} />
                                                         <div className="info-imagen">
