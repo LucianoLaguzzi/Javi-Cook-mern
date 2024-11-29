@@ -803,14 +803,14 @@ const DetalleReceta = () => {
                           <div key={respuesta._id} className="respuesta">
                             <div className="imagen-nombre">
                               <img
-                                className="imagen-perfil-respuesta"
+                                className="imagen-perfil-comentario"
                                 src={respuesta.usuario?.imagenPerfil || '../images/default-imagen-perfil'}
                                 alt={respuesta.usuario?.nombre || 'Usuario desconocido'}
                               />
-                              <span className="usuario-respuesta">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
+                              <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
                             </div>
-                            <span className="respuesta-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                            <p className="texto-respuesta">{respuesta.comentario}</p>
+                            <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+                            <p className="texto-comentario">{respuesta.comentario}</p>
                           </div>
                         ))}
                       </div>
