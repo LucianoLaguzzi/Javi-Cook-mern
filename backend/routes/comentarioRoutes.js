@@ -76,11 +76,17 @@ router.post('/:id/responder', async (req, res) => {
     const { comentario, usuario } = req.body;
 
     try {
-        // Crear una nueva respuesta
+        // Buscar el comentario padre
+        const comentarioPadre = await Comentario.findById(id);
+        if (!comentarioPadre) {
+            return res.status(404).json({ message: 'Comentario padre no encontrado' });
+        }
+
+        // Crear una nueva respuesta, usando la receta del comentario padre
         const nuevaRespuesta = new Comentario({
             comentario,
             usuario,
-            receta: null, // No es necesario relacionar con la receta directamente aquí
+            receta: comentarioPadre.receta, // Usar la receta del comentario padre
             fecha: new Date(),
         });
 
