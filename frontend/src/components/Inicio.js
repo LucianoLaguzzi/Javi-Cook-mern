@@ -65,6 +65,16 @@ const Inicio = () => {
     // Llenar con placeholders si hay menos de 3 recetas
     const tarjetasFaltantes = 3 - topRecetas.length;
 
+
+    //Precargar sonidos:
+    const sonidos = {
+        item: new Audio("../sounds/item.mp3"),
+        item2: new Audio("../sounds/item2.mp3"),
+        magic: new Audio("../sounds/click-subitem.mp3"),
+        popup: new Audio("../sounds/popup-item.mp3"),
+        card: new Audio("../sounds/card.mp3"),
+    };
+
     //Traer las recetas para las tarjetas
     useEffect(() => {
         axios.get('https://javicook-mern.onrender.com/api/recetas')
@@ -98,6 +108,11 @@ const Inicio = () => {
                     console.error("Error al cargar recetas favoritas", error);
                 });
         }
+
+
+        // Precargar sonidos
+        Object.values(sonidos).forEach((sonido) => sonido.load());
+
     }, []);
 
     // Función para abrir el modal
@@ -376,34 +391,13 @@ const Inicio = () => {
         }
     };
 
-    // Función para reproducir el sonido al pasar por los items
-    const reproducirSonido = () => {
-        const sonido = new Audio("../sounds/item.mp3");
-        sonido.play();
-    };
-
-    // Función para reproducir el sonido al pasar por los subitems
-    const reproducirSonidoSubitem = () => {
-        const sonido = new Audio("../sounds/item2.mp3");
-        sonido.play();
-    };
-
-    // Función para reproducir el sonido al pasar por los subitems
-    const reproducirSonidoMagic = () => {
-        const sonido = new Audio("../sounds/click-subitem.mp3");
-        sonido.play();
-    };
-
-    // Función para reproducir el sonido al pasar por los subitems
-    const reproducirSonidoPopup = () => {
-        const sonido = new Audio("../sounds/popup-item.mp3");
-        sonido.play();
-    };
-    
-    // Función para reproducir el sonido de carta
-    const reproducirSonidoCarta = () => {
-        const sonido = new Audio("../sounds/card.mp3");
-        sonido.play();
+     // Función para reproducir un sonido específico
+    const reproducirSonido = (key) => {
+        const sonido = sonidos[key];
+        if (sonido) {
+            sonido.currentTime = 0; // Reinicia el sonido si ya está reproduciéndose
+            sonido.play();
+        }
     };
     
 
@@ -734,24 +728,24 @@ const Inicio = () => {
 
 
                     <div className="barra-secundaria">
-                        <a href="#recetas" className="link-secundario" onMouseEnter={reproducirSonido} onMouseUp={reproducirSonidoPopup}>Recetas</a>
-                        <a href="#top3" className="link-secundario" onMouseEnter={reproducirSonido} onMouseUp={reproducirSonidoPopup}>Top 3</a>
-                        <a href="#favoritos" className="link-secundario" onMouseEnter={reproducirSonido} onMouseUp={reproducirSonidoPopup}>Favoritos</a>
+                        <a href="#recetas" className="link-secundario"  onMouseEnter={() => reproducirSonido("item")}  onMouseUp={() => reproducirSonido("popup")}>Recetas</a>
+                        <a href="#top3" className="link-secundario"   onMouseEnter={() => reproducirSonido("item")} onMouseUp={() => reproducirSonido("popup")}>Top 3</a>
+                        <a href="#favoritos" className="link-secundario" onMouseEnter={() => reproducirSonido("item")}  onMouseUp={() => reproducirSonido("popup")}>Favoritos</a>
                         <div 
                             className="dropdown"
                             onMouseEnter={() => setMenuVisible(true)}
                             onMouseLeave={() => setMenuVisible(false)}
                         >
-                            <a href="#" className="link-secundario" onMouseEnter={reproducirSonido}>Aleatorio</a>
+                            <a href="#" className="link-secundario" onMouseEnter={() => reproducirSonido("item")}>Aleatorio</a>
                             {menuVisible && (
                                 <div className="dropdown-menu">
-                                    <button  className="shine-effect" data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Desayuno/Merienda</button>
-                                    <button  className="shine-effect" data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Almuerzo/Cena</button>
-                                    <button  className="shine-effect" data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Brunch</button>
-                                    <button  className="shine-effect" data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Bebida/Trago</button>
-                                    <button  className="shine-effect" data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Veggie</button>
-                                    <button  className="shine-effect" data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Guarnición</button>
-                                    <button  className="shine-effect" data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")} onMouseEnter={reproducirSonidoSubitem} onMouseUp={reproducirSonidoMagic}>Postre</button>
+                                    <button  className="shine-effect" data-categoria="Desayuno/Merienda" onClick={() => obtenerRecetaAleatoria("Desayuno/Merienda")} onMouseEnter={() => reproducirSonido("item2")} onMouseUp={() => reproducirSonido("magic")}>Desayuno/Merienda</button>
+                                    <button  className="shine-effect" data-categoria="Almuerzo/Cena" onClick={() => obtenerRecetaAleatoria("Almuerzo/Cena")}onMouseEnter={() => reproducirSonido("item2")} onMouseUp={() => reproducirSonido("magic")}>Almuerzo/Cena</button>
+                                    <button  className="shine-effect" data-categoria="Brunch" onClick={() => obtenerRecetaAleatoria("Brunch")} onMouseEnter={() => reproducirSonido("item2")} onMouseUp={() => reproducirSonido("magic")}>Brunch</button>
+                                    <button  className="shine-effect" data-categoria="Bebida/Trago" onClick={() => obtenerRecetaAleatoria("Bebida/Trago")} onMouseEnter={() => reproducirSonido("item2")} onMouseUp={() => reproducirSonido("magic")}>Bebida/Trago</button>
+                                    <button  className="shine-effect" data-categoria="Veggie" onClick={() => obtenerRecetaAleatoria("Veggie")} onMouseEnter={() => reproducirSonido("item2")} onMouseUp={() => reproducirSonido("magic")}>Veggie</button>
+                                    <button  className="shine-effect" data-categoria="Guarnición" onClick={() => obtenerRecetaAleatoria("Guarnición")} onMouseEnter={() => reproducirSonido("item2")} onMouseUp={() => reproducirSonido("magic")}>Guarnición</button>
+                                    <button  className="shine-effect" data-categoria="Postre"onClick={() => obtenerRecetaAleatoria("Postre")}onMouseEnter={() => reproducirSonido("item2")} onMouseUp={() => reproducirSonido("magic")}>Postre</button>
                                     
                                 </div>
                             )}
@@ -805,7 +799,7 @@ const Inicio = () => {
                                     recetasActuales.length > 0 ? ( // Si hay recetas, y recetasActuales tiene coincidencias
                                         <div className="panel-recetas">
                                             {recetasActuales.map((receta) => (
-                                                <div key={receta.id} className="tarjeta-receta" onMouseEnter={reproducirSonidoCarta}>
+                                                <div key={receta.id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")} >
                                                     <div className="imagen-contenedor-chica">
                                                         <img src={receta.imagen} alt={receta.titulo} />
                                                         <div className="info-imagen">
@@ -1107,7 +1101,7 @@ const Inicio = () => {
                             <p className="top-recetas-titulo">Top 3 Recetas</p>
                             <div className="panel-recetas">
                                 {topRecetas.map((receta) => (
-                                    <div key={receta.id} className="tarjeta-receta" onMouseEnter={reproducirSonidoCarta}>
+                                    <div key={receta.id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")}>
                                         <div className="imagen-contenedor-chica">
                                             <img src={receta.imagen} alt={receta.titulo} />
                                             <div className="info-imagen">
@@ -1149,7 +1143,7 @@ const Inicio = () => {
                             ) : (
                                 <div className="panel-recetas">
                                     {recetas.filter(receta => favoritos.map(fav => fav.toString()).includes(receta._id)).map(receta => (
-                                        <div key={receta._id} className="tarjeta-receta" onMouseEnter={reproducirSonidoCarta}>
+                                        <div key={receta._id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")}>
                                             <div className="imagen-contenedor-chica">
                                                 <img src={receta.imagen} alt={receta.titulo} />
                                                 <div className="info-imagen">
