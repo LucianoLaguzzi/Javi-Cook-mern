@@ -115,16 +115,6 @@ const Inicio = () => {
 
     }, []);
 
-    //Para sacar efectos de menus al precionar, copiar, etc.
-    useEffect(() => {
-        const preventContextMenu = (e) => e.preventDefault();
-        document.addEventListener('contextmenu', preventContextMenu);
-    
-        return () => {
-            document.removeEventListener('contextmenu', preventContextMenu);
-        };
-    }, []);
-
     // Función para abrir el modal
     const abrirModal = () => {
         setModalVisible(true);
@@ -704,7 +694,7 @@ const Inicio = () => {
                 <link rel="icon" href="/favicon.png" />
             </Helmet>
 
-            <div className="body-main app-container">
+            <div className="body-main">
                 <div className="main-content">
                     <div className="encabezado">
                         <div className="barra-navegacion">
