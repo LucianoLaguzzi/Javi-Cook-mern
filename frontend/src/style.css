@@ -4644,3 +4644,22 @@ i.fas.fa-undo {
   .reloj-tempo.fin {
     background-color: #ae0f0f; /* Rojo cuando el tiempo llega a 0 */
   }
+
+
+
+
+.contenedor-comentario {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+}
+
+.respuestas {
+  margin-left: 2rem;
+  padding-left: 1rem;
+  border-left: 1px solid #ddd;
+}
+
+.respuesta {
+  margin-bottom: 0.5rem;
+}

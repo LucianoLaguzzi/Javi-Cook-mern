@@ -69,4 +69,32 @@ router.post('/:id/comentarios', async (req, res) => {
 });
 
 
+
+
+router.post('/:id/responder', async (req, res) => {
+    const { id } = req.params; // ID del comentario al que se responde
+    const { comentario, usuario } = req.body;
+
+    try {
+        // Crear una nueva respuesta
+        const nuevaRespuesta = new Comentario({
+            comentario,
+            usuario,
+            receta: null, // No es necesario relacionar con la receta directamente aquí
+            fecha: new Date(),
+        });
+
+        const respuestaGuardada = await nuevaRespuesta.save();
+
+        // Popular la respuesta con los datos del usuario
+        const respuestaConUsuario = await Comentario.findById(respuestaGuardada._id).populate('usuario', 'nombre imagenPerfil');
+
+        res.status(201).json({ respuestaGuardada: respuestaConUsuario });
+    } catch (error) {
+        console.error('Error al responder comentario:', error);
+        res.status(500).json({ message: 'Error al responder comentario' });
+    }
+});
+
+
 export default router;
