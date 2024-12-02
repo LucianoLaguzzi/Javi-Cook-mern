@@ -272,30 +272,36 @@ const DetalleReceta = () => {
   };
 
   const responderComentario = async (comentarioId) => {
-    if (!nuevoComentario) return;
+    // Verificar que el usuario esté logueado y tenga una respuesta para enviar
+    if (!respuestas[comentarioId]) {
+        alert("Escribe una respuesta antes de enviar.");
+        return;
+    }
 
+    const respuesta = respuestas[comentarioId];
+    
+    // Hacer una solicitud POST para agregar la respuesta a la base de datos
     try {
-        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}/respuestas`, {
-            comentario: nuevoComentario,
-            usuario: usuarioEnSesion._id
+        const respuestaGuardada = await axios.post(`/recetas/${id}/comentarios/${comentarioId}/responder`, {
+            comentario: respuesta,
+            usuario:  usuarioEnSesion._id, // Asegúrate de que el ID del usuario logueado esté disponible
         });
 
-        // Actualizar las respuestas de ese comentario en el frontend
+        // Actualizar el estado para incluir la nueva respuesta
         setComentarios((prevComentarios) => {
             return prevComentarios.map((comentario) => {
                 if (comentario._id === comentarioId) {
-                    return {
-                        ...comentario,
-                        respuestas: [...comentario.respuestas, response.data.comentarioGuardado]
-                    };
+                    comentario.respuestas.push(respuestaGuardada.data);
                 }
                 return comentario;
             });
         });
 
-        setNuevoComentario('');
+        // Limpiar el campo de texto de respuesta después de enviar
+        setRespuestas({ ...respuestas, [comentarioId]: '' });
     } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
+        console.error("Error al responder el comentario", error);
+        alert("Hubo un error al enviar la respuesta.");
     }
 };
 

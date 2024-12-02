@@ -78,7 +78,7 @@ router.post('/:id/comentarios', async (req, res) => {
 
 
 // Ruta para agregar una respuesta a un comentario específico
-router.post('/:id/comentarios/:comentarioId/respuestas', async (req, res) => {
+router.post('/:id/comentarios/:comentarioId/responder', async (req, res) => {
     const { id, comentarioId } = req.params;
     const { comentario, usuario } = req.body;
 
