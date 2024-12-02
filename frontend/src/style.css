@@ -4646,17 +4646,3 @@ i.fas.fa-undo {
   }
 
 
-
-
-
-  .input-respuesta {
-    margin-top: 10px;
-    display: flex;
-    gap: 5px;
-  }
-  
-  .comentarios-hijos {
-    margin-left: 20px;
-    border-left: 2px solid #ccc;
-    padding-left: 10px;
-  }
