@@ -69,31 +69,32 @@ router.post('/:id/comentarios', async (req, res) => {
 router.post('/:id/comentarios/respuesta', async (req, res) => {
     try {
       const { comentario, usuario, parentComment } = req.body;
-      console.log("Datos recibidos:", { comentario, usuario, parentComment });
   
+      // Crear la nueva respuesta
       const nuevaRespuesta = new Comentario({
         comentario,
         usuario,
-        parentComment,
+        parentComment,  // Asegúrate de que 'parentComment' sea el comentario al que se responde
       });
   
       await nuevaRespuesta.save();
   
+      // Agregar la respuesta al comentario principal
       const comentarioPrincipal = await Comentario.findById(parentComment);
       if (!comentarioPrincipal) {
-        console.error('Comentario principal no encontrado');
         return res.status(404).json({ mensaje: 'Comentario principal no encontrado' });
       }
   
       comentarioPrincipal.respuestas.push(nuevaRespuesta._id);
       await comentarioPrincipal.save();
   
+      // Rellenar los datos del usuario para la respuesta antes de enviarla de vuelta
       await nuevaRespuesta.populate('usuario', 'nombre imagenPerfil').execPopulate();
   
       res.json({ comentarioGuardado: nuevaRespuesta });
     } catch (error) {
       console.error('Error en agregar respuesta:', error);
-      res.status(500).json({ mensaje: 'Error al agregar la respuesta', error });
+      res.status(500).json({ mensaje: 'Error al agregar la respuesta', error: error.message });
     }
   });
 

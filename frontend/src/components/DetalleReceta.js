@@ -274,7 +274,10 @@ const DetalleReceta = () => {
 
  // Función para agregar respuesta a un comentario
  const agregarRespuesta = async (parentCommentId) => {
-  if (!respuestas[parentCommentId]) return;
+  if (!respuestas[parentCommentId]) {
+    console.error(`Comentario con ID ${parentCommentId} no encontrado en respuestas`);
+    return;
+  }
 
   try {
     // Enviar la respuesta como una respuesta a un comentario existente
@@ -288,7 +291,7 @@ const DetalleReceta = () => {
     setComentarios((prevComentarios) => {
       return prevComentarios.map((comentario) => {
         if (comentario._id === parentCommentId) {
-          // Si encontramos el comentario correspondiente, agregamos la respuesta
+          console.log(`Agregando respuesta al comentario con ID ${parentCommentId}`);
           return {
             ...comentario,
             respuestas: [...comentario.respuestas, response.data.comentarioGuardado],
@@ -305,7 +308,7 @@ const DetalleReceta = () => {
       return updatedRespuestas;
     });
   } catch (error) {
-    console.error('Error al agregar la respuesta:', error);
+    console.error('Error al agregar la respuesta:', error.response ? error.response.data : error.message);
   }
 };
 
