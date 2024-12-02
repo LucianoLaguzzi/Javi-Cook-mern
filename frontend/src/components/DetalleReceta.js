@@ -735,49 +735,58 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-    {comentarios.map((comentario) => (
-        <div key={comentario._id} className="contenedores-spam">
-            <div className="imagen-nombre">
-                {comentario.usuario?.imagenPerfil ? (
-                    <img className="imagen-perfil-comentario" src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                ) : (
-                    <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                )}
-                <span className="usuario-comentario">{comentario.usuario?.nombre || 'Usuario desconocido'}</span>
-            </div>
-            <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-            <p className="texto-comentario">{comentario.comentario}</p>
-            
-            <button onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
-                Responder
-            </button>
-            {respuestas[comentario._id] !== undefined && (
-                <div className="input-respuesta">
-                    <input
-                        value={respuestas[comentario._id]}
-                        onChange={(e) =>
-                            setRespuestas({ ...respuestas, [comentario._id]: e.target.value })
-                        }
-                        placeholder="Escribe una respuesta..."
-                    />
-                    <button onClick={() => agregarRespuesta(comentario._id)}>
-                        Enviar
-                    </button>
-                </div>
-            )}
-            <div className="respuestas">
-                {comentarios
-                    .filter((respuesta) => respuesta.parentComment?._id === comentario._id)
-                    .map((respuesta) => (
-                        <div key={respuesta._id} className="respuesta">
-                            <span>{respuesta.usuario?.nombre || 'Usuario desconocido'}:</span>
-                            <p>{respuesta.comentario}</p>
+                {comentarios.map((comentario) => (
+                    <div key={comentario._id} className="contenedores-spam">
+                        <div className="imagen-nombre">
+                            {comentario.usuario?.imagenPerfil ? (
+                                <img className="imagen-perfil-comentario" src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
+                            ) : (
+                                <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                            )}
+                            <span className="usuario-comentario">{comentario.usuario?.nombre || 'Usuario desconocido'}</span>
                         </div>
-                    ))}
-            </div>
-        </div>
-    ))}
-</div>
+                        <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
+                        <p className="texto-comentario">{comentario.comentario}</p>
+                        
+                        <button onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
+                            Responder
+                        </button>
+                        {respuestas[comentario._id] !== undefined && (
+                            <div className="input-respuesta">
+                                <input
+                                    value={respuestas[comentario._id]}
+                                    onChange={(e) =>
+                                        setRespuestas({ ...respuestas, [comentario._id]: e.target.value })
+                                    }
+                                    placeholder="Escribe una respuesta..."
+                                />
+                                <button onClick={() => agregarRespuesta(comentario._id)}>
+                                    Enviar
+                                </button>
+                            </div>
+                        )}
+                        {/* Respuestas en estilo de hilo */}
+                        <div className="respuestas">
+                            {comentarios
+                                .filter((respuesta) => respuesta.parentComment?._id === comentario._id)
+                                .map((respuesta) => (
+                                    <div key={respuesta._id} className="respuesta">
+                                        <div className="imagen-nombre">
+                                            {respuesta.usuario?.imagenPerfil ? (
+                                                <img className="imagen-perfil-comentario" src={respuesta.usuario.imagenPerfil} alt={respuesta.usuario.nombre} />
+                                            ) : (
+                                                <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                                            )}
+                                            <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
+                                        </div>
+                                        <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+                                        <p className="texto-comentario">{respuesta.comentario}</p>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                ))}
+              </div>
 
               <hr className='divider'></hr>
 
