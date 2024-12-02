@@ -8,15 +8,13 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
-            .populate('usuario') // Población para el usuario de la receta
-            .populate({
-                path: 'comentarios',
-                populate: [
-                    { path: 'usuario', select: 'nombre imagenPerfil' },
-                    { path: 'parentComment', select: 'comentario' },
-                    // Agregar esta línea para las respuestas de cada comentario
-                    { path: 'respuestas', populate: { path: 'usuario', select: 'nombre imagenPerfil' } }
-                ]
+            .populate('usuario') // Popula el usuario que creó la receta
+            .populate({ 
+                path: 'comentarios', 
+                populate: { 
+                    path: 'usuario', // Popula el usuario de cada comentario
+                    select: 'nombre imagenPerfil' // Puedes seleccionar los campos que quieres del usuario
+                }
             });
 
         if (!receta) {
@@ -28,4 +26,5 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
 });
+
 export default router;

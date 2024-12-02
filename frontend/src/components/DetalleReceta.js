@@ -273,39 +273,39 @@ const DetalleReceta = () => {
 
 
  // Función para agregar respuesta a un comentario
-const agregarRespuesta = async (parentCommentId) => {
+ const agregarRespuesta = async (parentCommentId) => {
   if (!respuestas[parentCommentId]) return;
 
   try {
-      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-          comentario: respuestas[parentCommentId],
-          usuario: usuarioEnSesion._id,
-          parentComment: parentCommentId,
-      });
+    // Enviar la respuesta como una respuesta a un comentario existente
+    const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/respuesta`, {
+      comentario: respuestas[parentCommentId],
+      usuario: usuarioEnSesion._id,
+      parentComment: parentCommentId,
+    });
 
-      // Actualiza solo el comentario principal con la nueva respuesta
-      setComentarios((prevComentarios) => {
-          // Mapeamos los comentarios y buscamos el comentario principal
-          return prevComentarios.map((comentario) => {
-              if (comentario._id === parentCommentId) {
-                  // Si es el comentario principal, agregamos la respuesta a la propiedad 'respuestas'
-                  return {
-                      ...comentario,
-                      respuestas: [...comentario.respuestas, response.data.comentarioGuardado]
-                  };
-              }
-              return comentario;
-          });
+    // Actualizar los comentarios solo agregando la respuesta al comentario correspondiente
+    setComentarios((prevComentarios) => {
+      return prevComentarios.map((comentario) => {
+        if (comentario._id === parentCommentId) {
+          // Si encontramos el comentario correspondiente, agregamos la respuesta
+          return {
+            ...comentario,
+            respuestas: [...comentario.respuestas, response.data.comentarioGuardado],
+          };
+        }
+        return comentario;  // De lo contrario, no modificamos ese comentario
       });
+    });
 
-      // Restablecer el estado de la respuesta para ese comentario
-      setRespuestas((prevRespuestas) => {
-          const updatedRespuestas = { ...prevRespuestas };
-          delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
-          return updatedRespuestas;
-      });
+    // Limpiar el estado de la respuesta para ese comentario
+    setRespuestas((prevRespuestas) => {
+      const updatedRespuestas = { ...prevRespuestas };
+      delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
+      return updatedRespuestas;
+    });
   } catch (error) {
-      console.error('Error al agregar la respuesta:', error);
+    console.error('Error al agregar la respuesta:', error);
   }
 };
 
