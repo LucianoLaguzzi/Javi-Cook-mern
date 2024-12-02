@@ -767,7 +767,7 @@ const agregarRespuesta = async (parentCommentId) => {
         <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
         <p className="texto-comentario">{comentario.comentario}</p>
 
-        <button onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
+        <button className='boton-responder' onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
             Responder
         </button>
 
