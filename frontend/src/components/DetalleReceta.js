@@ -43,8 +43,8 @@ const DetalleReceta = () => {
   const [tiempoInicial, setTiempoInicial] = useState(0);  // Guardar el tiempo inicial
   const [ultimaActualizacion, setUltimaActualizacion] = useState(Date.now());  // Registrar la última actualización
 
-  const [respuestas, setRespuestas] = useState({}); // Objeto para almacenar respuestas por comentario
 
+  const [replyingTo, setReplyingTo] = useState(null); // ID del comentario al que estás respondiendo
 
   const botonRef = useRef(null);
 
@@ -243,69 +243,23 @@ const DetalleReceta = () => {
   };
 
   // Agregar comentario
-  const agregarComentario = async () => {
+  const agregarComentario = async (parentCommentId = null) => {
     if (!nuevoComentario) return;
-    console.log('Usuario en sesión:', usuarioEnSesion);
 
     try {
-      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-          comentario: nuevoComentario,
-          usuario: usuarioEnSesion._id
-      });
-
-      // Esto debería devolver el comentario guardado, incluyendo la referencia al usuario
-      setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]); // Actualiza los comentarios
-      setNuevoComentario(''); // Limpiar el input
-    } catch (error) {
-      // Manejar errores más detalladamente
-      if (error.response) {
-          // La solicitud se realizó y el servidor respondió con un código de estado
-          console.error('Error al agregar el comentario:', error.response.data);
-      } else if (error.request) {
-          // La solicitud se realizó pero no se recibió respuesta
-          console.error('No se recibió respuesta del servidor:', error.request);
-      } else {
-          // Algo sucedió al configurar la solicitud
-          console.error('Error en la configuración de la solicitud:', error.message);
-      }
-    }
-  };
-
-  const responderComentario = async (comentarioId) => {
-    // Verificar que el usuario esté logueado y tenga una respuesta para enviar
-    if (!respuestas[comentarioId]) {
-        alert("Escribe una respuesta antes de enviar.");
-        return;
-    }
-
-    const respuesta = respuestas[comentarioId];
-    
-    // Hacer una solicitud POST para agregar la respuesta a la base de datos
-    try {
-        const respuestaGuardada = await axios.post(`/recetas/${id}/comentarios/${comentarioId}/responder`, {
-            comentario: respuesta,
-            usuario:  usuarioEnSesion._id, // Asegúrate de que el ID del usuario logueado esté disponible
+        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
+            comentario: nuevoComentario,
+            usuario: usuarioEnSesion._id,
+            parentCommentId,
         });
 
-        // Actualizar el estado para incluir la nueva respuesta
-        setComentarios((prevComentarios) => {
-            return prevComentarios.map((comentario) => {
-                if (comentario._id === comentarioId) {
-                    comentario.respuestas.push(respuestaGuardada.data);
-                }
-                return comentario;
-            });
-        });
-
-        // Limpiar el campo de texto de respuesta después de enviar
-        setRespuestas({ ...respuestas, [comentarioId]: '' });
+        setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
+        setNuevoComentario('');
+        setReplyingTo(null); // Reinicia el estado de respuesta
     } catch (error) {
-        console.error("Error al responder el comentario", error);
-        alert("Hubo un error al enviar la respuesta.");
+        console.error('Error al agregar el comentario:', error);
     }
 };
-
-
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -432,6 +386,41 @@ const DetalleReceta = () => {
     
   };
 
+
+
+  const renderComentarios = (comentarios) => {
+    return comentarios.map((comentario) => (
+        <div key={comentario._id} className="contenedores-spam">
+            <div className="imagen-nombre">
+                {comentario.usuario?.imagenPerfil ? (
+                    <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
+                ) : (
+                    <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                )}
+                <span className='usuario-comentario'>{comentario.usuario?.nombre || 'Usuario desconocido'}</span>
+            </div>
+            <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
+            <p className='texto-comentario'>{comentario.comentario}</p>
+
+            {/* Responder */}
+            <button onClick={() => setReplyingTo(comentario._id)}>Responder</button>
+            {replyingTo === comentario._id && (
+                <div className="input-respuesta">
+                    <input
+                        className="input-comentario"
+                        value={nuevoComentario}
+                        onChange={(e) => setNuevoComentario(e.target.value)}
+                        placeholder="Responder comentario..."
+                    />
+                    <button className='boton-comentario' onClick={() => agregarComentario(comentario._id)}>Enviar</button>
+                </div>
+            )}
+
+            {/* Renderizar respuestas */}
+            {comentario.respuestas && renderComentarios(comentario.respuestas)}
+        </div>
+    ));
+};
   
 
 
@@ -751,53 +740,8 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-              {comentarios && comentarios.length > 0 ? (
-    comentarios.map((comentario) => (
-        <div key={comentario._id} className="contenedores-spam">
-            <div className="imagen-nombre">
-                {comentario.usuario && comentario.usuario.imagenPerfil ? (
-                    <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                ) : (
-                    <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                )}
-                <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
-            </div>
-            <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-            <p className='texto-comentario'>{comentario.comentario}</p>
-            
-            {/* Input de respuesta */}
-            <div className="input-respuesta">
-                <input
-                    className="input-comentario"
-                    value={respuestas[comentario._id] || ''}
-                    onChange={(e) => setRespuestas({ ...respuestas, [comentario._id]: e.target.value })}
-                    placeholder="Agregar respuesta..."
-                />
-                <button 
-                    className="boton-respuesta"
-                    onClick={() => responderComentario(comentario._id)}
-                >
-                    Responder
-                </button>
-            </div>
-
-           {/* Mostrar respuestas anidadas */}
-            {comentario.respuestas && comentario.respuestas.length > 0 && (
-                <div className="respuestas">
-                    {comentario.respuestas.map((respuesta) => (
-                        <div key={respuesta._id} className="respuesta">
-                            <p>{respuesta.comentario}</p>
-                            <span>{respuesta.usuario?.nombre || "Usuario desconocido"}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    ))
-) : (
-    <p>No hay comentarios aún.</p>
-)}
-</div>
+        {comentarios.length > 0 ? renderComentarios(comentarios) : <p>No hay comentarios aún.</p>}
+    </div>
 
               <hr className='divider'></hr>
 

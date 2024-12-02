@@ -19,10 +19,11 @@ const ComentarioSchema = new mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
-    respuestas: [{ 
+    parentCommentId: { 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Comentario' 
-    }] // Referencia a otros comentarios (respuestas)
+        ref: 'Comentario', 
+        default: null 
+    }, // Nuevo campo
 });
 
 const Comentario = mongoose.model('Comentario', ComentarioSchema);

@@ -8,23 +8,28 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
-            .populate('usuario') // Popula el usuario que creó la receta
-            .populate({ 
-                path: 'comentarios', 
-                populate: { 
-                    path: 'usuario', // Popula el usuario de cada comentario
-                    select: 'nombre imagenPerfil' // Puedes seleccionar los campos que quieres del usuario
-                }
+            .populate('usuario')
+            .populate({
+                path: 'comentarios',
+                populate: { path: 'usuario', select: 'nombre imagenPerfil' }
             });
 
-        if (!receta) {
-            return res.status(404).json({ mensaje: 'Receta no encontrada' });
-        }
+        if (!receta) return res.status(404).json({ mensaje: 'Receta no encontrada' });
 
-        res.json(receta);
+        // Estructurar comentarios en forma de árbol
+        const comentarios = receta.comentarios.reduce((tree, comentario) => {
+            if (!comentario.parentCommentId) {
+                tree.push({ ...comentario.toObject(), respuestas: [] });
+            } else {
+                const padre = tree.find(c => c._id.toString() === comentario.parentCommentId.toString());
+                if (padre) padre.respuestas.push(comentario.toObject());
+            }
+            return tree;
+        }, []);
+
+        res.json({ ...receta.toObject(), comentarios });
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
 });
-
 export default router;
