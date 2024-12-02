@@ -17,12 +17,7 @@ const ComentarioSchema = new mongoose.Schema({
     },
     fecha: { 
         type: Date, 
-        default: Date.now 
-    },
-    respuestas: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comentario'
-    }]
+        default: Date.now }
 });
 
 const Comentario = mongoose.model('Comentario', ComentarioSchema);

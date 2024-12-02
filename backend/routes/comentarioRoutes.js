@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
-    const { comentario, usuario, comentarioPadreId } = req.body; // Datos del comentario o respuesta
+    const { comentario, usuario } = req.body; // Datos del comentario
 
     try {
         // Buscar la receta por su ID
@@ -50,15 +50,6 @@ router.post('/:id/comentarios', async (req, res) => {
             receta: receta._id,
             fecha: new Date(),
         });
-
-        // Si es una respuesta, agregar el ID del comentario padre a las respuestas
-        if (comentarioPadreId) {
-            const comentarioPadre = await Comentario.findById(comentarioPadreId);
-            if (comentarioPadre) {
-                comentarioPadre.respuestas.push(nuevoComentario._id); // Añadir el nuevo comentario a las respuestas del padre
-                await comentarioPadre.save(); // Guardar el comentario padre actualizado
-            }
-        }
 
         // Guardar el comentario en la base de datos
         const comentarioGuardado = await nuevoComentario.save();
