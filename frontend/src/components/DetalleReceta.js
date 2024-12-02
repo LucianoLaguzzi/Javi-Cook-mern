@@ -43,6 +43,7 @@ const DetalleReceta = () => {
   const [tiempoInicial, setTiempoInicial] = useState(0);  // Guardar el tiempo inicial
   const [ultimaActualizacion, setUltimaActualizacion] = useState(Date.now());  // Registrar la última actualización
 
+  const [comentarioPadre, setComentarioPadre] = useState(null);
 
   const botonRef = useRef(null);
 
@@ -240,35 +241,64 @@ const DetalleReceta = () => {
     }
   };
 
+
+
+
+
+
+
+
+
+
+
   // Agregar comentario
   const agregarComentario = async () => {
     if (!nuevoComentario) return;
-    console.log('Usuario en sesión:', usuarioEnSesion);
-
+  
     try {
-      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
+      const response = await axios.post(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+        {
           comentario: nuevoComentario,
-          usuario: usuarioEnSesion._id
-      });
-
-      // Esto debería devolver el comentario guardado, incluyendo la referencia al usuario
-      setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]); // Actualiza los comentarios
-      setNuevoComentario(''); // Limpiar el input
-    } catch (error) {
-      // Manejar errores más detalladamente
-      if (error.response) {
-          // La solicitud se realizó y el servidor respondió con un código de estado
-          console.error('Error al agregar el comentario:', error.response.data);
-      } else if (error.request) {
-          // La solicitud se realizó pero no se recibió respuesta
-          console.error('No se recibió respuesta del servidor:', error.request);
+          usuario: usuarioEnSesion._id,
+          comentarioPadre, // Si hay un comentario padre, este campo lo indicará
+        }
+      );
+  
+      // Actualizamos los comentarios en el estado
+      if (comentarioPadre) {
+        // Agregar respuesta al comentario padre
+        setComentarios((prevComentarios) =>
+          prevComentarios.map((comentario) =>
+            comentario._id === comentarioPadre
+              ? {
+                  ...comentario,
+                  respuestas: [...comentario.respuestas, response.data.comentarioGuardado],
+                }
+              : comentario
+          )
+        );
       } else {
-          // Algo sucedió al configurar la solicitud
-          console.error('Error en la configuración de la solicitud:', error.message);
+        // Agregar comentario principal
+        setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
       }
+  
+      // Limpiar el estado
+      setNuevoComentario('');
+      setComentarioPadre(null);
+    } catch (error) {
+      console.error('Error al agregar el comentario:', error.response || error.message);
     }
   };
   
+
+
+
+
+
+
+
+
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
     return texto.charAt(0).toUpperCase() + texto.slice(1);
@@ -697,6 +727,13 @@ const DetalleReceta = () => {
 
               
 
+
+
+
+
+
+
+
               <div className="detalles-comentarios">
                 <i class="far fa-comment-alt"></i>
                 <h3>Comentarios</h3>
@@ -713,25 +750,87 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-                  {comentarios && comentarios.length > 0 ? (
-                      comentarios.map((comentario) => (
-                          <div key={comentario._id} className="contenedores-spam">
-                              <div className="imagen-nombre">
-                                  {comentario.usuario && comentario.usuario.imagenPerfil ? (
-                                      <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                                  ) : (
-                                      <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                                  )}
-                                  <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
-                              </div>
-                              <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-                              <p className='texto-comentario'>{comentario.comentario}</p>
-                          </div>
-                      ))
+  {comentarios && comentarios.length > 0 ? (
+    comentarios.map((comentario) => (
+      <div key={comentario._id} className="contenedores-spam">
+        <div className="imagen-nombre">
+          {comentario.usuario && comentario.usuario.imagenPerfil ? (
+            <img
+              className="imagen-perfil-comentario"
+              src={comentario.usuario.imagenPerfil}
+              alt={comentario.usuario.nombre}
+            />
+          ) : (
+            <img
+              src="../images/default-imagen-perfil"
+              alt="Usuario desconocido"
+            />
+          )}
+          <span className="usuario-comentario">
+            {comentario.usuario ? comentario.usuario.nombre : "Usuario desconocido"}
+          </span>
+        </div>
+        <span className="comentario-fecha">
+          {new Date(comentario.fecha).toLocaleDateString()}
+        </span>
+        <p className="texto-comentario">{comentario.comentario}</p>
+        <button
+          className="responder-comentario"
+          onClick={() => setComentarioPadre(comentario._id)}
+        >
+          Responder
+        </button>
+        {comentario.respuestas && comentario.respuestas.length > 0 && (
+          <div className="comentarios-hijos">
+            {comentario.respuestas.map((respuesta) => (
+              <div key={respuesta._id} className="contenedores-spam">
+                <div className="imagen-nombre">
+                  {respuesta.usuario && respuesta.usuario.imagenPerfil ? (
+                    <img
+                      className="imagen-perfil-comentario"
+                      src={respuesta.usuario.imagenPerfil}
+                      alt={respuesta.usuario.nombre}
+                    />
                   ) : (
-                      <p>No hay comentarios aún.</p>
+                    <img
+                      src="../images/default-imagen-perfil"
+                      alt="Usuario desconocido"
+                    />
                   )}
+                  <span className="usuario-comentario">
+                    {respuesta.usuario ? respuesta.usuario.nombre : "Usuario desconocido"}
+                  </span>
+                </div>
+                <span className="comentario-fecha">
+                  {new Date(respuesta.fecha).toLocaleDateString()}
+                </span>
+                <p className="texto-comentario">{respuesta.comentario}</p>
               </div>
+            ))}
+          </div>
+        )}
+      </div>
+    ))
+  ) : (
+    <p>No hay comentarios aún.</p>
+  )}
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              
 
               <hr className='divider'></hr>
 
