@@ -274,41 +274,37 @@ const DetalleReceta = () => {
 
  // Función para agregar respuesta a un comentario
  const agregarRespuesta = async (parentCommentId) => {
-  if (!respuestas[parentCommentId]) {
-    console.error(`Comentario con ID ${parentCommentId} no encontrado en respuestas`);
-    return;
-  }
+  if (!respuestas[parentCommentId]) return;
 
   try {
-    // Enviar la respuesta como una respuesta a un comentario existente
     const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/respuesta`, {
       comentario: respuestas[parentCommentId],
       usuario: usuarioEnSesion._id,
       parentComment: parentCommentId,
+      receta: id,  // Asegúrate de pasar el id de la receta aquí
     });
 
-    // Actualizar los comentarios solo agregando la respuesta al comentario correspondiente
+    // Actualizar los comentarios con la nueva respuesta
     setComentarios((prevComentarios) => {
       return prevComentarios.map((comentario) => {
         if (comentario._id === parentCommentId) {
-          console.log(`Agregando respuesta al comentario con ID ${parentCommentId}`);
           return {
             ...comentario,
             respuestas: [...comentario.respuestas, response.data.comentarioGuardado],
           };
         }
-        return comentario;  // De lo contrario, no modificamos ese comentario
+        return comentario;
       });
     });
 
     // Limpiar el estado de la respuesta para ese comentario
     setRespuestas((prevRespuestas) => {
       const updatedRespuestas = { ...prevRespuestas };
-      delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
+      delete updatedRespuestas[parentCommentId];
       return updatedRespuestas;
     });
   } catch (error) {
-    console.error('Error al agregar la respuesta:', error.response ? error.response.data : error.message);
+    console.error('Error al agregar la respuesta:', error);
   }
 };
 

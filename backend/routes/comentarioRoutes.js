@@ -68,23 +68,20 @@ router.post('/:id/comentarios', async (req, res) => {
 
 router.post('/:id/comentarios/respuesta', async (req, res) => {
     try {
-      const { comentario, usuario, parentComment } = req.body;
+      const { comentario, usuario, parentComment, receta } = req.body;
   
-      // Crear la nueva respuesta
+      // Crear la nueva respuesta con el campo receta
       const nuevaRespuesta = new Comentario({
         comentario,
         usuario,
         parentComment,  // Asegúrate de que 'parentComment' sea el comentario al que se responde
+        receta,         // Aquí agregas el campo receta, lo cual es obligatorio
       });
   
       await nuevaRespuesta.save();
   
       // Agregar la respuesta al comentario principal
       const comentarioPrincipal = await Comentario.findById(parentComment);
-      if (!comentarioPrincipal) {
-        return res.status(404).json({ mensaje: 'Comentario principal no encontrado' });
-      }
-  
       comentarioPrincipal.respuestas.push(nuevaRespuesta._id);
       await comentarioPrincipal.save();
   
@@ -93,8 +90,8 @@ router.post('/:id/comentarios/respuesta', async (req, res) => {
   
       res.json({ comentarioGuardado: nuevaRespuesta });
     } catch (error) {
-      console.error('Error en agregar respuesta:', error);
-      res.status(500).json({ mensaje: 'Error al agregar la respuesta', error: error.message });
+      console.error('Error al agregar la respuesta:', error);
+      res.status(500).json({ mensaje: 'Error al agregar la respuesta', error });
     }
   });
 
