@@ -16,6 +16,14 @@ router.get('/:id', async (req, res) => {
                     model: 'Usuario',
                     select: 'nombre imagenPerfil'
                 }
+            })
+            .populate({
+                path: 'comentarios.respuestas',
+                populate: {
+                    path: 'usuario',
+                    model: 'Usuario',
+                    select: 'nombre imagenPerfil'
+                }
             });
 
         if (!receta) {
@@ -75,37 +83,37 @@ router.post('/:id/comentarios/:comentarioId/respuestas', async (req, res) => {
     const { comentario, usuario } = req.body;
 
     try {
-        // Buscar la receta
         const receta = await Receta.findById(id);
-        if (!receta) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
-        }
+        if (!receta) return res.status(404).json({ message: 'Receta no encontrada' });
 
-        // Buscar el comentario al que se le responderá
-        const comentarioPadre = await Comentario.findById(comentarioId);
-        if (!comentarioPadre) {
-            return res.status(404).json({ message: 'Comentario no encontrado' });
-        }
+        const comentarioOriginal = await Comentario.findById(comentarioId);
+        if (!comentarioOriginal) return res.status(404).json({ message: 'Comentario no encontrado' });
 
-        // Crear una nueva respuesta (comentario)
         const nuevaRespuesta = new Comentario({
             comentario,
             usuario,
             receta: receta._id,
             fecha: new Date(),
+            respuestaA: comentarioId // Guardamos la referencia del comentario al que responde
         });
 
-        // Guardar la nueva respuesta
+        // Guardamos la respuesta en la base de datos
         const respuestaGuardada = await nuevaRespuesta.save();
 
-        // Agregar la respuesta al campo "respuestas" del comentario original
-        comentarioPadre.respuestas.push(respuestaGuardada._id);
-        await comentarioPadre.save();
+        // Agregamos la respuesta al comentario original
+        comentarioOriginal.respuestas.push(respuestaGuardada._id);
+        await comentarioOriginal.save();
 
-        // Recuperar el comentario con las respuestas del usuario
-        const comentarioConRespuestas = await Comentario.findById(respuestaGuardada._id).populate('usuario', 'nombre imagenPerfil');
+        // Recuperamos el comentario con la respuesta
+        const comentarioConRespuesta = await Comentario.findById(comentarioOriginal._id).populate({
+            path: 'respuestas',
+            populate: {
+                path: 'usuario',
+                select: 'nombre imagenPerfil'
+            }
+        });
 
-        res.status(201).json({ comentarioGuardado: comentarioConRespuestas }); // Devolver la respuesta guardada
+        res.status(201).json(comentarioConRespuesta);
     } catch (error) {
         console.error('Error al agregar la respuesta:', error);
         res.status(500).json({ message: 'Error al agregar la respuesta' });

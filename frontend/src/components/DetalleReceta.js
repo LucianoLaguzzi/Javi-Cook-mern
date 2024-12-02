@@ -43,6 +43,8 @@ const DetalleReceta = () => {
   const [tiempoInicial, setTiempoInicial] = useState(0);  // Guardar el tiempo inicial
   const [ultimaActualizacion, setUltimaActualizacion] = useState(Date.now());  // Registrar la última actualización
 
+  const [respuestas, setRespuestas] = useState({}); // Objeto para almacenar respuestas por comentario
+
 
   const botonRef = useRef(null);
 
@@ -269,7 +271,7 @@ const DetalleReceta = () => {
     }
   };
 
-  const agregarRespuesta = async (comentarioId) => {
+  const responderComentario = async (comentarioId) => {
     if (!nuevoComentario) return;
 
     try {
@@ -743,53 +745,52 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-    {comentarios && comentarios.length > 0 ? (
-        comentarios.map((comentario) => (
-            <div key={comentario._id} className="contenedores-spam">
-                <div className="imagen-nombre">
-                    {comentario.usuario && comentario.usuario.imagenPerfil ? (
-                        <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                    ) : (
-                        <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                    )}
-                    <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
-                </div>
-                <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-                <p className='texto-comentario'>{comentario.comentario}</p>
-                
-                {/* Aquí agregas la lógica para mostrar respuestas anidadas */}
-                <div className="respuestas">
-                    {comentario.respuestas && comentario.respuestas.length > 0 ? (
-                        comentario.respuestas.map((respuesta) => (
-                            <div key={respuesta._id} className="respuesta">
-                                <p>{respuesta.comentario}</p>
-                                {/* Aquí puedes agregar más detalles como el usuario y la fecha */}
-                            </div>
-                        ))
-                    ) : (
-                        <p>No hay respuestas.</p>
-                    )}
-                </div>
-
-                {/* Agregar un campo para agregar una respuesta */}
-                <div className="input-respuesta">
-                    <input
-                        type="text"
-                        placeholder="Agregar una respuesta..."
-                        value={nuevoComentario}
-                        onChange={(e) => setNuevoComentario(e.target.value)}
-                    />
-                    <button
-                        onClick={() => agregarRespuesta(comentario._id)} // Llamar a la función para agregar una respuesta
-                    >
-                        Responder
-                    </button>
-                </div>
+              {comentarios && comentarios.length > 0 ? (
+    comentarios.map((comentario) => (
+        <div key={comentario._id} className="contenedores-spam">
+            <div className="imagen-nombre">
+                {comentario.usuario && comentario.usuario.imagenPerfil ? (
+                    <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
+                ) : (
+                    <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                )}
+                <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
             </div>
-        ))
-    ) : (
-        <p>No hay comentarios aún.</p>
-    )}
+            <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
+            <p className='texto-comentario'>{comentario.comentario}</p>
+            
+            {/* Input de respuesta */}
+            <div className="input-respuesta">
+                <input
+                    className="input-comentario"
+                    value={respuestas[comentario._id] || ''}
+                    onChange={(e) => setRespuestas({ ...respuestas, [comentario._id]: e.target.value })}
+                    placeholder="Agregar respuesta..."
+                />
+                <button 
+                    className="boton-respuesta"
+                    onClick={() => responderComentario(comentario._id)}
+                >
+                    Responder
+                </button>
+            </div>
+
+            {/* Mostrar respuestas anidadas */}
+            {comentario.respuestas && comentario.respuestas.length > 0 && (
+                <div className="respuestas">
+                    {comentario.respuestas.map((respuesta) => (
+                        <div key={respuesta._id} className="respuesta">
+                            <p>{respuesta.comentario}</p>
+                            <span>{respuesta.usuario.nombre}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    ))
+) : (
+    <p>No hay comentarios aún.</p>
+)}
 </div>
 
               <hr className='divider'></hr>
