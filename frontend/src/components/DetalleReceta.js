@@ -44,8 +44,6 @@ const DetalleReceta = () => {
   const [ultimaActualizacion, setUltimaActualizacion] = useState(Date.now());  // Registrar la última actualización
 
 
-  const [respuestas, setRespuestas] = useState({}); // Guardar respuestas por comentario
-
   const botonRef = useRef(null);
 
   
@@ -270,44 +268,6 @@ const DetalleReceta = () => {
       }
     }
   };
-
-
- // Función para agregar respuesta a un comentario
- const agregarRespuesta = async (parentCommentId) => {
-  if (!respuestas[parentCommentId]) return;
-
-  try {
-    const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/respuesta`, {
-      comentario: respuestas[parentCommentId],
-      usuario: usuarioEnSesion._id,
-      parentComment: parentCommentId,
-      receta: id,  // Asegúrate de pasar el id de la receta aquí
-    });
-
-    // Actualizar los comentarios con la nueva respuesta
-    setComentarios((prevComentarios) => {
-      return prevComentarios.map((comentario) => {
-        if (comentario._id === parentCommentId) {
-          return {
-            ...comentario,
-            respuestas: [...comentario.respuestas, response.data.comentarioGuardado],
-          };
-        }
-        return comentario;
-      });
-    });
-
-    // Limpiar el estado de la respuesta para ese comentario
-    setRespuestas((prevRespuestas) => {
-      const updatedRespuestas = { ...prevRespuestas };
-      delete updatedRespuestas[parentCommentId];
-      return updatedRespuestas;
-    });
-  } catch (error) {
-    console.error('Error al agregar la respuesta:', error.response ? error.response.data : error);
-  }
-};
-
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -753,56 +713,24 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-              {comentarios.map((comentario) => (
-    <div key={comentario._id} className="contenedores-spam">
-        <div className="imagen-nombre">
-            {comentario.usuario?.imagenPerfil ? (
-                <img className="imagen-perfil-comentario" src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-            ) : (
-                <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-            )}
-            <span className="usuario-comentario">{comentario.usuario?.nombre || 'Usuario desconocido'}</span>
-        </div>
-        <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-        <p className="texto-comentario">{comentario.comentario}</p>
-
-        <button className='boton-responder' onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
-            Responder
-        </button>
-
-        {respuestas[comentario._id] !== undefined && (
-            <div className="input-respuesta">
-                <input
-                    value={respuestas[comentario._id]}
-                    onChange={(e) =>
-                        setRespuestas({ ...respuestas, [comentario._id]: e.target.value })
-                    }
-                    placeholder="Escribe una respuesta..."
-                />
-                <button onClick={() => agregarRespuesta(comentario._id)}>
-                    Enviar
-                </button>
-            </div>
-        )}
-
-        <div className="respuestas">
-            {comentario.respuestas && comentario.respuestas.map((respuesta) => (
-                <div key={respuesta._id} className="respuesta">
-                    <div className="imagen-nombre">
-                        {respuesta.usuario?.imagenPerfil ? (
-                            <img className="imagen-perfil-comentario" src={respuesta.usuario.imagenPerfil} alt={respuesta.usuario.nombre} />
-                        ) : (
-                            <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                        )}
-                        <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
-                    </div>
-                    <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                    <p className="texto-comentario">{respuesta.comentario}</p>
-                </div>
-            ))}
-        </div>
-    </div>
-))}
+                  {comentarios && comentarios.length > 0 ? (
+                      comentarios.map((comentario) => (
+                          <div key={comentario._id} className="contenedores-spam">
+                              <div className="imagen-nombre">
+                                  {comentario.usuario && comentario.usuario.imagenPerfil ? (
+                                      <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
+                                  ) : (
+                                      <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                                  )}
+                                  <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
+                              </div>
+                              <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
+                              <p className='texto-comentario'>{comentario.comentario}</p>
+                          </div>
+                      ))
+                  ) : (
+                      <p>No hay comentarios aún.</p>
+                  )}
               </div>
 
               <hr className='divider'></hr>

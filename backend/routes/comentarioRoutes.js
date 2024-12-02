@@ -34,71 +34,39 @@ router.get('/:id', async (req, res) => {
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
-    const { comentario, usuario, parentComment } = req.body;
+    const { comentario, usuario } = req.body; // Datos del comentario
 
     try {
+        // Buscar la receta por su ID
         const receta = await Receta.findById(id);
         if (!receta) {
             return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
+        // Crear un nuevo comentario
         const nuevoComentario = new Comentario({
             comentario,
-            usuario,
+            usuario: usuario, // Asegúrate de guardar el ObjectId del usuario
             receta: receta._id,
-            parentComment: parentComment || null, // Manejar si es respuesta o no
             fecha: new Date(),
         });
 
+        // Guardar el comentario en la base de datos
         const comentarioGuardado = await nuevoComentario.save();
+
+        // Agregar el ID del comentario al array de comentarios de la receta
         receta.comentarios.push(comentarioGuardado._id);
-        await receta.save();
+        await receta.save(); // Guardar la receta actualizada
 
-        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
-            .populate('usuario', 'nombre imagenPerfil')
-            .populate('parentComment');
+        // Recuperar el comentario guardado con los datos del usuario
+        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id).populate('usuario', 'nombre imagenPerfil');
 
-        res.status(201).json({ comentarioGuardado: comentarioConUsuario });
+        res.status(201).json({ comentarioGuardado: comentarioConUsuario }); // Devolver el comentario guardado
     } catch (error) {
-        console.error('Error al agregar el comentario:', error);
+        console.error('Error en el backend:', error);
         res.status(500).json({ message: 'Error al agregar el comentario' });
     }
 });
-
-
-router.post('/:id/comentarios/respuesta', async (req, res) => {
-    try {
-      const { comentario, usuario, parentComment, receta } = req.body;
-  
-      // Crear la nueva respuesta con el campo receta
-      const nuevaRespuesta = new Comentario({
-        comentario,
-        usuario,
-        parentComment,  // Asegúrate de que 'parentComment' sea el comentario al que se responde
-        receta,         // Aquí agregas el campo receta, lo cual es obligatorio
-      });
-  
-      await nuevaRespuesta.save();
-  
-      // Agregar la respuesta al comentario principal
-      const comentarioPrincipal = await Comentario.findById(parentComment);
-      
-      if (!comentarioPrincipal) {
-        return res.status(404).json({ mensaje: 'Comentario principal no encontrado' });
-      }
-  
-      comentarioPrincipal.respuestas.push(nuevaRespuesta._id);
-      await comentarioPrincipal.save();
-  
-      // Rellenar los datos del usuario para la respuesta antes de enviarla de vuelta
-      await nuevaRespuesta.populate('usuario', 'nombre imagenPerfil').execPopulate();
-  
-      res.json({ comentarioGuardado: nuevaRespuesta });
-    } catch (error) {
-      console.error('Error al agregar la respuesta:', error);
-      res.status(500).json({ mensaje: 'Error al agregar la respuesta', error });
-    }
-  });
 
 
 export default router;
