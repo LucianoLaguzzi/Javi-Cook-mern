@@ -275,36 +275,26 @@ const DetalleReceta = () => {
   const agregarRespuesta = async (parentCommentId) => {
     if (!respuestas[parentCommentId]) return;
 
-    try {
-        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-            comentario: respuestas[parentCommentId],
-            usuario: usuarioEnSesion._id,
-            parentComment: parentCommentId,
-        });
+      try {
+          const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
+              comentario: respuestas[parentCommentId],
+              usuario: usuarioEnSesion._id,
+              parentComment: parentCommentId,
+          });
 
-        // Actualiza los comentarios con la nueva respuesta
-        setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
+          // Actualiza los comentarios con la nueva respuesta
+          setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
 
-        // Restablecer el estado de la respuesta y mostrar el botón 'Responder' nuevamente
-        setRespuestas((prevRespuestas) => {
-            const updatedRespuestas = { ...prevRespuestas };
-            delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
-            return updatedRespuestas;  // Vuelve a mostrar el botón 'Responder'
-        });
-    } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
-    }
-};
-        // Limpiar el input después de agregar la respuesta
-        setRespuestas((prevRespuestas) => {
-            const updatedRespuestas = { ...prevRespuestas };
-            delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
-            return updatedRespuestas;  // Vuelve a mostrar el botón 'Responder'
-        });
-    } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
-    }
-};
+          // Restablecer el estado de la respuesta y mostrar el botón 'Responder' nuevamente
+          setRespuestas((prevRespuestas) => {
+              const updatedRespuestas = { ...prevRespuestas };
+              delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
+              return updatedRespuestas;  // Vuelve a mostrar el botón 'Responder'
+          });
+      } catch (error) {
+          console.error('Error al agregar la respuesta:', error);
+      }
+  };
 
   
   // Función para capitalizar la primera letra de cada paso
