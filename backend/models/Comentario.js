@@ -17,12 +17,12 @@ const ComentarioSchema = new mongoose.Schema({
     },
     fecha: { 
         type: Date, 
-        default: Date.now },
-
-    comentarioPadre: { 
-        type: mongoose.Schema.Types.ObjectId, ref: 'Comentario', default: null 
-    }, // Nueva propiedad
-    
+        default: Date.now 
+    },
+    respuestas: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comentario'
+    }]
 });
 
 const Comentario = mongoose.model('Comentario', ComentarioSchema);

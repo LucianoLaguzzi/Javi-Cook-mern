@@ -4646,3 +4646,11 @@ i.fas.fa-undo {
   }
 
 
+  .respuestas {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.respuesta {
+    padding: 5px 0;
+}
