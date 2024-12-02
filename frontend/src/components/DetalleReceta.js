@@ -747,11 +747,13 @@ const DetalleReceta = () => {
                         </div>
                         <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
                         <p className="texto-comentario">{comentario.comentario}</p>
+
+                        {respuestas[comentario._id] === undefined ? (
                         
-                        <button onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
+                        <button className='boton-responder' onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
                             Responder
                         </button>
-                        {respuestas[comentario._id] !== undefined && (
+                         ) : (
                             <div className="input-respuesta">
                                 <input
                                     value={respuestas[comentario._id]}
@@ -760,7 +762,17 @@ const DetalleReceta = () => {
                                     }
                                     placeholder="Escribe una respuesta..."
                                 />
-                                <button onClick={() => agregarRespuesta(comentario._id)}>
+                                 <button
+                                    onClick={() => {
+                                        agregarRespuesta(comentario._id);
+                                        // Restaurar estado después de enviar la respuesta
+                                        setRespuestas((prev) => {
+                                            const updated = { ...prev };
+                                            delete updated[comentario._id];
+                                            return updated;
+                                        });
+                                    }}
+                                >
                                     Enviar
                                 </button>
                             </div>
