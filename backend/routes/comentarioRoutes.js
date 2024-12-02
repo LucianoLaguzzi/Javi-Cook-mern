@@ -82,6 +82,11 @@ router.post('/:id/comentarios/respuesta', async (req, res) => {
   
       // Agregar la respuesta al comentario principal
       const comentarioPrincipal = await Comentario.findById(parentComment);
+      
+      if (!comentarioPrincipal) {
+        return res.status(404).json({ mensaje: 'Comentario principal no encontrado' });
+      }
+  
       comentarioPrincipal.respuestas.push(nuevaRespuesta._id);
       await comentarioPrincipal.save();
   

@@ -304,7 +304,7 @@ const DetalleReceta = () => {
       return updatedRespuestas;
     });
   } catch (error) {
-    console.error('Error al agregar la respuesta:', error);
+    console.error('Error al agregar la respuesta:', error.response ? error.response.data : error);
   }
 };
 
