@@ -17,7 +17,12 @@ const ComentarioSchema = new mongoose.Schema({
     },
     fecha: { 
         type: Date, 
-        default: Date.now }
+        default: Date.now 
+    },
+    respuestas: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Comentario' 
+    }] // Referencia a otros comentarios (respuestas)
 });
 
 const Comentario = mongoose.model('Comentario', ComentarioSchema);

@@ -268,6 +268,36 @@ const DetalleReceta = () => {
       }
     }
   };
+
+  const agregarRespuesta = async (comentarioId) => {
+    if (!nuevoComentario) return;
+
+    try {
+        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}/respuestas`, {
+            comentario: nuevoComentario,
+            usuario: usuarioEnSesion._id
+        });
+
+        // Actualizar las respuestas de ese comentario en el frontend
+        setComentarios((prevComentarios) => {
+            return prevComentarios.map((comentario) => {
+                if (comentario._id === comentarioId) {
+                    return {
+                        ...comentario,
+                        respuestas: [...comentario.respuestas, response.data.comentarioGuardado]
+                    };
+                }
+                return comentario;
+            });
+        });
+
+        setNuevoComentario('');
+    } catch (error) {
+        console.error('Error al agregar la respuesta:', error);
+    }
+};
+
+
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -713,25 +743,54 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-                  {comentarios && comentarios.length > 0 ? (
-                      comentarios.map((comentario) => (
-                          <div key={comentario._id} className="contenedores-spam">
-                              <div className="imagen-nombre">
-                                  {comentario.usuario && comentario.usuario.imagenPerfil ? (
-                                      <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                                  ) : (
-                                      <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                                  )}
-                                  <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
-                              </div>
-                              <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-                              <p className='texto-comentario'>{comentario.comentario}</p>
-                          </div>
-                      ))
-                  ) : (
-                      <p>No hay comentarios aún.</p>
-                  )}
-              </div>
+    {comentarios && comentarios.length > 0 ? (
+        comentarios.map((comentario) => (
+            <div key={comentario._id} className="contenedores-spam">
+                <div className="imagen-nombre">
+                    {comentario.usuario && comentario.usuario.imagenPerfil ? (
+                        <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
+                    ) : (
+                        <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                    )}
+                    <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
+                </div>
+                <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
+                <p className='texto-comentario'>{comentario.comentario}</p>
+                
+                {/* Aquí agregas la lógica para mostrar respuestas anidadas */}
+                <div className="respuestas">
+                    {comentario.respuestas && comentario.respuestas.length > 0 ? (
+                        comentario.respuestas.map((respuesta) => (
+                            <div key={respuesta._id} className="respuesta">
+                                <p>{respuesta.comentario}</p>
+                                {/* Aquí puedes agregar más detalles como el usuario y la fecha */}
+                            </div>
+                        ))
+                    ) : (
+                        <p>No hay respuestas.</p>
+                    )}
+                </div>
+
+                {/* Agregar un campo para agregar una respuesta */}
+                <div className="input-respuesta">
+                    <input
+                        type="text"
+                        placeholder="Agregar una respuesta..."
+                        value={nuevoComentario}
+                        onChange={(e) => setNuevoComentario(e.target.value)}
+                    />
+                    <button
+                        onClick={() => agregarRespuesta(comentario._id)} // Llamar a la función para agregar una respuesta
+                    >
+                        Responder
+                    </button>
+                </div>
+            </div>
+        ))
+    ) : (
+        <p>No hay comentarios aún.</p>
+    )}
+</div>
 
               <hr className='divider'></hr>
 

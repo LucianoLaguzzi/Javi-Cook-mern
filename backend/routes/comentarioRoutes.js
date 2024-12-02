@@ -69,4 +69,47 @@ router.post('/:id/comentarios', async (req, res) => {
 });
 
 
+// Ruta para agregar una respuesta a un comentario específico
+router.post('/:id/comentarios/:comentarioId/respuestas', async (req, res) => {
+    const { id, comentarioId } = req.params;
+    const { comentario, usuario } = req.body;
+
+    try {
+        // Buscar la receta
+        const receta = await Receta.findById(id);
+        if (!receta) {
+            return res.status(404).json({ message: 'Receta no encontrada' });
+        }
+
+        // Buscar el comentario al que se le responderá
+        const comentarioPadre = await Comentario.findById(comentarioId);
+        if (!comentarioPadre) {
+            return res.status(404).json({ message: 'Comentario no encontrado' });
+        }
+
+        // Crear una nueva respuesta (comentario)
+        const nuevaRespuesta = new Comentario({
+            comentario,
+            usuario,
+            receta: receta._id,
+            fecha: new Date(),
+        });
+
+        // Guardar la nueva respuesta
+        const respuestaGuardada = await nuevaRespuesta.save();
+
+        // Agregar la respuesta al campo "respuestas" del comentario original
+        comentarioPadre.respuestas.push(respuestaGuardada._id);
+        await comentarioPadre.save();
+
+        // Recuperar el comentario con las respuestas del usuario
+        const comentarioConRespuestas = await Comentario.findById(respuestaGuardada._id).populate('usuario', 'nombre imagenPerfil');
+
+        res.status(201).json({ comentarioGuardado: comentarioConRespuestas }); // Devolver la respuesta guardada
+    } catch (error) {
+        console.error('Error al agregar la respuesta:', error);
+        res.status(500).json({ message: 'Error al agregar la respuesta' });
+    }
+});
+
 export default router;
