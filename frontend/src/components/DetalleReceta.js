@@ -761,10 +761,7 @@ const DetalleReceta = () => {
               alt={comentario.usuario.nombre}
             />
           ) : (
-            <img
-              src="../images/default-imagen-perfil"
-              alt="Usuario desconocido"
-            />
+            <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
           )}
           <span className="usuario-comentario">
             {comentario.usuario ? comentario.usuario.nombre : "Usuario desconocido"}
@@ -780,6 +777,23 @@ const DetalleReceta = () => {
         >
           Responder
         </button>
+
+        {/* Mostrar el input de respuesta si este comentario es el seleccionado */}
+        {comentarioPadre === comentario._id && (
+          <div className="input-respuesta">
+            <input
+              className="input-comentario"
+              value={nuevoComentario}
+              onChange={(e) => setNuevoComentario(e.target.value)}
+              placeholder="Escribe tu respuesta..."
+            />
+            <button className="boton-comentario" onClick={agregarComentario}>
+              Enviar
+            </button>
+          </div>
+        )}
+
+        {/* Mostrar respuestas anidadas */}
         {comentario.respuestas && comentario.respuestas.length > 0 && (
           <div className="comentarios-hijos">
             {comentario.respuestas.map((respuesta) => (
@@ -792,10 +806,7 @@ const DetalleReceta = () => {
                       alt={respuesta.usuario.nombre}
                     />
                   ) : (
-                    <img
-                      src="../images/default-imagen-perfil"
-                      alt="Usuario desconocido"
-                    />
+                    <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
                   )}
                   <span className="usuario-comentario">
                     {respuesta.usuario ? respuesta.usuario.nombre : "Usuario desconocido"}
@@ -815,6 +826,7 @@ const DetalleReceta = () => {
     <p>No hay comentarios aún.</p>
   )}
 </div>
+
 
 
 
