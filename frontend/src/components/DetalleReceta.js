@@ -274,6 +274,7 @@ const DetalleReceta = () => {
 
   const agregarRespuesta = async (parentCommentId) => {
     if (!respuestas[parentCommentId]) return;
+
     try {
         const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
             comentario: respuestas[parentCommentId],
@@ -281,10 +282,20 @@ const DetalleReceta = () => {
             parentComment: parentCommentId,
         });
 
-        // Actualiza los comentarios con la nueva respuesta
-        setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
+        // Actualiza los comentarios con la nueva respuesta dentro del comentario correspondiente
+        setComentarios((prevComentarios) => {
+            return prevComentarios.map((comentario) => {
+                if (comentario._id === parentCommentId) {
+                    return {
+                        ...comentario,
+                        respuestas: [...comentario.respuestas, response.data.comentarioGuardado],
+                    };
+                }
+                return comentario;
+            });
+        });
 
-        // Restablecer el estado de la respuesta y mostrar el botón 'Responder' nuevamente
+        // Limpiar el input después de agregar la respuesta
         setRespuestas((prevRespuestas) => {
             const updatedRespuestas = { ...prevRespuestas };
             delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
@@ -293,7 +304,7 @@ const DetalleReceta = () => {
     } catch (error) {
         console.error('Error al agregar la respuesta:', error);
     }
-  };
+};
 
   
   // Función para capitalizar la primera letra de cada paso
@@ -753,11 +764,11 @@ const DetalleReceta = () => {
                         <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
                         <p className="texto-comentario">{comentario.comentario}</p>
 
-                        {respuestas[comentario._id] === undefined ? (
-                        <button className='boton-responder' onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
+                        <button onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
                             Responder
                         </button>
-                         ) : (
+
+                        {respuestas[comentario._id] !== undefined && (
                             <div className="input-respuesta">
                                 <input
                                     value={respuestas[comentario._id]}
@@ -766,43 +777,31 @@ const DetalleReceta = () => {
                                     }
                                     placeholder="Escribe una respuesta..."
                                 />
-                                 <button
-                                    onClick={() => {
-                                        agregarRespuesta(comentario._id);
-                                        // Restaurar estado después de enviar la respuesta
-                                        setRespuestas((prev) => {
-                                            const updated = { ...prev };
-                                            delete updated[comentario._id];
-                                            return updated;
-                                        });
-                                    }}
-                                >
+                                <button onClick={() => agregarRespuesta(comentario._id)}>
                                     Enviar
                                 </button>
                             </div>
                         )}
-                        {/* Respuestas en estilo de hilo */}
+
                         <div className="respuestas">
-                            {comentarios
-                                .filter((respuesta) => respuesta.parentComment?._id === comentario._id)
-                                .map((respuesta) => (
-                                    <div key={respuesta._id} className="respuesta">
-                                        <div className="imagen-nombre">
-                                            {respuesta.usuario?.imagenPerfil ? (
-                                                <img className="imagen-perfil-comentario" src={respuesta.usuario.imagenPerfil} alt={respuesta.usuario.nombre} />
-                                            ) : (
-                                                <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                                            )}
-                                            <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
-                                        </div>
-                                        <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                                        <p className="texto-comentario">{respuesta.comentario}</p>
+                            {comentario.respuestas && comentario.respuestas.map((respuesta) => (
+                                <div key={respuesta._id} className="respuesta" style={{ marginLeft: '30px' }}>
+                                    <div className="imagen-nombre">
+                                        {respuesta.usuario?.imagenPerfil ? (
+                                            <img className="imagen-perfil-comentario" src={respuesta.usuario.imagenPerfil} alt={respuesta.usuario.nombre} />
+                                        ) : (
+                                            <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                                        )}
+                                        <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
                                     </div>
-                                ))}
+                                    <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+                                    <p className="texto-comentario">{respuesta.comentario}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 ))}
-              </div>
+            </div>
 
               <hr className='divider'></hr>
 
