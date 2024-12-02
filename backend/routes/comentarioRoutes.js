@@ -32,40 +32,43 @@ router.get('/:id', async (req, res) => {
 
 
 // Ruta para agregar un comentario a una receta
-router.post('/:id/comentarios', async (req, res) => {
-    const { id } = req.params; // ID de la receta
-    const { comentario, usuario, comentarioPadre } = req.body; // Datos del comentario y el comentarioPadre
+// Ruta para agregar respuesta a un comentario
+router.post('/:id/comentarios/:comentarioPadreId/respuestas', async (req, res) => {
+    const { id, comentarioPadreId } = req.params;
+    const { comentario, usuario } = req.body;
 
     try {
-        // Buscar la receta por su ID
         const receta = await Receta.findById(id);
         if (!receta) {
             return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
-        // Crear un nuevo comentario
-        const nuevoComentario = new Comentario({
+        const comentarioPadre = await Comentario.findById(comentarioPadreId);
+        if (!comentarioPadre) {
+            return res.status(404).json({ message: 'Comentario no encontrado' });
+        }
+
+        // Crear una nueva respuesta
+        const nuevaRespuesta = new Comentario({
             comentario,
-            usuario,  // Asegúrate de guardar el ObjectId del usuario
+            usuario,
             receta: receta._id,
             fecha: new Date(),
-            comentarioPadre: comentarioPadre || null // Si hay un comentarioPadre, lo asignamos
+            comentarioPadre: comentarioPadreId, // Referencia al comentario padre
         });
 
-        // Guardar el comentario en la base de datos
-        const comentarioGuardado = await nuevoComentario.save();
+        const respuestaGuardada = await nuevaRespuesta.save();
 
-        // Agregar el ID del comentario al array de comentarios de la receta
-        receta.comentarios.push(comentarioGuardado._id);
-        await receta.save(); // Guardar la receta actualizada
+        // Agregar la respuesta al array de respuestas del comentario padre
+        comentarioPadre.respuestas.push(respuestaGuardada._id);
+        await comentarioPadre.save();
 
-        // Recuperar el comentario guardado con los datos del usuario
-        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id).populate('usuario', 'nombre imagenPerfil');
+        const respuestaConUsuario = await Comentario.findById(respuestaGuardada._id).populate('usuario', 'nombre imagenPerfil');
 
-        res.status(201).json({ comentarioGuardado: comentarioConUsuario }); // Devolver el comentario guardado
+        res.status(201).json({ comentarioGuardado: respuestaConUsuario });
     } catch (error) {
         console.error('Error en el backend:', error);
-        res.status(500).json({ message: 'Error al agregar el comentario' });
+        res.status(500).json({ message: 'Error al agregar la respuesta' });
     }
 });
 
