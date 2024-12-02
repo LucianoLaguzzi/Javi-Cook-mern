@@ -44,7 +44,7 @@ const DetalleReceta = () => {
   const [ultimaActualizacion, setUltimaActualizacion] = useState(Date.now());  // Registrar la última actualización
 
 
-  const [replyingTo, setReplyingTo] = useState(null); // ID del comentario al que estás respondiendo
+  const [respuestas, setRespuestas] = useState({}); // Guardar respuestas por comentario
 
   const botonRef = useRef(null);
 
@@ -243,23 +243,53 @@ const DetalleReceta = () => {
   };
 
   // Agregar comentario
-  const agregarComentario = async (parentCommentId = null) => {
+  const agregarComentario = async () => {
     if (!nuevoComentario) return;
+    console.log('Usuario en sesión:', usuarioEnSesion);
+
+    try {
+      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
+          comentario: nuevoComentario,
+          usuario: usuarioEnSesion._id
+      });
+
+      // Esto debería devolver el comentario guardado, incluyendo la referencia al usuario
+      setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]); // Actualiza los comentarios
+      setNuevoComentario(''); // Limpiar el input
+    } catch (error) {
+      // Manejar errores más detalladamente
+      if (error.response) {
+          // La solicitud se realizó y el servidor respondió con un código de estado
+          console.error('Error al agregar el comentario:', error.response.data);
+      } else if (error.request) {
+          // La solicitud se realizó pero no se recibió respuesta
+          console.error('No se recibió respuesta del servidor:', error.request);
+      } else {
+          // Algo sucedió al configurar la solicitud
+          console.error('Error en la configuración de la solicitud:', error.message);
+      }
+    }
+  };
+
+
+  const agregarRespuesta = async (parentCommentId) => {
+    if (!respuestas[parentCommentId]) return;
 
     try {
         const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-            comentario: nuevoComentario,
+            comentario: respuestas[parentCommentId],
             usuario: usuarioEnSesion._id,
-            parentCommentId,
+            parentComment: parentCommentId,
         });
 
         setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
-        setNuevoComentario('');
-        setReplyingTo(null); // Reinicia el estado de respuesta
+        setRespuestas({ ...respuestas, [parentCommentId]: '' });
     } catch (error) {
-        console.error('Error al agregar el comentario:', error);
+        console.error('Error al agregar la respuesta:', error);
     }
 };
+
+
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -386,41 +416,6 @@ const DetalleReceta = () => {
     
   };
 
-
-
-  const renderComentarios = (comentarios) => {
-    return comentarios.map((comentario) => (
-        <div key={comentario._id} className="contenedores-spam">
-            <div className="imagen-nombre">
-                {comentario.usuario?.imagenPerfil ? (
-                    <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                ) : (
-                    <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                )}
-                <span className='usuario-comentario'>{comentario.usuario?.nombre || 'Usuario desconocido'}</span>
-            </div>
-            <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-            <p className='texto-comentario'>{comentario.comentario}</p>
-
-            {/* Responder */}
-            <button onClick={() => setReplyingTo(comentario._id)}>Responder</button>
-            {replyingTo === comentario._id && (
-                <div className="input-respuesta">
-                    <input
-                        className="input-comentario"
-                        value={nuevoComentario}
-                        onChange={(e) => setNuevoComentario(e.target.value)}
-                        placeholder="Responder comentario..."
-                    />
-                    <button className='boton-comentario' onClick={() => agregarComentario(comentario._id)}>Enviar</button>
-                </div>
-            )}
-
-            {/* Renderizar respuestas */}
-            {comentario.respuestas && renderComentarios(comentario.respuestas)}
-        </div>
-    ));
-};
   
 
 
@@ -740,8 +735,49 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-        {comentarios.length > 0 ? renderComentarios(comentarios) : <p>No hay comentarios aún.</p>}
-    </div>
+    {comentarios.map((comentario) => (
+        <div key={comentario._id} className="contenedores-spam">
+            <div className="imagen-nombre">
+                {comentario.usuario?.imagenPerfil ? (
+                    <img className="imagen-perfil-comentario" src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
+                ) : (
+                    <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                )}
+                <span className="usuario-comentario">{comentario.usuario?.nombre || 'Usuario desconocido'}</span>
+            </div>
+            <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
+            <p className="texto-comentario">{comentario.comentario}</p>
+            
+            <button onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
+                Responder
+            </button>
+            {respuestas[comentario._id] !== undefined && (
+                <div className="input-respuesta">
+                    <input
+                        value={respuestas[comentario._id]}
+                        onChange={(e) =>
+                            setRespuestas({ ...respuestas, [comentario._id]: e.target.value })
+                        }
+                        placeholder="Escribe una respuesta..."
+                    />
+                    <button onClick={() => agregarRespuesta(comentario._id)}>
+                        Enviar
+                    </button>
+                </div>
+            )}
+            <div className="respuestas">
+                {comentarios
+                    .filter((respuesta) => respuesta.parentComment?._id === comentario._id)
+                    .map((respuesta) => (
+                        <div key={respuesta._id} className="respuesta">
+                            <span>{respuesta.usuario?.nombre || 'Usuario desconocido'}:</span>
+                            <p>{respuesta.comentario}</p>
+                        </div>
+                    ))}
+            </div>
+        </div>
+    ))}
+</div>
 
               <hr className='divider'></hr>
 

@@ -34,31 +34,33 @@ router.get('/:id', async (req, res) => {
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
-    const { comentario, usuario, parentCommentId } = req.body; // parentCommentId es opcional
+    const { comentario, usuario, parentComment } = req.body;
 
     try {
         const receta = await Receta.findById(id);
-        if (!receta) return res.status(404).json({ message: 'Receta no encontrada' });
+        if (!receta) {
+            return res.status(404).json({ message: 'Receta no encontrada' });
+        }
 
         const nuevoComentario = new Comentario({
             comentario,
             usuario,
             receta: receta._id,
-            parentCommentId: parentCommentId || null, // Vincula al padre o es un comentario raíz
+            parentComment: parentComment || null, // Manejar si es respuesta o no
             fecha: new Date(),
         });
 
         const comentarioGuardado = await nuevoComentario.save();
-
         receta.comentarios.push(comentarioGuardado._id);
         await receta.save();
 
         const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
-            .populate('usuario', 'nombre imagenPerfil');
+            .populate('usuario', 'nombre imagenPerfil')
+            .populate('parentComment');
 
         res.status(201).json({ comentarioGuardado: comentarioConUsuario });
     } catch (error) {
-        console.error('Error en el backend:', error);
+        console.error('Error al agregar el comentario:', error);
         res.status(500).json({ message: 'Error al agregar el comentario' });
     }
 });

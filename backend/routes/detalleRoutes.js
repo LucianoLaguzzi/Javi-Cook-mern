@@ -11,25 +11,20 @@ router.get('/:id', async (req, res) => {
             .populate('usuario')
             .populate({
                 path: 'comentarios',
-                populate: { path: 'usuario', select: 'nombre imagenPerfil' }
+                populate: [
+                    { path: 'usuario', select: 'nombre imagenPerfil' },
+                    { path: 'parentComment', select: 'comentario' }
+                ]
             });
 
-        if (!receta) return res.status(404).json({ mensaje: 'Receta no encontrada' });
+        if (!receta) {
+            return res.status(404).json({ mensaje: 'Receta no encontrada' });
+        }
 
-        // Estructurar comentarios en forma de árbol
-        const comentarios = receta.comentarios.reduce((tree, comentario) => {
-            if (!comentario.parentCommentId) {
-                tree.push({ ...comentario.toObject(), respuestas: [] });
-            } else {
-                const padre = tree.find(c => c._id.toString() === comentario.parentCommentId.toString());
-                if (padre) padre.respuestas.push(comentario.toObject());
-            }
-            return tree;
-        }, []);
-
-        res.json({ ...receta.toObject(), comentarios });
+        res.json(receta);
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
 });
+
 export default router;
