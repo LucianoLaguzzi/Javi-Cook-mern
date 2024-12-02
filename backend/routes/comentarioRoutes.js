@@ -18,7 +18,7 @@ router.get('/:id', async (req, res) => {
                 }
             })
             .populate({
-                path: 'comentarios.respuestas',
+                path: 'respuestas',
                 populate: {
                     path: 'usuario',
                     model: 'Usuario',

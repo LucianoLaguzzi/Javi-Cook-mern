@@ -781,13 +781,13 @@ const DetalleReceta = () => {
                 </button>
             </div>
 
-            {/* Mostrar respuestas anidadas */}
+           {/* Mostrar respuestas anidadas */}
             {comentario.respuestas && comentario.respuestas.length > 0 && (
                 <div className="respuestas">
                     {comentario.respuestas.map((respuesta) => (
                         <div key={respuesta._id} className="respuesta">
                             <p>{respuesta.comentario}</p>
-                            <span>{respuesta.usuario.nombre}</span>
+                            <span>{respuesta.usuario?.nombre || "Usuario desconocido"}</span>
                         </div>
                     ))}
                 </div>
