@@ -282,19 +282,19 @@ const DetalleReceta = () => {
             parentComment: parentCommentId,
         });
 
-        // Actualiza los comentarios con la nueva respuesta dentro del comentario correspondiente
-        setComentarios((prevComentarios) => {
-            return prevComentarios.map((comentario) => {
-                if (comentario._id === parentCommentId) {
-                    return {
-                        ...comentario,
-                        respuestas: [...comentario.respuestas, response.data.comentarioGuardado],
-                    };
-                }
-                return comentario;
-            });
-        });
+        // Actualiza los comentarios con la nueva respuesta
+        setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
 
+        // Restablecer el estado de la respuesta y mostrar el botón 'Responder' nuevamente
+        setRespuestas((prevRespuestas) => {
+            const updatedRespuestas = { ...prevRespuestas };
+            delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
+            return updatedRespuestas;  // Vuelve a mostrar el botón 'Responder'
+        });
+    } catch (error) {
+        console.error('Error al agregar la respuesta:', error);
+    }
+};
         // Limpiar el input después de agregar la respuesta
         setRespuestas((prevRespuestas) => {
             const updatedRespuestas = { ...prevRespuestas };
@@ -764,11 +764,11 @@ const DetalleReceta = () => {
                         <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
                         <p className="texto-comentario">{comentario.comentario}</p>
 
-                        <button onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
+                        {respuestas[comentario._id] === undefined ? (
+                        <button className='boton-responder' onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
                             Responder
                         </button>
-
-                        {respuestas[comentario._id] !== undefined && (
+                         ) : (
                             <div className="input-respuesta">
                                 <input
                                     value={respuestas[comentario._id]}
@@ -777,31 +777,43 @@ const DetalleReceta = () => {
                                     }
                                     placeholder="Escribe una respuesta..."
                                 />
-                                <button onClick={() => agregarRespuesta(comentario._id)}>
+                                 <button
+                                    onClick={() => {
+                                        agregarRespuesta(comentario._id);
+                                        // Restaurar estado después de enviar la respuesta
+                                        setRespuestas((prev) => {
+                                            const updated = { ...prev };
+                                            delete updated[comentario._id];
+                                            return updated;
+                                        });
+                                    }}
+                                >
                                     Enviar
                                 </button>
                             </div>
                         )}
-
+                        {/* Respuestas en estilo de hilo */}
                         <div className="respuestas">
-                            {comentario.respuestas && comentario.respuestas.map((respuesta) => (
-                                <div key={respuesta._id} className="respuesta" style={{ marginLeft: '30px' }}>
-                                    <div className="imagen-nombre">
-                                        {respuesta.usuario?.imagenPerfil ? (
-                                            <img className="imagen-perfil-comentario" src={respuesta.usuario.imagenPerfil} alt={respuesta.usuario.nombre} />
-                                        ) : (
-                                            <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                                        )}
-                                        <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
+                            {comentarios
+                                .filter((respuesta) => respuesta.parentComment?._id === comentario._id)
+                                .map((respuesta) => (
+                                    <div key={respuesta._id} className="respuesta">
+                                        <div className="imagen-nombre">
+                                            {respuesta.usuario?.imagenPerfil ? (
+                                                <img className="imagen-perfil-comentario" src={respuesta.usuario.imagenPerfil} alt={respuesta.usuario.nombre} />
+                                            ) : (
+                                                <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                                            )}
+                                            <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
+                                        </div>
+                                        <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+                                        <p className="texto-comentario">{respuesta.comentario}</p>
                                     </div>
-                                    <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                                    <p className="texto-comentario">{respuesta.comentario}</p>
-                                </div>
-                            ))}
+                                ))}
                         </div>
                     </div>
                 ))}
-            </div>
+              </div>
 
               <hr className='divider'></hr>
 
