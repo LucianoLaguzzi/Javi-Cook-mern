@@ -274,7 +274,6 @@ const DetalleReceta = () => {
 
   const agregarRespuesta = async (parentCommentId) => {
     if (!respuestas[parentCommentId]) return;
-
     try {
         const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
             comentario: respuestas[parentCommentId],
@@ -282,13 +281,19 @@ const DetalleReceta = () => {
             parentComment: parentCommentId,
         });
 
+        // Actualiza los comentarios con la nueva respuesta
         setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
-        setRespuestas({ ...respuestas, [parentCommentId]: '' });
+
+        // Restablecer el estado de la respuesta y mostrar el botón 'Responder' nuevamente
+        setRespuestas((prevRespuestas) => {
+            const updatedRespuestas = { ...prevRespuestas };
+            delete updatedRespuestas[parentCommentId];  // Elimina la respuesta de ese comentario
+            return updatedRespuestas;  // Vuelve a mostrar el botón 'Responder'
+        });
     } catch (error) {
         console.error('Error al agregar la respuesta:', error);
     }
-};
-
+  };
 
   
   // Función para capitalizar la primera letra de cada paso
@@ -749,7 +754,6 @@ const DetalleReceta = () => {
                         <p className="texto-comentario">{comentario.comentario}</p>
 
                         {respuestas[comentario._id] === undefined ? (
-                        
                         <button className='boton-responder' onClick={() => setRespuestas({ ...respuestas, [comentario._id]: '' })}>
                             Responder
                         </button>
