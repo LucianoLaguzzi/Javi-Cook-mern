@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
-    const { comentario, usuario } = req.body; // Datos del comentario
+    const { comentario, usuario, parentCommentId } = req.body; // Agregar parentCommentId
 
     try {
         // Buscar la receta por su ID
@@ -46,8 +46,9 @@ router.post('/:id/comentarios', async (req, res) => {
         // Crear un nuevo comentario
         const nuevoComentario = new Comentario({
             comentario,
-            usuario: usuario, // Asegúrate de guardar el ObjectId del usuario
+            usuario,
             receta: receta._id,
+            parentCommentId: parentCommentId || null,  // Si es una respuesta, asignar el ID del comentario padre
             fecha: new Date(),
         });
 
@@ -59,7 +60,8 @@ router.post('/:id/comentarios', async (req, res) => {
         await receta.save(); // Guardar la receta actualizada
 
         // Recuperar el comentario guardado con los datos del usuario
-        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id).populate('usuario', 'nombre imagenPerfil');
+        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
+            .populate('usuario', 'nombre imagenPerfil');
 
         res.status(201).json({ comentarioGuardado: comentarioConUsuario }); // Devolver el comentario guardado
     } catch (error) {
