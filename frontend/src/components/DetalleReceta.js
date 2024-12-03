@@ -764,26 +764,30 @@ const agregarRespuesta = async () => {
                         <p className="texto-comentario">{comentarioPadre.comentario}</p>
 
                         {/* Mostrar las respuestas de este comentario padre */}
-                        {comentarios
-                          .filter((respuesta) => respuesta.parentCommentId === comentarioPadre._id)
-                          .map((respuesta) => (
-                            <div key={respuesta._id} className="contenedores-spam respuesta">
-                              <div className="imagen-nombre">
-                                <img
-                                  className="imagen-perfil-comentario"
-                                  src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                  alt={respuesta.usuario.nombre}
-                                />
-                                <span className="usuario-comentario">
-                                  {respuesta.usuario.nombre || "Usuario desconocido"}
-                                </span>
-                              </div>
-                              <span className="comentario-fecha">
-                                {new Date(respuesta.fecha).toLocaleDateString()}
-                              </span>
-                              <p className="texto-comentario">{respuesta.comentario}</p>
-                            </div>
-                          ))}
+                        {comentarios.some((respuesta) => respuesta.parentCommentId === comentarioPadre._id) && (
+                          <div className="respuestas">
+                            {comentarios
+                              .filter((respuesta) => respuesta.parentCommentId === comentarioPadre._id)
+                              .map((respuesta) => (
+                                <div key={respuesta._id} className="contenedores-spam respuesta">
+                                  <div className="imagen-nombre">
+                                    <img
+                                      className="imagen-perfil-comentario"
+                                      src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                      alt={respuesta.usuario.nombre}
+                                    />
+                                    <span className="usuario-comentario">
+                                      {respuesta.usuario.nombre || "Usuario desconocido"}
+                                    </span>
+                                  </div>
+                                  <span className="comentario-fecha">
+                                    {new Date(respuesta.fecha).toLocaleDateString()}
+                                  </span>
+                                  <p className="texto-comentario">{respuesta.comentario}</p>
+                                </div>
+                              ))}
+                          </div>
+                        )}
 
                         {/* Botón de responder */}
                         <button
