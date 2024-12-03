@@ -746,13 +746,19 @@ const agregarRespuesta = async () => {
                     comentarios.map((comentario) => (
                         <div key={comentario._id} className="contenedores-spam">
                             <div className="imagen-nombre">
-                                <img className="imagen-perfil-comentario" src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"} alt={comentario.usuario.nombre} />
+                                <img className="imagen-perfil-comentario" 
+                                    src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"} 
+                                    alt={comentario.usuario.nombre} />
                                 <span className='usuario-comentario'>{comentario.usuario.nombre || 'Usuario desconocido'}</span>
                             </div>
                             <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-                            <p className='texto-comentario'>{comentario.comentario}</p>
 
-                            {/* Mostrar respuestas si las hay */}
+                            {/* Solo mostrar el comentario si NO es una respuesta */}
+                            {!comentario.parentCommentId && (
+                                <p className='texto-comentario'>{comentario.comentario}</p>
+                            )}
+
+                            {/* Mostrar respuestas si las hay y si el comentario tiene un parentCommentId */}
                             {comentario.parentCommentId && (
                                 <div className="respuesta-comentario">
                                     <span className="respuesta-texto">Respuesta:</span>
