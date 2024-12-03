@@ -742,77 +742,77 @@ const agregarRespuesta = async () => {
               </div>
 
               <div className="comentarios-usuarios">
-                {comentarios && comentarios.length > 0 ? (
-                  comentarios
-                    .filter((comentario) => !comentario.parentCommentId) // Mostrar solo comentarios principales
-                    .map((comentario) => (
-                      <div key={comentario._id} className="contenedores-spam">
-                        {/* Comentario principal */}
-                        <div className="imagen-nombre">
-                          <img
-                            className="imagen-perfil-comentario"
-                            src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                            alt={comentario.usuario.nombre}
-                          />
-                          <span className="usuario-comentario">
-                            {comentario.usuario.nombre || "Usuario desconocido"}
-                          </span>
-                        </div>
-                        <span className="comentario-fecha">
-                          {new Date(comentario.fecha).toLocaleDateString()}
+              {comentarios && comentarios.length > 0 ? (
+                comentarios
+                  .filter((comentario) => !comentario.parentCommentId) // Mostrar solo comentarios principales
+                  .map((comentario) => (
+                    <div key={comentario._id} className="contenedores-spam">
+                      {/* Comentario principal */}
+                      <div className="imagen-nombre">
+                        <img
+                          className="imagen-perfil-comentario"
+                          src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                          alt={comentario.usuario.nombre}
+                        />
+                        <span className="usuario-comentario">
+                          {comentario.usuario.nombre || "Usuario desconocido"}
                         </span>
-                        <p className="texto-comentario">{comentario.comentario}</p>
-
-                        {/* Botón para responder */}
-                        <button
-                          className="boton-responder"
-                          onClick={() => responderComentario(comentario._id)}
-                        >
-                          Responder
-                        </button>
-
-                        {/* Mostrar input de respuesta si está en modo respuesta */}
-                        {comentarioAResponder === comentario._id && (
-                          <div className="input-respuesta">
-                            <input
-                              type="text"
-                              value={respuesta}
-                              onChange={(e) => setRespuesta(e.target.value)}
-                              placeholder="Escribe tu respuesta..."
-                            />
-                            <button onClick={agregarRespuesta}>Enviar</button>
-                          </div>
-                        )}
-
-                        {/* Respuestas anidadas */}
-                        <div className="respuestas-anidadas">
-                          {comentarios
-                            .filter((respuesta) => respuesta.parentCommentId === comentario._id) // Respuestas relacionadas
-                            .map((respuesta) => (
-                              <div key={respuesta._id} className="respuesta-comentario">
-                                <div className="imagen-nombre">
-                                  <img
-                                    className="imagen-perfil-comentario"
-                                    src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                    alt={respuesta.usuario.nombre}
-                                  />
-                                  <span className="usuario-comentario">
-                                    {respuesta.usuario.nombre || "Usuario desconocido"}
-                                  </span>
-                                </div>
-                                <span className="comentario-fecha">
-                                  {new Date(respuesta.fecha).toLocaleDateString()}
-                                </span>
-                                <p className="texto-comentario">{respuesta.comentario}</p>
-                              </div>
-                            ))}
-                        </div>
                       </div>
-                    ))
-                ) : (
-                  <p>No hay comentarios aún.</p>
-                )}
-              </div>
+                      <span className="comentario-fecha">
+                        {new Date(comentario.fecha).toLocaleDateString()}
+                      </span>
+                      <p className="texto-comentario">{comentario.comentario}</p>
+
+                      {/* Botón para responder */}
+                      <button
+                        className="boton-responder"
+                        onClick={() => responderComentario(comentario._id)}
+                      >
+                        Responder
+                      </button>
+
+                      {/* Mostrar input de respuesta si está en modo respuesta */}
+                      {comentarioAResponder === comentario._id && (
+                        <div className="input-respuesta">
+                          <input
+                            type="text"
+                            value={respuesta}
+                            onChange={(e) => setRespuesta(e.target.value)}
+                            placeholder="Escribe tu respuesta..."
+                          />
+                          <button onClick={agregarRespuesta}>Enviar</button>
+                        </div>
+                      )}
+
+                      {/* Respuestas anidadas */}
+                      <div className="respuestas-anidadas">
+                        {comentarios
+                          .filter((respuesta) => respuesta.parentCommentId === comentario._id) // Respuestas relacionadas
+                          .map((respuesta) => (
+                            <div key={respuesta._id} className="respuesta-comentario">
+                              <div className="imagen-nombre">
+                                <img
+                                  className="imagen-perfil-comentario"
+                                  src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                  alt={respuesta.usuario.nombre}
+                                />
+                                <span className="usuario-comentario">
+                                  {respuesta.usuario.nombre || "Usuario desconocido"}
+                                </span>
+                              </div>
+                              <span className="comentario-fecha">
+                                {new Date(respuesta.fecha).toLocaleDateString()}
+                              </span>
+                              <p className="texto-comentario">{respuesta.comentario}</p>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <p>No hay comentarios aún.</p>
+              )}
+            </div>
 
               <hr className='divider'></hr>
 
