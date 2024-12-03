@@ -785,33 +785,30 @@ const agregarRespuesta = async () => {
                         )}
 
                         {/* Respuestas del Comentario Padre */}
-                        {comentarios
-                          .filter((respuesta) => respuesta.parentCommentId === comentarioPadre._id) // Filtrar respuestas de este padre
-                          .map((respuesta) => (
-                            <div key={respuesta._id} className="contenedores-spam respuesta">
-                              <div className="imagen-nombre">
-                                <img
-                                  className="imagen-perfil-comentario"
-                                  src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                  alt={respuesta.usuario.nombre}
-                                />
-                                <span className="usuario-comentario">
-                                  {respuesta.usuario.nombre || "Usuario desconocido"}
+                        <div className="contenedor-respuestas">
+                          {comentarios
+                            .filter((respuesta) => respuesta.parentCommentId === comentarioPadre._id) // Filtrar respuestas de este padre
+                            .map((respuesta) => (
+                              <div key={respuesta._id} className="respuesta-comentario">
+                                {/* Solo el contenido de la respuesta */}
+                                <p className="texto-comentario">
+                                  <span className="usuario-comentario">
+                                    {respuesta.usuario.nombre || "Usuario desconocido"}:
+                                  </span>{" "}
+                                  {respuesta.comentario}
+                                </p>
+                                <span className="comentario-fecha">
+                                  {new Date(respuesta.fecha).toLocaleDateString()}
                                 </span>
                               </div>
-                              <span className="comentario-fecha">
-                                {new Date(respuesta.fecha).toLocaleDateString()}
-                              </span>
-                              <p className="texto-comentario">{respuesta.comentario}</p>
-                            </div>
-                          ))}
+                            ))}
+                        </div>
                       </div>
                     ))
                 ) : (
                   <p>No hay comentarios aún.</p>
                 )}
               </div>
-
 
               <hr className='divider'></hr>
 
