@@ -21,8 +21,8 @@ const ComentarioSchema = new mongoose.Schema({
     },
     parentCommentId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comentario',
-        default: null  // Si no es una respuesta, será null
+        ref: 'Comentario', // Referencia al comentario al que responde
+        default: null
     }
 });
 
