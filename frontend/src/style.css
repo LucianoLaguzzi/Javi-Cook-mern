@@ -4734,9 +4734,34 @@ i.fas.fa-undo {
 
 
 
-.respuesta-comentario .respuesta-texto {
-    margin-left: 20px; /* O cualquier valor que se alinee a la derecha del comentario original */
-    background-color: #f4f4f4; /* Si quieres darle un fondo distinto */
+
+/* Respuesta dentro del comentario */
+.respuesta-comentario {
+    position: relative;
+    margin-left: 20px; /* Ajusta este valor para mover la respuesta a la derecha */
+    background-color: #f4f4f4; /* Fondo de la respuesta */
     padding: 10px;
     border-radius: 8px;
 }
+
+/* El texto de la respuesta */
+.respuesta-texto {
+    margin-top: 5px;
+}
+
+/* Nombre del usuario que responde */
+.usuario-comentario-respuesta {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Botón de respuesta */
+.boton-responder {
+    background-color: #007BFF;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
