@@ -4734,3 +4734,9 @@ i.fas.fa-undo {
 
 
 
+.respuesta-comentario .respuesta-texto {
+    margin-left: 20px; /* O cualquier valor que se alinee a la derecha del comentario original */
+    background-color: #f4f4f4; /* Si quieres darle un fondo distinto */
+    padding: 10px;
+    border-radius: 8px;
+}
