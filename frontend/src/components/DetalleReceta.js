@@ -756,42 +756,57 @@ const toggleRespuestaInput = (comentarioId) => {
                 {comentarios && comentarios.length > 0 ? (
                     comentarios.map((comentario) => (
                       <div key={comentario._id} className="contenedores-spam">
-                      <div className="imagen-nombre">
-                          {comentario.usuario && comentario.usuario.imagenPerfil ? (
-                              <img className="imagen-perfil-comentario" src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                          ) : (
-                              <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                          )}
-                          <span className="usuario-comentario">{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
-                      </div>
-                      <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-                      <p className="texto-comentario">{comentario.comentario}</p>
-                  
-                      {/* Botón para responder */}
-                      <button onClick={() => toggleRespuestaInput(comentario._id)}>Responder</button>
-                      {respuestaActiva === comentario._id && (
-                          <div className="input-respuesta">
-                              <input
-                                  value={respuestas[comentario._id] || ''} // Muestra la respuesta temporal del estado
-                                  onChange={(e) => setRespuestas({ ...respuestas, [comentario._id]: e.target.value })} // Actualiza el texto
-                                  placeholder="Escribe tu respuesta..."
-                              />
-                              <button onClick={() => agregarRespuesta(comentario._id)}>Enviar</button>
-                          </div>
-                      )}
-                  
-                      {/* Mostrar respuestas anidadas */}
-                      {comentario.respuestas && comentario.respuestas.length > 0 && (
-                          <div className="respuestas">
-                              {comentario.respuestas.map((respuesta) => (
-                                  <div key={respuesta._id} className="respuesta">
-                                      <span className="usuario-comentario">{respuesta.usuario.nombre}</span>
-                                      <p>{respuesta.comentario}</p>
-                                  </div>
-                              ))}
-                          </div>
-                      )}
-                  </div>
+                        <div className="imagen-nombre">
+                            {comentario.usuario?.imagenPerfil ? (
+                                <img
+                                    className="imagen-perfil-comentario"
+                                    src={comentario.usuario.imagenPerfil}
+                                    alt={comentario.usuario.nombre || 'Usuario desconocido'}
+                                />
+                            ) : (
+                                <img
+                                    className="imagen-perfil-comentario"
+                                    src="../images/default-imagen-perfil"
+                                    alt="Usuario desconocido"
+                                />
+                            )}
+                            <span className="usuario-comentario">
+                                {comentario.usuario?.nombre || 'Usuario desconocido'}
+                            </span>
+                        </div>
+                        <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
+                        <p className="texto-comentario">{comentario.comentario}</p>
+
+                        {/* Botón para responder */}
+                        <button onClick={() => toggleRespuestaInput(comentario._id)}>Responder</button>
+                        {respuestaActiva === comentario._id && (
+                            <div className="input-respuesta">
+                                <input
+                                    value={respuestas[comentario._id] || ''} // Muestra la respuesta temporal del estado
+                                    onChange={(e) =>
+                                        setRespuestas({
+                                            ...respuestas,
+                                            [comentario._id]: e.target.value,
+                                        })
+                                    } // Actualiza el texto
+                                    placeholder="Escribe tu respuesta..."
+                                />
+                                <button onClick={() => agregarRespuesta(comentario._id)}>Enviar</button>
+                            </div>
+                        )}
+
+                        {/* Mostrar respuestas anidadas */}
+                        {comentario.respuestas && comentario.respuestas.length > 0 && (
+                            <div className="respuestas">
+                                {comentario.respuestas.map((respuesta) => (
+                                    <div key={respuesta._id} className="respuesta">
+                                        <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
+                                        <p>{respuesta.comentario}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                     ))
                 ) : (
                     <p>No hay comentarios aún.</p>
