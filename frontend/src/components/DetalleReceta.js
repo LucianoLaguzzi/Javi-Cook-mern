@@ -762,16 +762,7 @@ const agregarRespuesta = async () => {
                             {/* Mostrar respuestas si las hay y si el comentario tiene un parentCommentId */}
                             {comentario.parentCommentId && (
                                 <div className="respuesta-comentario">
-                                    <div className="imagen-nombre">
-                                        <img className="imagen-perfil-comentario" 
-                                            src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"} 
-                                            alt={comentario.usuario.nombre} />
-                                        <span className='usuario-comentario'>{comentario.usuario.nombre || 'Usuario desconocido'}</span>
-                                    </div>
-                                    <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-
                                     <div className="respuesta-texto">
-                                        <span className="respuesta-label">Respuesta:</span>
                                         <p>{comentario.comentario}</p>
                                     </div>
                                 </div>
@@ -791,7 +782,7 @@ const agregarRespuesta = async () => {
                                         onChange={(e) => setRespuesta(e.target.value)} 
                                         placeholder="Escribe tu respuesta..." 
                                     />
-                                    <button onClick={agregarRespuesta}>Enviar respuesta</button>
+                                    <button onClick={agregarRespuesta}>Enviar</button>
                                 </div>
                             )}
                         </div>
