@@ -4734,18 +4734,3 @@ i.fas.fa-undo {
 
 
 
-
-.respuesta-comentario {
-    margin-left: 20px; /* Ajusta este valor según necesites */
-    padding-left: 10px;
-    border-left: 2px solid #ddd; /* Opcional: para marcar visualmente las respuestas */
-}
-
-.respuesta-texto {
-    margin-top: 5px;
-}
-
-.respuesta-label {
-    font-weight: bold;
-    margin-right: 5px;
-}
