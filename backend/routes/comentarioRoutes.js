@@ -61,9 +61,18 @@ router.post('/:id/comentarios', async (req, res) => {
             await receta.save();
         }
 
+        if (parentComment) {
+            const comentarioPadre = await Comentario.findById(parentComment);
+            comentarioPadre.respuestas.push(comentarioGuardado._id);
+            await comentarioPadre.save();
+        }
+
         const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
-            .populate('usuario', 'nombre imagenPerfil')
-            .populate('parentComment');
+        .populate('usuario', 'nombre imagenPerfil')
+        .populate({
+            path: 'parentComment',
+            populate: { path: 'usuario', select: 'nombre imagenPerfil' },
+        });
 
         res.status(201).json({ comentarioGuardado: comentarioConUsuario });
     } catch (error) {

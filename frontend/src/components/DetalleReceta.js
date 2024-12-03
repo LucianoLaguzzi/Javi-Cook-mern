@@ -797,13 +797,15 @@ const toggleRespuestaInput = (comentarioId) => {
 
                         {/* Mostrar respuestas anidadas */}
                         {comentario.respuestas && comentario.respuestas.length > 0 && (
-                            <div className="respuestas">
-                                {comentario.respuestas.map((respuesta) => (
-                                    <div key={respuesta._id} className="respuesta">
-                                        <span className="usuario-comentario">{respuesta.usuario?.nombre || 'Usuario desconocido'}</span>
-                                        <p>{respuesta.comentario}</p>
-                                    </div>
-                                ))}
+                        <div className="respuestas">
+                            {comentario.respuestas.map((respuesta) => (
+                                <div key={respuesta._id} className="respuesta">
+                                    <span className="usuario-comentario">
+                                        {respuesta.usuario?.nombre || 'Usuario desconocido'}
+                                    </span>
+                                    <p>{respuesta.comentario}</p>
+                                </div>
+                            ))}
                             </div>
                         )}
                     </div>

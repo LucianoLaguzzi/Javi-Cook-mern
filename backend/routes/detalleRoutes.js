@@ -9,12 +9,21 @@ router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
             .populate('usuario') // Popula el usuario que creó la receta
-            .populate({ 
-                path: 'comentarios', 
-                populate: { 
-                    path: 'usuario', // Popula el usuario de cada comentario
-                    select: 'nombre imagenPerfil' // Puedes seleccionar los campos que quieres del usuario
-                }
+            .populate({
+                path: 'comentarios',
+                populate: [
+                    {
+                        path: 'usuario', // Popula el usuario de cada comentario
+                        select: 'nombre imagenPerfil',
+                    },
+                    {
+                        path: 'respuestas', // Popula las respuestas de cada comentario
+                        populate: {
+                            path: 'usuario',
+                            select: 'nombre imagenPerfil',
+                        },
+                    },
+                ],
             });
 
         if (!receta) {
