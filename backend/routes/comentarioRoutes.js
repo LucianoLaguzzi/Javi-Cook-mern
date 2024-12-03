@@ -9,27 +9,23 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
-            .populate('usuario')
             .populate({
                 path: 'comentarios',
-                match: { parentComment: null }, // Solo comentarios principales
-                populate: [
-                    { path: 'usuario', select: 'nombre imagenPerfil' },
-                    { 
-                        path: 'respuestas', // Respuestas anidadas
-                        populate: { path: 'usuario', select: 'nombre imagenPerfil' }
-                    }
-                ],
+                populate: {
+                    path: 'usuario',
+                    model: 'Usuario',
+                    select: 'nombre imagenPerfil'
+                }
             });
 
         if (!receta) {
-            return res.status(404).json({ mensaje: 'Receta no encontrada' });
+            return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
         res.json(receta);
     } catch (error) {
-        console.error('Error al cargar la receta:', error);
-        res.status(500).json({ mensaje: 'Error al cargar la receta', error });
+        console.error('Error al obtener receta con comentarios:', error);
+        res.status(500).json({ message: 'Error al obtener la receta' });
     }
 });
 
@@ -38,46 +34,37 @@ router.get('/:id', async (req, res) => {
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
-    const { comentario, usuario, parentComment } = req.body; // Datos del comentario
+    const { comentario, usuario } = req.body; // Datos del comentario
 
     try {
+        // Buscar la receta por su ID
         const receta = await Receta.findById(id);
         if (!receta) {
             return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
+        // Crear un nuevo comentario
         const nuevoComentario = new Comentario({
             comentario,
-            usuario,
+            usuario: usuario, // Asegúrate de guardar el ObjectId del usuario
             receta: receta._id,
-            parentComment: parentComment || null, // Si no hay parentComment, es comentario principal
+            fecha: new Date(),
         });
 
+        // Guardar el comentario en la base de datos
         const comentarioGuardado = await nuevoComentario.save();
 
-        // Agregar solo comentarios principales al array de la receta
-        if (!parentComment) {
-            receta.comentarios.push(comentarioGuardado._id);
-            await receta.save();
-        }
+        // Agregar el ID del comentario al array de comentarios de la receta
+        receta.comentarios.push(comentarioGuardado._id);
+        await receta.save(); // Guardar la receta actualizada
 
-        if (parentComment) {
-            const comentarioPadre = await Comentario.findById(parentComment);
-            comentarioPadre.respuestas.push(comentarioGuardado._id);
-            await comentarioPadre.save();
-        }
+        // Recuperar el comentario guardado con los datos del usuario
+        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id).populate('usuario', 'nombre imagenPerfil');
 
-        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
-        .populate('usuario', 'nombre imagenPerfil')
-        .populate({
-            path: 'parentComment',
-            populate: { path: 'usuario', select: 'nombre imagenPerfil' },
-        });
-
-        res.status(201).json({ comentarioGuardado: comentarioConUsuario });
+        res.status(201).json({ comentarioGuardado: comentarioConUsuario }); // Devolver el comentario guardado
     } catch (error) {
-        console.error('Error al agregar comentario:', error);
-        res.status(500).json({ message: 'Error al agregar comentario' });
+        console.error('Error en el backend:', error);
+        res.status(500).json({ message: 'Error al agregar el comentario' });
     }
 });
 
