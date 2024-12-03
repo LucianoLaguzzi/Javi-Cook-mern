@@ -241,33 +241,36 @@ const DetalleReceta = () => {
   };
 
   // Agregar comentario
-  const agregarComentario = async () => {
+  const agregarComentario = async (parentCommentId = null) => {
     if (!nuevoComentario) return;
-    console.log('Usuario en sesión:', usuarioEnSesion);
 
     try {
-      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-          comentario: nuevoComentario,
-          usuario: usuarioEnSesion._id
-      });
+        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
+            comentario: nuevoComentario,
+            usuario: usuarioEnSesion._id,
+            parentComment: parentCommentId // Si estamos respondiendo a un comentario, pasamos su ID
+        });
 
-      // Esto debería devolver el comentario guardado, incluyendo la referencia al usuario
-      setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]); // Actualiza los comentarios
-      setNuevoComentario(''); // Limpiar el input
+        // Actualizar los comentarios, agregando el comentario nuevo (ya sea respuesta o principal)
+        if (parentCommentId) {
+            // Si es una respuesta, agregamos a las respuestas del comentario
+            setComentarios((prevComentarios) => {
+                return prevComentarios.map((comentario) =>
+                    comentario._id === parentCommentId
+                        ? { ...comentario, respuestas: [...comentario.respuestas, response.data.comentarioGuardado] }
+                        : comentario
+                );
+            });
+        } else {
+            // Si es un comentario nuevo, simplemente lo agregamos a la lista principal
+            setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]);
+        }
+
+        setNuevoComentario(''); // Limpiar el input
     } catch (error) {
-      // Manejar errores más detalladamente
-      if (error.response) {
-          // La solicitud se realizó y el servidor respondió con un código de estado
-          console.error('Error al agregar el comentario:', error.response.data);
-      } else if (error.request) {
-          // La solicitud se realizó pero no se recibió respuesta
-          console.error('No se recibió respuesta del servidor:', error.request);
-      } else {
-          // Algo sucedió al configurar la solicitud
-          console.error('Error en la configuración de la solicitud:', error.message);
-      }
+        console.error('Error al agregar el comentario:', error);
     }
-  };
+};
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -713,25 +716,53 @@ const DetalleReceta = () => {
               </div>
 
               <div className="comentarios-usuarios">
-                  {comentarios && comentarios.length > 0 ? (
-                      comentarios.map((comentario) => (
-                          <div key={comentario._id} className="contenedores-spam">
-                              <div className="imagen-nombre">
-                                  {comentario.usuario && comentario.usuario.imagenPerfil ? (
-                                      <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
-                                  ) : (
-                                      <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
-                                  )}
-                                  <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
-                              </div>
-                              <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-                              <p className='texto-comentario'>{comentario.comentario}</p>
-                          </div>
-                      ))
-                  ) : (
-                      <p>No hay comentarios aún.</p>
-                  )}
-              </div>
+    {comentarios && comentarios.length > 0 ? (
+        comentarios.map((comentario) => (
+            <div key={comentario._id} className="contenedores-spam">
+                <div className="imagen-nombre">
+                    {comentario.usuario && comentario.usuario.imagenPerfil ? (
+                        <img className='imagen-perfil-comentario' src={comentario.usuario.imagenPerfil} alt={comentario.usuario.nombre} />
+                    ) : (
+                        <img src="../images/default-imagen-perfil" alt="Usuario desconocido" />
+                    )}
+                    <span className='usuario-comentario'>{comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido'}</span>
+                </div>
+                <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
+                <p className='texto-comentario'>{comentario.comentario}</p>
+                
+                {/* Aquí agregamos el input para responder a este comentario */}
+                <div className="input-respuesta">
+                    <input
+                        className="input-comentario"
+                        value={nuevoComentario}
+                        onChange={(e) => setNuevoComentario(e.target.value)}
+                        placeholder="Responder..."
+                    />
+                    <button
+                        className='boton-comentario'
+                        onClick={() => agregarComentario(comentario._id)} // Pasamos el ID del comentario para responder
+                    >
+                        Responder
+                    </button>
+                </div>
+
+                {/* Mostrar las respuestas a este comentario */}
+                {comentario.respuestas && comentario.respuestas.length > 0 && (
+                    <div className="respuestas">
+                        {comentario.respuestas.map((respuesta) => (
+                            <div key={respuesta._id} className="contenedor-respuesta">
+                                <span className='usuario-respuesta'>{respuesta.usuario.nombre}</span>
+                                <p className='texto-respuesta'>{respuesta.comentario}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        ))
+    ) : (
+        <p>No hay comentarios aún.</p>
+    )}
+</div>
 
               <hr className='divider'></hr>
 

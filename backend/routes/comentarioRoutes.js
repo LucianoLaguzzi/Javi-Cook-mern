@@ -11,11 +11,22 @@ router.get('/:id', async (req, res) => {
         const receta = await Receta.findById(req.params.id)
             .populate({
                 path: 'comentarios',
-                populate: {
-                    path: 'usuario',
-                    model: 'Usuario',
-                    select: 'nombre imagenPerfil'
-                }
+                populate: [
+                    {
+                        path: 'usuario',
+                        model: 'Usuario',
+                        select: 'nombre imagenPerfil'
+                    },
+                    {
+                        path: 'respuestas',
+                        model: 'Comentario',
+                        populate: {
+                            path: 'usuario',
+                            model: 'Usuario',
+                            select: 'nombre imagenPerfil'
+                        }
+                    }
+                ]
             });
 
         if (!receta) {
@@ -24,7 +35,7 @@ router.get('/:id', async (req, res) => {
 
         res.json(receta);
     } catch (error) {
-        console.error('Error al obtener receta con comentarios:', error);
+        console.error('Error al obtener receta con comentarios y respuestas:', error);
         res.status(500).json({ message: 'Error al obtener la receta' });
     }
 });
@@ -34,7 +45,7 @@ router.get('/:id', async (req, res) => {
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
-    const { comentario, usuario } = req.body; // Datos del comentario
+    const { comentario, usuario, parentComment } = req.body; // Ahora también recibimos parentComment
 
     try {
         // Buscar la receta por su ID
@@ -43,12 +54,13 @@ router.post('/:id/comentarios', async (req, res) => {
             return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
-        // Crear un nuevo comentario
+        // Crear un nuevo comentario (puede ser una respuesta o un comentario principal)
         const nuevoComentario = new Comentario({
             comentario,
-            usuario: usuario, // Asegúrate de guardar el ObjectId del usuario
+            usuario,
             receta: receta._id,
             fecha: new Date(),
+            parentComment: parentComment || null // Si hay un comentario principal, se establece el parentComment
         });
 
         // Guardar el comentario en la base de datos
