@@ -743,68 +743,72 @@ const agregarRespuesta = async () => {
 
               <div className="comentarios-usuarios">
                 {comentarios && comentarios.length > 0 ? (
-                  comentarios
-                    .filter((comentario) => !comentario.parentCommentId) // Filtrar solo comentarios padres
-                    .map((comentarioPadre) => (
-                      <div key={comentarioPadre._id} className="contenedores-spam">
-                        {/* Comentario Padre */}
-                        <div className="imagen-nombre">
-                          <img
-                            className="imagen-perfil-comentario"
-                            src={comentarioPadre.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                            alt={comentarioPadre.usuario.nombre}
-                          />
-                          <span className="usuario-comentario">
-                            {comentarioPadre.usuario.nombre || "Usuario desconocido"}
-                          </span>
-                        </div>
-                        <span className="comentario-fecha">
-                          {new Date(comentarioPadre.fecha).toLocaleDateString()}
-                        </span>
-                        <p className="texto-comentario">{comentarioPadre.comentario}</p>
-
-                        {/* Botón de Responder */}
-                        <button
-                          className="boton-responder"
-                          onClick={() => responderComentario(comentarioPadre._id)}
-                        >
-                          Responder
-                        </button>
-
-                        {/* Input para Responder */}
-                        {comentarioAResponder === comentarioPadre._id && (
-                          <div className="input-respuesta">
-                            <input
-                              type="text"
-                              value={respuesta}
-                              onChange={(e) => setRespuesta(e.target.value)}
-                              placeholder="Escribe tu respuesta..."
+                  comentarios.map((comentario) => (
+                    <div key={comentario._id} className="contenedores-spam">
+                      {/* Comentario Padre */}
+                      {!comentario.parentCommentId && (
+                        <>
+                          <div className="imagen-nombre">
+                            <img
+                              className="imagen-perfil-comentario"
+                              src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                              alt={comentario.usuario.nombre}
                             />
-                            <button onClick={agregarRespuesta}>Enviar</button>
+                            <span className="usuario-comentario">
+                              {comentario.usuario.nombre || "Usuario desconocido"}
+                            </span>
                           </div>
-                        )}
+                          <span className="comentario-fecha">
+                            {new Date(comentario.fecha).toLocaleDateString()}
+                          </span>
+                          <p className="texto-comentario">{comentario.comentario}</p>
 
-                        {/* Respuestas del Comentario Padre */}
-                        <div className="contenedor-respuestas">
+                          {/* Botón para responder */}
+                          <button
+                            className="boton-responder"
+                            onClick={() => responderComentario(comentario._id)}
+                          >
+                            Responder
+                          </button>
+
+                          {/* Mostrar las respuestas si existen */}
                           {comentarios
-                            .filter((respuesta) => respuesta.parentCommentId === comentarioPadre._id) // Filtrar respuestas de este padre
+                            .filter((respuesta) => respuesta.parentCommentId === comentario._id)
                             .map((respuesta) => (
-                              <div key={respuesta._id} className="respuesta-comentario">
-                                {/* Solo el contenido de la respuesta */}
-                                <p className="texto-comentario">
+                              <div key={respuesta._id} className="contenedores-spam respuesta">
+                                <div className="imagen-nombre">
+                                  <img
+                                    className="imagen-perfil-comentario"
+                                    src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                    alt={respuesta.usuario.nombre}
+                                  />
                                   <span className="usuario-comentario">
-                                    {respuesta.usuario.nombre || "Usuario desconocido"}:
-                                  </span>{" "}
-                                  {respuesta.comentario}
-                                </p>
+                                    {respuesta.usuario.nombre || "Usuario desconocido"}
+                                  </span>
+                                </div>
                                 <span className="comentario-fecha">
                                   {new Date(respuesta.fecha).toLocaleDateString()}
                                 </span>
+                                <p className="texto-comentario">{respuesta.comentario}</p>
                               </div>
                             ))}
+                        </>
+                      )}
+
+                      {/* Input de respuesta si está en modo respuesta */}
+                      {comentarioAResponder === comentario._id && (
+                        <div className="input-respuesta">
+                          <input
+                            type="text"
+                            value={respuesta}
+                            onChange={(e) => setRespuesta(e.target.value)}
+                            placeholder="Escribe tu respuesta..."
+                          />
+                          <button onClick={agregarRespuesta}>Enviar respuesta</button>
                         </div>
-                      </div>
-                    ))
+                      )}
+                    </div>
+                  ))
                 ) : (
                   <p>No hay comentarios aún.</p>
                 )}
