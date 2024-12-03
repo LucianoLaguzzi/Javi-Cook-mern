@@ -4662,17 +4662,6 @@ i.fas.fa-undo {
     background-color: #0056b3;
 }
 
-.respuestas {
-    margin-left: 60px;
-    margin-top: 10px;
-}
-
-.respuesta {
-    margin-bottom: 10px;
-    padding-left: 10px;
-    border-left: 2px solid #007bff;
-}
-
 .input-respuesta {
     display: flex;
     align-items: center;
@@ -4733,35 +4722,12 @@ i.fas.fa-undo {
 }
 
 
-
-
 /* Respuesta dentro del comentario */
 .respuesta-comentario {
     position: relative;
-    margin-left: 20px; /* Ajusta este valor para mover la respuesta a la derecha */
-    background-color: #f4f4f4; /* Fondo de la respuesta */
+    margin-left: 60px;
     padding: 10px;
-    border-radius: 8px;
+    border-left: 2px solid #007bff;
 }
 
-/* El texto de la respuesta */
-.respuesta-texto {
-    margin-top: 5px;
-}
-
-/* Nombre del usuario que responde */
-.usuario-comentario-respuesta {
-    font-weight: bold;
-    color: #333;
-}
-
-/* Botón de respuesta */
-.boton-responder {
-    background-color: #007BFF;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-}
 

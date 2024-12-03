@@ -769,7 +769,6 @@ const agregarRespuesta = async () => {
                             <span className='usuario-comentario'>{comentario.usuario.nombre || 'Usuario desconocido'}</span>
                           </div>
                           <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
-                          <span className="respuesta-texto">Respuesta:</span>
                           <p>{comentario.comentario}</p>
                         </div>
                       )}
@@ -783,7 +782,7 @@ const agregarRespuesta = async () => {
                             onChange={(e) => setRespuesta(e.target.value)} 
                             placeholder="Escribe tu respuesta..." 
                           />
-                          <button onClick={agregarRespuesta}>Enviar respuesta</button>
+                          <button onClick={agregarRespuesta}>Enviar</button>
                         </div>
                       )}
                     </div>
