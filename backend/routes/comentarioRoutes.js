@@ -9,34 +9,27 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
+            .populate('usuario')
             .populate({
                 path: 'comentarios',
+                match: { parentComment: null }, // Solo comentarios principales
                 populate: [
-                    {
-                        path: 'usuario',
-                        model: 'Usuario',
-                        select: 'nombre imagenPerfil'
-                    },
-                    {
-                        path: 'respuestas',
-                        model: 'Comentario',
-                        populate: {
-                            path: 'usuario',
-                            model: 'Usuario',
-                            select: 'nombre imagenPerfil'
-                        }
+                    { path: 'usuario', select: 'nombre imagenPerfil' },
+                    { 
+                        path: 'respuestas', // Respuestas anidadas
+                        populate: { path: 'usuario', select: 'nombre imagenPerfil' }
                     }
-                ]
+                ],
             });
 
         if (!receta) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
+            return res.status(404).json({ mensaje: 'Receta no encontrada' });
         }
 
         res.json(receta);
     } catch (error) {
-        console.error('Error al obtener receta con comentarios y respuestas:', error);
-        res.status(500).json({ message: 'Error al obtener la receta' });
+        console.error('Error al cargar la receta:', error);
+        res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
 });
 
@@ -45,38 +38,37 @@ router.get('/:id', async (req, res) => {
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
-    const { comentario, usuario, parentComment } = req.body; // Ahora también recibimos parentComment
+    const { comentario, usuario, parentComment } = req.body; // Datos del comentario
 
     try {
-        // Buscar la receta por su ID
         const receta = await Receta.findById(id);
         if (!receta) {
             return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
-        // Crear un nuevo comentario (puede ser una respuesta o un comentario principal)
         const nuevoComentario = new Comentario({
             comentario,
             usuario,
             receta: receta._id,
-            fecha: new Date(),
-            parentComment: parentComment || null // Si hay un comentario principal, se establece el parentComment
+            parentComment: parentComment || null, // Si no hay parentComment, es comentario principal
         });
 
-        // Guardar el comentario en la base de datos
         const comentarioGuardado = await nuevoComentario.save();
 
-        // Agregar el ID del comentario al array de comentarios de la receta
-        receta.comentarios.push(comentarioGuardado._id);
-        await receta.save(); // Guardar la receta actualizada
+        // Agregar solo comentarios principales al array de la receta
+        if (!parentComment) {
+            receta.comentarios.push(comentarioGuardado._id);
+            await receta.save();
+        }
 
-        // Recuperar el comentario guardado con los datos del usuario
-        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id).populate('usuario', 'nombre imagenPerfil');
+        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
+            .populate('usuario', 'nombre imagenPerfil')
+            .populate('parentComment');
 
-        res.status(201).json({ comentarioGuardado: comentarioConUsuario }); // Devolver el comentario guardado
+        res.status(201).json({ comentarioGuardado: comentarioConUsuario });
     } catch (error) {
-        console.error('Error en el backend:', error);
-        res.status(500).json({ message: 'Error al agregar el comentario' });
+        console.error('Error al agregar comentario:', error);
+        res.status(500).json({ message: 'Error al agregar comentario' });
     }
 });
 
