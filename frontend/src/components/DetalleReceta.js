@@ -745,6 +745,7 @@ const agregarRespuesta = async () => {
                 {comentarios && comentarios.length > 0 ? (
                     comentarios.map((comentario) => (
                         <div key={comentario._id} className="contenedores-spam">
+                            {/* Comentario original */}
                             <div className="imagen-nombre">
                                 <img className="imagen-perfil-comentario" 
                                     src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"} 
@@ -753,7 +754,7 @@ const agregarRespuesta = async () => {
                             </div>
                             <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
 
-                            {/* Solo mostrar el comentario si NO es una respuesta */}
+                            {/* Mostrar solo el comentario si NO es una respuesta */}
                             {!comentario.parentCommentId && (
                                 <p className='texto-comentario'>{comentario.comentario}</p>
                             )}
@@ -761,14 +762,24 @@ const agregarRespuesta = async () => {
                             {/* Mostrar respuestas si las hay y si el comentario tiene un parentCommentId */}
                             {comentario.parentCommentId && (
                                 <div className="respuesta-comentario">
-                                    <span className="respuesta-texto">Respuesta:</span>
-                                    <p>{comentario.comentario}</p>
+                                    <div className="imagen-nombre">
+                                        <img className="imagen-perfil-comentario" 
+                                            src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"} 
+                                            alt={comentario.usuario.nombre} />
+                                        <span className='usuario-comentario'>{comentario.usuario.nombre || 'Usuario desconocido'}</span>
+                                    </div>
+                                    <span className='comentario-fecha'>{new Date(comentario.fecha).toLocaleDateString()}</span>
+
+                                    <div className="respuesta-texto">
+                                        <span className="respuesta-label">Respuesta:</span>
+                                        <p>{comentario.comentario}</p>
+                                    </div>
                                 </div>
                             )}
 
                             {/* Si el comentario no es una respuesta, mostrar el botón de respuesta */}
                             {!comentario.parentCommentId && (
-                                <button onClick={() => responderComentario(comentario._id)}>Responder</button>
+                                <button className='boton-responder' onClick={() => responderComentario(comentario._id)}>Responder</button>
                             )}
 
                             {/* Mostrar input de respuesta si está en modo respuesta */}
@@ -788,7 +799,7 @@ const agregarRespuesta = async () => {
                 ) : (
                     <p>No hay comentarios aún.</p>
                 )}
-            </div>
+              </div>
 
               <hr className='divider'></hr>
 

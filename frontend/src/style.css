@@ -4731,3 +4731,21 @@ i.fas.fa-undo {
     background-color: #004080;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+
+
+
+.respuesta-comentario {
+    margin-left: 20px; /* Ajusta este valor según necesites */
+    padding-left: 10px;
+    border-left: 2px solid #ddd; /* Opcional: para marcar visualmente las respuestas */
+}
+
+.respuesta-texto {
+    margin-top: 5px;
+}
+
+.respuesta-label {
+    font-weight: bold;
+    margin-right: 5px;
+}
