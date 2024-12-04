@@ -8,18 +8,11 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
-            .populate('usuario') // Popula el usuario que creó la receta
+            .populate('usuario')
             .populate({ 
-                path: 'comentarios', 
+                path: 'comentarios',
                 populate: { 
-                    path: 'usuario', // Popula el usuario de cada comentario
-                    select: 'nombre imagenPerfil' // Puedes seleccionar los campos que quieres del usuario
-                }
-            })
-            .populate({
-                path: 'comentarios.respuestas', // Aquí solo se hace un populate para las respuestas de cada comentario
-                populate: {
-                    path: 'usuario', // Popula el usuario de cada respuesta
+                    path: 'usuario',
                     select: 'nombre imagenPerfil'
                 }
             });
@@ -28,7 +21,17 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ mensaje: 'Receta no encontrada' });
         }
 
-        res.json(receta);
+        // Estructurar los comentarios en un árbol (padres con respuestas)
+        const comentarios = receta.comentarios.map((comentario) => comentario.toObject()); // Convierte a objetos planos
+        const comentariosRaiz = comentarios.filter((c) => !c.parentCommentId);
+        const comentariosMap = new Map(comentarios.map((c) => [c._id.toString(), c]));
+
+        comentariosRaiz.forEach((comentarioRaiz) => {
+            comentarioRaiz.respuestas = comentarios
+                .filter((c) => c.parentCommentId?.toString() === comentarioRaiz._id.toString());
+        });
+
+        res.json({ ...receta.toObject(), comentarios: comentariosRaiz });
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
