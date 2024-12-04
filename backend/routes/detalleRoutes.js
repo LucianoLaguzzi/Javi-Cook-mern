@@ -17,10 +17,10 @@ router.get('/:id', async (req, res) => {
                 }
             })
             .populate({
-                path: 'comentarios.respuestas', // Aquí solo se hace un populate para las respuestas de cada comentario
+                path: 'comentarios',
                 populate: {
-                    path: 'usuario', // Popula el usuario de cada respuesta
-                    select: 'nombre imagenPerfil'
+                    path: 'parentCommentId', // Para obtener las respuestas (comentarios padres)
+                    select: 'comentario usuario fecha'
                 }
             });
 

@@ -52,36 +52,64 @@ const [respuesta, setRespuesta] = useState('');
   
 
   useEffect(() => {
+    // Obtener detalles de la receta desde el backend usando Axios
     const obtenerReceta = async () => {
-        try {
-            setIsLoading(true);
-            const response = await axios.get(`https://javicook-mern.onrender.com/api/detalles/${id}`);
-            setReceta(response.data);
-            
-            if (response.data.usuario._id === usuarioEnSesion._id) {
-                setEsPropietario(true);
-            }
+      try {
+        setIsLoading(true); // Activa el loading antes de empezar
 
-            setIngredientesCantidades(response.data.ingredientesCantidades.join('\r\n'));
-            setPasos(response.data.pasos.join('\r\n'));
+        const response = await axios.get(`https://javicook-mern.onrender.com/api/detalles/${id}`);
+        setReceta(response.data);
 
-            // Aquí estamos asignando los comentarios correctamente
-            const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
-                return {
-                    ...comentario,
-                    respuestas: comentario.respuestas || [] // Asegúrate de que las respuestas se asignen correctamente
-                };
-            });
-
-            setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
-        } catch (error) {
-            console.error('Error al cargar la receta', error);
-        } finally {
-            setIsLoading(false);
+        // Comparar IDs para determinar si es propietario
+        if (response.data.usuario._id === usuarioEnSesion._id) {
+          console.log("Es propietario de la receta")
+          setEsPropietario(true);
         }
+
+        setIngredientesCantidades(response.data.ingredientesCantidades.join('\r\n'));
+        setPasos(response.data.pasos.join('\r\n'));
+
+
+
+
+
+
+        // Aquí estamos asignando los comentarios correctamente
+        const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
+          // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
+          return {
+            ...comentario,
+            respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
+          };
+        });
+
+        setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
+
+
+
+
+
+
+
+
+
+
+        // Obtener la valoración del usuario
+        const valoracionResponse = await axios.get(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+        if (valoracionResponse.data.valoracionUsuario) {
+          setValoracionUsuario(valoracionResponse.data.valoracionUsuario);
+          setYaValorado(true);
+        }
+
+
+      } catch (error) {
+        console.error('Error al cargar la receta', error);
+       } finally {
+        setIsLoading(false); // Desactiva el loading después de completar la carga
+      }
     };
     obtenerReceta();
-}, [id]);
+  }, [id]);
 
   
   // Temporizador
@@ -271,33 +299,33 @@ const [respuesta, setRespuesta] = useState('');
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
-  
+
     try {
-      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-        comentario: respuesta,
-        usuario: usuarioEnSesion._id,
-        parentCommentId: comentarioAResponder // ID del comentario padre
-      });
-  
-      const nuevaRespuesta = response.data.comentarioGuardado;
-  
-      setComentarios((prevComentarios) => {
-        return prevComentarios.map((comentario) => {
-          // Si el comentario actual es el padre, añadimos la respuesta como su hijo
-          if (comentario._id === comentarioAResponder) {
-            return {
-              ...comentario,
-              respuestas: [...(comentario.respuestas || []), nuevaRespuesta] // Añadimos la respuesta al comentario
-            };
-          }
-          return comentario;
+        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
+            comentario: respuesta,
+            usuario: usuarioEnSesion._id,
+            parentCommentId: comentarioAResponder // ID del comentario padre
         });
-      });
-  
-      setRespuesta('');
-      setComentarioAResponder(null); // Limpiar el estado del comentario padre
+
+        const nuevaRespuesta = response.data.comentarioGuardado;
+
+        setComentarios((prevComentarios) => {
+            return prevComentarios.map((comentario) => {
+                // Si el comentario actual es el padre, añadimos la respuesta como su hijo
+                if (comentario._id === comentarioAResponder) {
+                    return {
+                        ...comentario,
+                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta]
+                    };
+                }
+                return comentario;
+            });
+        });
+
+        setRespuesta('');
+        setComentarioAResponder(null); // Limpiar el estado del comentario padre
     } catch (error) {
-      console.error('Error al agregar la respuesta:', error);
+        console.error('Error al agregar la respuesta:', error);
     }
   };
 
@@ -756,53 +784,61 @@ const [respuesta, setRespuesta] = useState('');
               </div>
               
               <div className="comentarios-usuarios">
-              {comentarios && comentarios.length > 0 ? (
-                comentarios.map((comentario) => (
+                {comentarios && comentarios.length > 0 ? (
+                  comentarios.map((comentario) => (
                     <div key={comentario._id} className="contenedores-spam">
-                        <div className="comentario-principal">
-                            {/* Mostrar comentario principal */}
-                            <div className="imagen-nombre">
-                                <img src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"} alt={comentario.usuario.nombre} />
-                                <span className="usuario-comentario">{comentario.usuario.nombre || 'Usuario desconocido'}</span>
-                            </div>
-                            <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-                            <p className="texto-comentario">{comentario.comentario}</p>
-                            <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>Responder</button>
+                      {/* Comentario principal */}
+                      <div className="comentario-principal">
+                        <div className="imagen-nombre">
+                          <img
+                            className="imagen-perfil-comentario"
+                            src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                            alt={comentario.usuario.nombre}
+                          />
+                          <span className="usuario-comentario">{comentario.usuario.nombre || 'Usuario desconocido'}</span>
                         </div>
-
-                        {/* Mostrar respuestas si existen */}
-                        {comentario.respuestas && comentario.respuestas.length > 0 && (
-                            <div className="respuestas">
-                                {comentario.respuestas.map((respuesta) => (
-                                    <div key={respuesta._id} className="respuesta-comentario">
-                                        <div className="imagen-nombre">
-                                            <img src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"} alt={respuesta.usuario.nombre} />
-                                            <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
-                                        </div>
-                                        <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                                        <p>{respuesta.comentario}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Mostrar input de respuesta si está en modo respuesta */}
-                        {comentarioAResponder === comentario._id && (
-                            <div className="input-respuesta">
-                                <input 
-                                    type="text" 
-                                    value={respuesta} 
-                                    onChange={(e) => setRespuesta(e.target.value)} 
-                                    placeholder="Escribe tu respuesta..." 
-                                />
-                                <button onClick={agregarRespuesta}>Enviar</button>
-                              </div>
-                          )}
+                        <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
+                        <p className="texto-comentario">{comentario.comentario}</p>
+                        <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>Responder</button>
                       </div>
+
+                      {/* Respuestas */}
+                      {comentario.respuestas && comentario.respuestas.length > 0 && (
+                        <div className="respuestas">
+                          {comentario.respuestas.map((respuesta) => (
+                            <div key={respuesta._id} className="respuesta-comentario">
+                              <div className="imagen-nombre">
+                                <img
+                                  className="imagen-perfil-comentario"
+                                  src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                  alt={respuesta.usuario.nombre}
+                                />
+                                <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
+                              </div>
+                              <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+                              <p>{respuesta.comentario}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Mostrar input de respuesta si está en modo respuesta */}
+                      {comentarioAResponder === comentario._id && (
+                        <div className="input-respuesta">
+                          <input 
+                            type="text" 
+                            value={respuesta} 
+                            onChange={(e) => setRespuesta(e.target.value)} 
+                            placeholder="Escribe tu respuesta..." 
+                          />
+                          <button onClick={agregarRespuesta}>Enviar</button>
+                        </div>
+                      )}
+                    </div>
                   ))
-              ) : (
+                ) : (
                   <p>No hay comentarios aún.</p>
-              )}
+                )}
               </div>
 
               <hr className='divider'></hr>

@@ -9,23 +9,29 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
+            .populate('usuario') // Popula el usuario que creó la receta
+            .populate({ 
+                path: 'comentarios', 
+                populate: { 
+                    path: 'usuario', // Popula el usuario de cada comentario
+                    select: 'nombre imagenPerfil' // Puedes seleccionar los campos que quieres del usuario
+                }
+            })
             .populate({
                 path: 'comentarios',
                 populate: {
-                    path: 'usuario',
-                    model: 'Usuario',
-                    select: 'nombre imagenPerfil'
+                    path: 'parentCommentId', // Para obtener las respuestas (comentarios padres)
+                    select: 'comentario usuario fecha'
                 }
             });
 
         if (!receta) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
+            return res.status(404).json({ mensaje: 'Receta no encontrada' });
         }
 
         res.json(receta);
     } catch (error) {
-        console.error('Error al obtener receta con comentarios:', error);
-        res.status(500).json({ message: 'Error al obtener la receta' });
+        res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
 });
 
