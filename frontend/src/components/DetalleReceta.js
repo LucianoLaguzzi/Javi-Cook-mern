@@ -71,27 +71,13 @@ const [respuesta, setRespuesta] = useState('');
 
 
 
-
-
-
         // Aquí estamos asignando los comentarios correctamente
-      const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
-        // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
-        return {
+        const comentariosConRespuestas = response.data.comentarios.map((comentario) => ({
           ...comentario,
-          respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
-        };
-      });
+          respuestas: comentario.respuestas ? comentario.respuestas : [] // Asegúrate de que nunca sea undefined ni null
+        }));
 
-      setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
-
-
-
-
-
-
-
-
+        setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
 
 
         // Obtener la valoración del usuario
@@ -768,7 +754,7 @@ const [respuesta, setRespuesta] = useState('');
 
               
 
-<div className="detalles-comentarios">
+              <div className="detalles-comentarios">
                 <i class="far fa-comment-alt"></i>
                 <h3>Comentarios</h3>
               </div>
