@@ -68,7 +68,31 @@ const [respuesta, setRespuesta] = useState('');
 
         setIngredientesCantidades(response.data.ingredientesCantidades.join('\r\n'));
         setPasos(response.data.pasos.join('\r\n'));
-        setComentarios(response.data.comentarios || []); // Inicializar comentarios
+
+
+
+
+
+
+        // Aquí estamos asignando los comentarios correctamente
+        const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
+          // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
+          return {
+            ...comentario,
+            respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
+          };
+        });
+
+        setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
+
+
+
+
+
+
+
+
+
 
         // Obtener la valoración del usuario
         const valoracionResponse = await axios.get(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
@@ -275,33 +299,33 @@ const [respuesta, setRespuesta] = useState('');
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
-
+  
     try {
-        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-            comentario: respuesta,
-            usuario: usuarioEnSesion._id,
-            parentCommentId: comentarioAResponder // ID del comentario padre
+      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
+        comentario: respuesta,
+        usuario: usuarioEnSesion._id,
+        parentCommentId: comentarioAResponder // ID del comentario padre
+      });
+  
+      const nuevaRespuesta = response.data.comentarioGuardado;
+  
+      setComentarios((prevComentarios) => {
+        return prevComentarios.map((comentario) => {
+          // Si el comentario actual es el padre, añadimos la respuesta como su hijo
+          if (comentario._id === comentarioAResponder) {
+            return {
+              ...comentario,
+              respuestas: [...(comentario.respuestas || []), nuevaRespuesta] // Añadimos la respuesta al comentario
+            };
+          }
+          return comentario;
         });
-
-        const nuevaRespuesta = response.data.comentarioGuardado;
-
-        setComentarios((prevComentarios) => {
-            return prevComentarios.map((comentario) => {
-                // Si el comentario actual es el padre, añadimos la respuesta como su hijo
-                if (comentario._id === comentarioAResponder) {
-                    return {
-                        ...comentario,
-                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta]
-                    };
-                }
-                return comentario;
-            });
-        });
-
-        setRespuesta('');
-        setComentarioAResponder(null); // Limpiar el estado del comentario padre
+      });
+  
+      setRespuesta('');
+      setComentarioAResponder(null); // Limpiar el estado del comentario padre
     } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
+      console.error('Error al agregar la respuesta:', error);
     }
   };
 
@@ -766,10 +790,10 @@ const [respuesta, setRespuesta] = useState('');
                       {/* Comentario principal */}
                       <div className="comentario-principal">
                         <div className="imagen-nombre">
-                          <img 
-                            className="imagen-perfil-comentario" 
-                            src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"} 
-                            alt={comentario.usuario.nombre} 
+                          <img
+                            className="imagen-perfil-comentario"
+                            src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                            alt={comentario.usuario.nombre}
                           />
                           <span className="usuario-comentario">{comentario.usuario.nombre || 'Usuario desconocido'}</span>
                         </div>
@@ -784,10 +808,10 @@ const [respuesta, setRespuesta] = useState('');
                           {comentario.respuestas.map((respuesta) => (
                             <div key={respuesta._id} className="respuesta-comentario">
                               <div className="imagen-nombre">
-                                <img 
-                                  className="imagen-perfil-comentario" 
-                                  src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"} 
-                                  alt={respuesta.usuario.nombre} 
+                                <img
+                                  className="imagen-perfil-comentario"
+                                  src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                  alt={respuesta.usuario.nombre}
                                 />
                                 <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
                               </div>
