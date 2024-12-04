@@ -75,15 +75,15 @@ const [respuesta, setRespuesta] = useState('');
 
 
         // Aquí estamos asignando los comentarios correctamente
-        const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
-          // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
-          return {
-            ...comentario,
-            respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
-          };
-        });
+      const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
+        // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
+        return {
+          ...comentario,
+          respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
+        };
+      });
 
-        setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
+      setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
 
 
 
@@ -768,7 +768,7 @@ const [respuesta, setRespuesta] = useState('');
 
               
 
-               <div className="detalles-comentarios">
+<div className="detalles-comentarios">
                 <i class="far fa-comment-alt"></i>
                 <h3>Comentarios</h3>
               </div>
