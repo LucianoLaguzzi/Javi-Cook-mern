@@ -259,64 +259,53 @@ const [respuesta, setRespuesta] = useState('');
   // Agregar comentario
   const agregarComentario = async () => {
     if (!nuevoComentario) return;
-    console.log('Usuario en sesión:', usuarioEnSesion);
 
     try {
-      const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-          comentario: nuevoComentario,
-          usuario: usuarioEnSesion._id
-      });
+        const response = await axios.post(
+            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+            { comentario: nuevoComentario, usuario: usuarioEnSesion._id }
+        );
 
-      // Esto debería devolver el comentario guardado, incluyendo la referencia al usuario
-      setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]); // Actualiza los comentarios
-      setNuevoComentario(''); // Limpiar el input
+        // Recupera el comentario con el usuario ya poblado
+        const comentarioPoblado = response.data.comentarioGuardado;
+
+        setComentarios((prevComentarios) => [...prevComentarios, comentarioPoblado]);
+        setNuevoComentario('');
     } catch (error) {
-      // Manejar errores más detalladamente
-      if (error.response) {
-          // La solicitud se realizó y el servidor respondió con un código de estado
-          console.error('Error al agregar el comentario:', error.response.data);
-      } else if (error.request) {
-          // La solicitud se realizó pero no se recibió respuesta
-          console.error('No se recibió respuesta del servidor:', error.request);
-      } else {
-          // Algo sucedió al configurar la solicitud
-          console.error('Error en la configuración de la solicitud:', error.message);
-      }
+        console.error('Error al agregar el comentario:', error);
     }
-  };
+};
 
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
 
     try {
-        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-            comentario: respuesta,
-            usuario: usuarioEnSesion._id,
-            parentCommentId: comentarioAResponder // ID del comentario padre
-        });
+        const response = await axios.post(
+            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+            { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
+        );
 
         const nuevaRespuesta = response.data.comentarioGuardado;
 
-        setComentarios((prevComentarios) => {
-            return prevComentarios.map((comentario) => {
-                // Si el comentario actual es el padre, añadimos la respuesta como su hijo
+        setComentarios((prevComentarios) =>
+            prevComentarios.map((comentario) => {
                 if (comentario._id === comentarioAResponder) {
                     return {
                         ...comentario,
-                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta]
+                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
                     };
                 }
                 return comentario;
-            });
-        });
+            })
+        );
 
         setRespuesta('');
-        setComentarioAResponder(null); // Limpiar el estado del comentario padre
+        setComentarioAResponder(null);
     } catch (error) {
         console.error('Error al agregar la respuesta:', error);
     }
-  };
+};
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
