@@ -272,31 +272,34 @@ const [respuesta, setRespuesta] = useState('');
     }
   };
 
-  const responderComentario = (comentarioId) => {
-    setComentarioAResponder(comentarioId); // Cuando se clickea "Responder", asignamos el comentario al que se responderá
-};
-
-// Función para agregar la respuesta
-const agregarRespuesta = async () => {
+  // Función para agregar respuesta
+  const agregarRespuesta = async () => {
     if (!respuesta) return;
 
     try {
         const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
             comentario: respuesta,
             usuario: usuarioEnSesion._id,
-            parentCommentId: comentarioAResponder // Enviamos el ID del comentario al que respondemos
+            parentCommentId: comentarioAResponder // ID del comentario al que se responde
         });
 
-        setComentarios((prevComentarios) => [
-            ...prevComentarios,
-            response.data.comentarioGuardado
-        ]);
+        // Actualizar el estado de los comentarios asegurándonos de que la respuesta se añada correctamente
+        setComentarios((prevComentarios) => {
+            const comentariosActualizados = [...prevComentarios, response.data.comentarioGuardado];
+            return comentariosActualizados;
+        });
+
         setRespuesta('');
-        setComentarioAResponder(null); // Limpiar la respuesta
+        setComentarioAResponder(null); // Limpiar el comentario al que se va a responder
     } catch (error) {
         console.error('Error al agregar la respuesta:', error);
     }
-};
+  };
+
+  // Función para manejar la respuesta
+  const responderComentario = (comentarioId) => {
+    setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
+  };
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
