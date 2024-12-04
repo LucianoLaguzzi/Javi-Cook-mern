@@ -255,7 +255,11 @@ const [respuesta, setRespuesta] = useState('');
       });
 
       // Esto debería devolver el comentario guardado, incluyendo la referencia al usuario
-      setComentarios((prevComentarios) => [...prevComentarios, response.data.comentarioGuardado]); // Actualiza los comentarios
+      setComentarios((prevComentarios) => {
+        const nuevosComentarios = [...prevComentarios, response.data.comentarioGuardado];
+        console.log('Comentarios actualizados:', nuevosComentarios);
+        return nuevosComentarios;
+      }); // Actualiza los comentarios
       setNuevoComentario(''); // Limpiar el input
     } catch (error) {
       // Manejar errores más detalladamente
@@ -275,24 +279,27 @@ const [respuesta, setRespuesta] = useState('');
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
-
+  
     try {
-        const response = await axios.post(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`, {
-            comentario: respuesta,
-            usuario: usuarioEnSesion._id,
-            parentCommentId: comentarioAResponder // ID del comentario al que se responde
-        });
-
-        // Actualizar el estado de los comentarios asegurándonos de que la respuesta se añada correctamente
-        setComentarios((prevComentarios) => {
-            const comentariosActualizados = [...prevComentarios, response.data.comentarioGuardado];
-            return comentariosActualizados;
-        });
-
-        setRespuesta('');
-        setComentarioAResponder(null); // Limpiar el comentario al que se va a responder
+      const response = await axios.post(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+        {
+          comentario: respuesta,
+          usuario: usuarioEnSesion._id,
+          parentCommentId: comentarioAResponder // ID del comentario al que se responde
+        }
+      );
+  
+      // Actualizar el estado de los comentarios inmediatamente
+      setComentarios((prevComentarios) => [
+        ...prevComentarios,
+        response.data.comentarioGuardado // Agregar la nueva respuesta
+      ]);
+  
+      setRespuesta(''); // Limpiar el input
+      setComentarioAResponder(null); // Limpiar el comentario al que se va a responder
     } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
+      console.error('Error al agregar la respuesta:', error);
     }
   };
 
@@ -777,7 +784,7 @@ const [respuesta, setRespuesta] = useState('');
               <div className="comentarios-usuarios">
                 {comentarios && comentarios.length > 0 ? (
                   comentarios
-                    .filter((comentario) => !comentario.parentCommentId) // Filtrar solo los comentarios principales
+                    .filter((comentario) => !comentario.parentCommentId) // Comentarios principales
                     .map((comentario) => (
                       <div key={comentario._id} className="contenedores-spam">
                         {/* Comentario principal */}
@@ -803,7 +810,7 @@ const [respuesta, setRespuesta] = useState('');
                         {/* Respuestas al comentario */}
                         <div className="respuestas">
                           {comentarios
-                            .filter((respuesta) => respuesta.parentCommentId === comentario._id) // Respuestas de este comentario
+                            .filter((respuesta) => respuesta.parentCommentId === comentario._id) // Respuestas al comentario
                             .map((respuesta) => (
                               <div key={respuesta._id} className="respuesta-comentario">
                                 <div className="imagen-nombre">
@@ -820,7 +827,7 @@ const [respuesta, setRespuesta] = useState('');
                             ))}
                         </div>
 
-                        {/* Mostrar input de respuesta si está en modo respuesta */}
+                        {/* Mostrar input para responder */}
                         {comentarioAResponder === comentario._id && (
                           <div className="input-respuesta">
                             <input
