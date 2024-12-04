@@ -4656,6 +4656,8 @@ i.fas.fa-undo {
     color: #fff;
     border-radius: 4px;
     cursor: pointer;
+    margin-bottom: 10px;
+    margin-left: 15px;
 }
 
 .boton-responder:hover {
