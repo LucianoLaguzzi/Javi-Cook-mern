@@ -72,10 +72,13 @@ const [respuesta, setRespuesta] = useState('');
 
 
         // Aquí estamos asignando los comentarios correctamente
-        const comentariosConRespuestas = response.data.comentarios.map((comentario) => ({
-          ...comentario,
-          respuestas: comentario.respuestas ? comentario.respuestas : [] // Asegúrate de que nunca sea undefined ni null
-        }));
+        const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
+          // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
+          return {
+            ...comentario,
+            respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
+          };
+        });
 
         setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
 

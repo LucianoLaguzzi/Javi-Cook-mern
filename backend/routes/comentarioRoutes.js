@@ -37,6 +37,7 @@ router.get('/:id', async (req, res) => {
 
 
 
+
 // Ruta para agregar un comentario a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
@@ -65,12 +66,13 @@ router.post('/:id/comentarios', async (req, res) => {
         receta.comentarios.push(comentarioGuardado._id);
         await receta.save(); // Guardar la receta actualizada
 
-        // Recuperar el comentario guardado con los datos del usuario
+        // Aquí hacemos un populate para incluir el usuario en el comentario
         const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
-            .populate('usuario', 'nombre imagenPerfil')
-            .populate('parentCommentId'); // También podemos poblar el comentario padre si es necesario
+            .populate('usuario', 'nombre imagenPerfil') // Aseguramos que se devuelvan estos campos
+            .populate('parentCommentId'); // Poblar el comentario padre si existe
 
-        res.status(201).json({ comentarioGuardado: comentarioConUsuario }); // Devolver el comentario guardado
+        // Devolver el comentario con la información del usuario
+        res.status(201).json({ comentarioGuardado: comentarioConUsuario });
     } catch (error) {
         console.error('Error en el backend:', error);
         res.status(500).json({ message: 'Error al agregar el comentario' });
