@@ -4754,3 +4754,14 @@ i.fas.fa-undo {
 }
 
 
+.toggle-respuestas button {
+    background: none;
+    border: none;
+    color: #007BFF;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+  }
+  .toggle-respuestas button:hover {
+    text-decoration: underline;
+  }

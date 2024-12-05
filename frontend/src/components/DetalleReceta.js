@@ -33,19 +33,16 @@ const DetalleReceta = () => {
   const [edicionActiva, setEdicionActiva] = useState(false);  // Controla si la edición está activa
   const [loading, setLoading] = useState(false); // Estado para el cartel de carga al eliminar
   const [isLoading, setIsLoading] = useState(true); // Nuevo estado para loading de carga de recetas 
-
-
   const [tiempo, setTiempo] = useState(0); // Tiempo en segundos
   const [activo, setActivo] = useState(false); // Estado para iniciar/pausar el temporizador
   const [mostrarControles, setMostrarControles] = useState(false); // Para mostrar/ocultar controles
   const [inputTiempo, setInputTiempo] = useState(""); // Valor fijo del input en minutos
-  
   const [tiempoInicial, setTiempoInicial] = useState(0);  // Guardar el tiempo inicial
   const [ultimaActualizacion, setUltimaActualizacion] = useState(Date.now());  // Registrar la última actualización
-
   const [comentarioAResponder, setComentarioAResponder] = useState(null);
-const [respuesta, setRespuesta] = useState('');
+  const [respuesta, setRespuesta] = useState('');
 
+  const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
   const botonRef = useRef(null);
 
@@ -313,6 +310,13 @@ const [respuesta, setRespuesta] = useState('');
   };
 
 
+  const toggleRespuestas = (idComentario) => {
+    setRespuestasVisibles((prev) => ({
+      ...prev,
+      [idComentario]: !prev[idComentario],
+    }));
+  };
+  
 
   
 
@@ -745,7 +749,7 @@ const [respuesta, setRespuesta] = useState('');
                 )}
 
               
-
+               {/* Comentarios */}
               <div className="detalles-comentarios">
                 <i class="far fa-comment-alt"></i>
                 <h3>Comentarios</h3>
@@ -782,6 +786,18 @@ const [respuesta, setRespuesta] = useState('');
 
                       {/* Respuestas */}
                       {comentario.respuestas && comentario.respuestas.length > 0 && (
+
+<div className="toggle-respuestas">
+<button onClick={() => toggleRespuestas(comentario._id)}>
+  {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : `Mostrar ${comentario.respuestas.length} respuesta(s)`}
+</button>
+{respuestasVisibles[comentario._id] && (
+
+
+
+
+
+
                         <div className="respuestas">
                           {comentario.respuestas.map((respuesta) => (
                             <div key={respuesta._id} className="respuesta-comentario">
@@ -798,8 +814,9 @@ const [respuesta, setRespuesta] = useState('');
                             </div>
                           ))}
                         </div>
+ 
                       )}
-
+</div> )}
                       {/* Mostrar input de respuesta si está en modo respuesta */}
                       {comentarioAResponder === comentario._id && (
                         <div className="input-respuesta">
