@@ -2907,6 +2907,7 @@ i.fas.fa-undo {
     display: flex;
     flex-direction: column;
     max-width: 1000px;
+    width: 100%;
 }
 
 .input-comentario{
@@ -4677,6 +4678,7 @@ i.fas.fa-undo {
     background-color: #f9f9f9;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.3s ease;
+    width: 85%;
 }
 
 @keyframes fadeIn {
@@ -4700,6 +4702,12 @@ i.fas.fa-undo {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+@media (max-width: 650px) {
+    .input-respuesta input  {
+        font-size: 12px;
+    }
+}
+
 .input-respuesta input:focus {
     background-color: #f0f8ff; /* Un azul muy suave */
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -4714,6 +4722,12 @@ i.fas.fa-undo {
     font-size: 0.9rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+@media (max-width: 650px) {
+    .input-respuesta button  {
+        font-size: 12px;
+    }
 }
 
 .input-respuesta button:hover {
