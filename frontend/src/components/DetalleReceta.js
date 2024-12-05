@@ -794,7 +794,7 @@ const [respuesta, setRespuesta] = useState('');
                                 <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
                               </div>
                               <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                              <p>{respuesta.comentario}</p>
+                              <p className='texto-respuesta'>{respuesta.comentario}</p>
                             </div>
                           ))}
                         </div>
