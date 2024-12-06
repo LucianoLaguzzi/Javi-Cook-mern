@@ -276,92 +276,37 @@ const DetalleReceta = () => {
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
-  
-    try {
-      const response = await axios.post(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-        { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
-      );
-  
-      const nuevaRespuesta = response.data.comentarioGuardado;
-  
-      setComentarios((prevComentarios) =>
-        prevComentarios.map((comentario) => {
-          // Si es una respuesta a un comentario principal
-          if (comentario._id === comentarioAResponder) {
-            return {
-              ...comentario,
-              respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
-            };
-          }
-          // Si es una subrespuesta
-          if (comentario.respuestas) {
-            return {
-              ...comentario,
-              respuestas: comentario.respuestas.map((respuesta) => {
-                if (respuesta._id === comentarioAResponder) {
-                  return {
-                    ...respuesta,
-                    subrespuestas: [...(respuesta.subrespuestas || []), nuevaRespuesta],
-                  };
-                }
-                return respuesta;
-              }),
-            };
-          }
-          return comentario;
-        })
-      );
-  
-      setRespuesta('');
-      setComentarioAResponder(null);
-    } catch (error) {
-      console.error('Error al agregar la respuesta:', error);
-    }
-  };
 
-  const agregarSubrespuesta = async () => {
-    if (!respuesta.trim()) return;  // Si no hay texto en el input, no hacer nada
-  
     try {
-      const response = await axios.post(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/subrespuestas`,
-        {
-          comentario: respuesta,  // El texto de la subrespuesta
-          usuario: usuarioEnSesion._id,  // El ID del usuario que responde
-          parentCommentId: comentarioAResponder,  // El ID del comentario al que se responde
-        }
-      );
-  
-      const nuevaSubrespuesta = response.data.comentarioGuardado;
-      // Actualiza el estado de los comentarios con la nueva subrespuesta
-      setComentarios((prevComentarios) =>
-        prevComentarios.map((comentario) => {
-          if (comentario._id === comentarioAResponder) {
-            return {
-              ...comentario,
-              subrespuestas: [...(comentario.subrespuestas || []), nuevaSubrespuesta],  // Agrega la subrespuesta al comentario
-            };
-          }
-          return comentario;
-        })
-      );
-      setRespuesta('');  // Limpiar el input
-      setComentarioAResponder(null);  // Restablecer el estado de la respuesta
+        const response = await axios.post(
+            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+            { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
+        );
+
+        const nuevaRespuesta = response.data.comentarioGuardado;
+
+        setComentarios((prevComentarios) =>
+            prevComentarios.map((comentario) => {
+                if (comentario._id === comentarioAResponder) {
+                    return {
+                        ...comentario,
+                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
+                    };
+                }
+                return comentario;
+            })
+        );
+
+        setRespuesta('');
+        setComentarioAResponder(null);
     } catch (error) {
-      console.error('Error al agregar la subrespuesta:', error);
+        console.error('Error al agregar la respuesta:', error);
     }
-  };
+};
 
   // Función para manejar la respuesta
-  const responderComentario = (comentarioId, usuarioNombre) => {
-    console.log('Usuario a responder:', usuarioNombre); // Debug: Asegúrate de que es un string
-    if (typeof usuarioNombre === 'string') {
-      setComentarioAResponder(comentarioId);
-      setRespuesta(`@${usuarioNombre} `);
-    } else {
-      console.error('El nombre del usuario no es un string:', usuarioNombre);
-    }
+  const responderComentario = (comentarioId) => {
+    setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
   };
 
 
@@ -841,6 +786,7 @@ const DetalleReceta = () => {
 
                       {/* Respuestas */}
                       {comentario.respuestas && comentario.respuestas.length > 0 && (
+
                         <div className="toggle-respuestas">
                           <button onClick={() => toggleRespuestas(comentario._id)}>
                             {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : `Mostrar ${comentario.respuestas.length} respuesta(s)`}
@@ -858,49 +804,21 @@ const DetalleReceta = () => {
                                     <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
                                   </div>
                                   <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                                  <p className="texto-respuesta">{respuesta.comentario}</p>
-                                  <button className="boton-responder" onClick={() => responderComentario(respuesta._id, respuesta.usuario.nombre)}>
-                                    Responder
-                                  </button>
-
-                                  {/* Subrespuestas ya expresadas */}
-                                  {respuesta.subrespuestas && respuesta.subrespuestas.length > 0 && (
-                                    <div className="subrespuestas">
-                                      {respuesta.subrespuestas.map((subrespuesta) => (
-                                        <p key={subrespuesta._id} className="texto-subrespuesta">
-                                          <strong>@{subrespuesta.usuario.nombre}:</strong> {subrespuesta.comentario}
-                                        </p>
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  {/* Input para subrespuestas */}
-                                  {comentarioAResponder === respuesta._id && (
-                                    <div className="input-respuesta">
-                                      <input
-                                        type="text"
-                                        value={respuesta || ''} // Asegura que siempre haya un string, incluso si el estado está vacío
-                                        onChange={(e) => setRespuesta(e.target.value)}
-                                        placeholder="Escribe tu respuesta..."
-                                      />
-                                        <button onClick={agregarSubrespuesta}>Enviar</button>
-                                    </div>
-                                  )}
+                                  <p className='texto-respuesta'>{respuesta.comentario}</p>
                                 </div>
                               ))}
                             </div>
                           )}
-                        </div>
+                        </div> 
                       )}
-
-                      {/* Input de respuesta para comentarios principales */}
+                      {/* Mostrar input de respuesta si está en modo respuesta */}
                       {comentarioAResponder === comentario._id && (
                         <div className="input-respuesta">
-                          <input
-                            type="text"
-                            value={respuesta}
-                            onChange={(e) => setRespuesta(e.target.value)}
-                            placeholder="Escribe tu respuesta..."
+                          <input 
+                            type="text" 
+                            value={respuesta} 
+                            onChange={(e) => setRespuesta(e.target.value)} 
+                            placeholder="Escribe tu respuesta..." 
                           />
                           <button onClick={agregarRespuesta}>Enviar</button>
                         </div>
