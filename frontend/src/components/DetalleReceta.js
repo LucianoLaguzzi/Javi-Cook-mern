@@ -277,22 +277,22 @@ const DetalleReceta = () => {
   const agregarRespuesta = () => {
     if (!respuesta.trim()) return;
   
-    const comentarioId = comentarioAResponder?.comentarioId;
-    const usuarioNombre = comentarioAResponder?.usuarioNombre;
+    const { comentarioId, usuarioNombre } = comentarioAResponder;
   
     // Construir el texto de la respuesta
     const textoRespuesta = usuarioNombre
       ? `@${usuarioNombre} ${respuesta}`
       : respuesta;
   
-    // Nueva respuesta
+    // Crear la nueva respuesta
     const nuevaRespuesta = {
+      _id: Math.random().toString(36).substr(2, 9), // Generar ID temporal
       comentario: textoRespuesta,
-      usuario:  usuarioEnSesion._id, // El usuario actual logueado
+      usuario: usuarioEnSesion._id, // Datos del usuario actual logueado
       fecha: new Date(),
     };
   
-    // Actualizar las respuestas del comentario en el estado
+    // Actualizar comentarios con la nueva respuesta
     const comentariosActualizados = comentarios.map((comentario) => {
       if (comentario._id === comentarioId) {
         return {
@@ -304,7 +304,7 @@ const DetalleReceta = () => {
     });
   
     setComentarios(comentariosActualizados);
-    setRespuesta('');
+    setRespuesta("");
     setComentarioAResponder(null); // Limpiar estado
   };
 
@@ -312,6 +312,7 @@ const DetalleReceta = () => {
   const responderComentario = (comentarioId, usuarioNombre = null) => {
     setComentarioAResponder({ comentarioId, usuarioNombre });
   };
+
 
   const toggleRespuestas = (idComentario) => {
     setRespuestasVisibles((prev) => ({
@@ -752,7 +753,8 @@ const DetalleReceta = () => {
                 )}
 
               
-             {/* Comentarios */}
+               {/* Comentarios */}
+              {/* Comentarios */}
 <div className="detalles-comentarios">
   <i className="far fa-comment-alt"></i>
   <h3>Comentarios</h3>
