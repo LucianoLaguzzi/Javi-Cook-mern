@@ -320,9 +320,43 @@ const DetalleReceta = () => {
     }
   };
 
+  const agregarSubrespuesta = async () => {
+    if (!respuesta.trim()) return;  // Si no hay texto en el input, no hacer nada
+  
+    try {
+      const response = await axios.post(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/subrespuestas`,
+        {
+          comentario: respuesta,  // El texto de la subrespuesta
+          usuario: usuarioEnSesion._id,  // El ID del usuario que responde
+          parentCommentId: comentarioAResponder,  // El ID del comentario al que se responde
+        }
+      );
+  
+      const nuevaSubrespuesta = response.data.comentarioGuardado;
+      // Actualiza el estado de los comentarios con la nueva subrespuesta
+      setComentarios((prevComentarios) =>
+        prevComentarios.map((comentario) => {
+          if (comentario._id === comentarioAResponder) {
+            return {
+              ...comentario,
+              subrespuestas: [...(comentario.subrespuestas || []), nuevaSubrespuesta],  // Agrega la subrespuesta al comentario
+            };
+          }
+          return comentario;
+        })
+      );
+      setRespuesta('');  // Limpiar el input
+      setComentarioAResponder(null);  // Restablecer el estado de la respuesta
+    } catch (error) {
+      console.error('Error al agregar la subrespuesta:', error);
+    }
+  };
+
   // Función para manejar la respuesta
-  const responderComentario = (comentarioId) => {
+  const responderComentario = (comentarioId, usuarioNombre) => {
     setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
+    setRespuesta(`@${usuarioNombre} `); // Establecer el nombre del usuario al que se responde en el input
   };
 
 
@@ -820,11 +854,11 @@ const DetalleReceta = () => {
                                   </div>
                                   <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
                                   <p className="texto-respuesta">{respuesta.comentario}</p>
-                                  <button className="boton-responder" onClick={() => responderComentario(respuesta._id)}>
+                                  <button className="boton-responder" onClick={() => responderComentario(respuesta._id, respuesta.usuario.nombre)}>
                                     Responder
                                   </button>
 
-                                  {/* Subrespuestas */}
+                                  {/* Subrespuestas ya expresadas */}
                                   {respuesta.subrespuestas && respuesta.subrespuestas.length > 0 && (
                                     <div className="subrespuestas">
                                       {respuesta.subrespuestas.map((subrespuesta) => (
@@ -844,7 +878,7 @@ const DetalleReceta = () => {
                                         onChange={(e) => setRespuesta(e.target.value)}
                                         placeholder="Escribe tu respuesta..."
                                       />
-                                      <button onClick={agregarRespuesta}>Enviar</button>
+                                        <button onClick={agregarSubrespuesta}>Enviar</button>
                                     </div>
                                   )}
                                 </div>
