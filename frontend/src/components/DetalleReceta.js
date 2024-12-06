@@ -307,6 +307,9 @@ const DetalleReceta = () => {
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
     setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
+
+    setRespuesta(""); // Limpia el estado de respuesta al iniciar
+
   };
 
 
@@ -824,18 +827,17 @@ const DetalleReceta = () => {
                                   )}
 
                                   {/* Mostrar input de subrespuesta */}
-                                  {comentarioAResponder === respuesta._id && (
+                                  {comentarioAResponder && (
                                     <div className="input-respuesta">
                                       <input
                                         type="text"
-                                        value={respuesta}
-                                        onChange={(e) => setRespuesta(e.target.value)}
+                                        value={respuesta || ""} // Garantiza que `respuesta` sea siempre una cadena
+                                        onChange={(e) => setRespuesta(e.target.value)} // Actualiza el estado al escribir
                                         placeholder="Escribe tu respuesta..."
                                       />
                                       <button onClick={agregarRespuesta}>Enviar</button>
                                     </div>
                                   )}
-
 
                                 </div>
                               ))}
