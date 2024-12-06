@@ -355,8 +355,13 @@ const DetalleReceta = () => {
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId, usuarioNombre) => {
-    setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
-    setRespuesta(`@${usuarioNombre} `); // Establecer el nombre del usuario al que se responde en el input
+    console.log('Usuario a responder:', usuarioNombre); // Debug: Asegúrate de que es un string
+    if (typeof usuarioNombre === 'string') {
+      setComentarioAResponder(comentarioId);
+      setRespuesta(`@${usuarioNombre} `);
+    } else {
+      console.error('El nombre del usuario no es un string:', usuarioNombre);
+    }
   };
 
 
@@ -874,7 +879,7 @@ const DetalleReceta = () => {
                                     <div className="input-respuesta">
                                       <input
                                         type="text"
-                                        value={respuesta}
+                                        value={respuesta || ''} // Asegura que siempre haya un string, incluso si el estado está vacío
                                         onChange={(e) => setRespuesta(e.target.value)}
                                         placeholder="Escribe tu respuesta..."
                                       />
