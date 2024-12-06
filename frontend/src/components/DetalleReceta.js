@@ -276,40 +276,53 @@ const DetalleReceta = () => {
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
-
+  
     try {
-        const response = await axios.post(
-            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-            { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
-        );
-
-        const nuevaRespuesta = response.data.comentarioGuardado;
-
-        setComentarios((prevComentarios) =>
-            prevComentarios.map((comentario) => {
-                if (comentario._id === comentarioAResponder) {
-                    return {
-                        ...comentario,
-                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
-                    };
+      const response = await axios.post(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+        { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
+      );
+  
+      const nuevaRespuesta = response.data.comentarioGuardado;
+  
+      setComentarios((prevComentarios) =>
+        prevComentarios.map((comentario) => {
+          // Si es una respuesta a un comentario principal
+          if (comentario._id === comentarioAResponder) {
+            return {
+              ...comentario,
+              respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
+            };
+          }
+          // Si es una subrespuesta
+          if (comentario.respuestas) {
+            return {
+              ...comentario,
+              respuestas: comentario.respuestas.map((respuesta) => {
+                if (respuesta._id === comentarioAResponder) {
+                  return {
+                    ...respuesta,
+                    subrespuestas: [...(respuesta.subrespuestas || []), nuevaRespuesta],
+                  };
                 }
-                return comentario;
-            })
-        );
-
-        setRespuesta('');
-        setComentarioAResponder(null);
+                return respuesta;
+              }),
+            };
+          }
+          return comentario;
+        })
+      );
+  
+      setRespuesta('');
+      setComentarioAResponder(null);
     } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
+      console.error('Error al agregar la respuesta:', error);
     }
-};
+  };
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
     setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
-
-    setRespuesta(""); // Limpia el estado de respuesta al iniciar
-
   };
 
 
@@ -789,7 +802,6 @@ const DetalleReceta = () => {
 
                       {/* Respuestas */}
                       {comentario.respuestas && comentario.respuestas.length > 0 && (
-
                         <div className="toggle-respuestas">
                           <button onClick={() => toggleRespuestas(comentario._id)}>
                             {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : `Mostrar ${comentario.respuestas.length} respuesta(s)`}
@@ -798,7 +810,6 @@ const DetalleReceta = () => {
                             <div className="respuestas">
                               {comentario.respuestas.map((respuesta) => (
                                 <div key={respuesta._id} className="respuesta-comentario">
-                                   {/* Respuesta */}
                                   <div className="imagen-nombre">
                                     <img
                                       className="imagen-perfil-comentario"
@@ -808,52 +819,49 @@ const DetalleReceta = () => {
                                     <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
                                   </div>
                                   <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                                  <p className='texto-respuesta'>{respuesta.comentario}</p>
+                                  <p className="texto-respuesta">{respuesta.comentario}</p>
+                                  <button className="boton-responder" onClick={() => responderComentario(respuesta._id)}>
+                                    Responder
+                                  </button>
 
-
-
-
-                                  <button className="boton-responder" onClick={() => responderComentario(respuesta._id)}>Responder</button>
                                   {/* Subrespuestas */}
                                   {respuesta.subrespuestas && respuesta.subrespuestas.length > 0 && (
                                     <div className="subrespuestas">
                                       {respuesta.subrespuestas.map((subrespuesta) => (
                                         <p key={subrespuesta._id} className="texto-subrespuesta">
-                                          <strong>@{subrespuesta.usuario.nombre}: </strong>
-                                          {subrespuesta.comentario}
+                                          <strong>@{subrespuesta.usuario.nombre}:</strong> {subrespuesta.comentario}
                                         </p>
                                       ))}
                                     </div>
                                   )}
 
-                                  {/* Mostrar input de subrespuesta */}
-                                  {comentarioAResponder && (
+                                  {/* Input para subrespuestas */}
+                                  {comentarioAResponder === respuesta._id && (
                                     <div className="input-respuesta">
                                       <input
                                         type="text"
-                                        value={respuesta || ""} // Garantiza que `respuesta` sea siempre una cadena
-                                        onChange={(e) => setRespuesta(e.target.value)} // Actualiza el estado al escribir
+                                        value={respuesta}
+                                        onChange={(e) => setRespuesta(e.target.value)}
                                         placeholder="Escribe tu respuesta..."
                                       />
                                       <button onClick={agregarRespuesta}>Enviar</button>
                                     </div>
                                   )}
-
                                 </div>
                               ))}
                             </div>
                           )}
-                        </div> 
+                        </div>
                       )}
 
-                      {/* Mostrar input de respuesta si está en modo respuesta */}
+                      {/* Input de respuesta para comentarios principales */}
                       {comentarioAResponder === comentario._id && (
                         <div className="input-respuesta">
-                          <input 
-                            type="text" 
-                            value={respuesta} 
-                            onChange={(e) => setRespuesta(e.target.value)} 
-                            placeholder="Escribe tu respuesta..." 
+                          <input
+                            type="text"
+                            value={respuesta}
+                            onChange={(e) => setRespuesta(e.target.value)}
+                            placeholder="Escribe tu respuesta..."
                           />
                           <button onClick={agregarRespuesta}>Enviar</button>
                         </div>

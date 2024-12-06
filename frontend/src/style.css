@@ -4753,7 +4753,6 @@ i.fas.fa-undo {
     margin-left: 7px;
 }
 
-
 .toggle-respuestas button {
     background: none;
     border: none;
@@ -4764,4 +4763,19 @@ i.fas.fa-undo {
   }
   .toggle-respuestas button:hover {
     text-decoration: underline;
+  }
+
+
+
+
+  .subrespuestas {
+    padding-left: 2rem;
+    border-left: 2px solid #ccc;
+    margin-top: 0.5rem;
+  }
+  
+  .texto-subrespuesta {
+    font-size: 0.9rem;
+    color: gray;
+    margin-bottom: 0.5rem;
   }
