@@ -863,16 +863,19 @@ const DetalleReceta = () => {
 
     {/* Mostrar input para respuesta de respuesta */}
     {respuestaARespuesta === respuesta._id && (
-      <div className="input-respuesta">
-        <input
-          type="text"
-          value={respuesta}
-          onChange={(e) => setRespuesta(e.target.value)}
-          placeholder={`Responder a @${respuesta.usuario.nombre}`}
-        />
-        <button onClick={agregarRespuestaARespuesta}>Enviar</button>
-      </div>
-    )}
+  <>
+    {console.log('Estado actual de respuesta:', respuesta)}
+    <div className="input-respuesta">
+      <input
+        type="text"
+        value={typeof respuesta === 'string' ? respuesta : ''}
+        onChange={(e) => setRespuesta(e.target.value)}
+        placeholder={`Responder a @${respuesta.usuario?.nombre || ''}`}
+      />
+      <button onClick={agregarRespuestaARespuesta}>Enviar</button>
+    </div>
+  </>
+)}
   </div>
 ))}
                             </div>
