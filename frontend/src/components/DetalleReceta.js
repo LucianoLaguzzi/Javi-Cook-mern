@@ -328,51 +328,35 @@ const DetalleReceta = () => {
   };
 
 
- const agregarRespuestaARespuesta = async () => {
-  if (!textoRespuestaARespuesta) return;
-
-  try {
-    const response = await axios.post(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-      {
-        comentario: textoRespuestaARespuesta,
-        usuario: usuarioEnSesion._id,
-        parentCommentId: respuestaARespuesta,
-      }
-    );
-
-    const nuevaRespuestaARespuesta = response.data.comentarioGuardado;
-
-    setComentarios((prevComentarios) =>
-      prevComentarios.map((comentario) => {
-        if (comentario.respuestas) {
-          return {
-            ...comentario,
-            respuestas: comentario.respuestas.map((respuesta) => {
-              if (respuesta._id === respuestaARespuesta) {
-                // Inserta la nueva respuesta en el lugar correcto
-                return {
-                  ...respuesta,
-                  respuestas: [
-                    ...(respuesta.respuestas || []),
-                    nuevaRespuestaARespuesta,
-                  ],
-                };
-              }
-              return respuesta;
-            }),
-          };
+  const agregarRespuestaARespuesta = async () => {
+    if (!textoRespuestaARespuesta || !respuestaARespuesta) return;
+  
+    try {
+      const usuarioResponder = comentarios.find(
+        (comentario) => comentario._id === respuestaARespuesta
+      )?.usuario?.nombre;
+  
+      const comentarioTexto = `@${usuarioResponder} ${textoRespuestaARespuesta}`;
+  
+      const response = await axios.post(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+        {
+          comentario: comentarioTexto,
+          usuario: usuarioEnSesion._id,
+          parentCommentId: respuestaARespuesta, // Se sigue registrando el ID padre
         }
-        return comentario;
-      })
-    );
-
-    setTextoRespuestaARespuesta('');
-    setRespuestaARespuesta(null);
-  } catch (error) {
-    console.error('Error al agregar la respuesta a la respuesta:', error);
-  }
-};
+      );
+  
+      const nuevaRespuesta = response.data.comentarioGuardado;
+  
+      setComentarios((prevComentarios) => [...prevComentarios, nuevaRespuesta]);
+  
+      setTextoRespuestaARespuesta('');
+      setRespuestaARespuesta(null);
+    } catch (error) {
+      console.error('Error al agregar la respuesta a la respuesta:', error);
+    }
+  };
 
   
 
