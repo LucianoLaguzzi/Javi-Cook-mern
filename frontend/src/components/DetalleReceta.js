@@ -43,6 +43,9 @@ const DetalleReceta = () => {
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
+
+
+const [respuestaAResponder, setRespuestaAResponder] = useState(null);   // Para las respuestas a comentarios
   const botonRef = useRef(null);
 
   
@@ -275,33 +278,35 @@ const DetalleReceta = () => {
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
-
+  
     try {
-        const response = await axios.post(
-            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-            { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
-        );
-
-        const nuevaRespuesta = response.data.comentarioGuardado;
-
-        setComentarios((prevComentarios) =>
-            prevComentarios.map((comentario) => {
-                if (comentario._id === comentarioAResponder) {
-                    return {
-                        ...comentario,
-                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
-                    };
-                }
-                return comentario;
-            })
-        );
-
-        setRespuesta('');
-        setComentarioAResponder(null);
+      // Lógica para enviar la respuesta al backend
+      const response = await axios.post(
+        `https://tu-backend.com/api/comentarios/${comentarioAResponder}/respuestas`,
+        { comentario: respuesta, usuario: usuarioEnSesion._id }
+      );
+  
+      const nuevaRespuesta = response.data;
+  
+      // Actualizar el estado de comentarios para incluir la nueva respuesta
+      setComentarios((prevComentarios) =>
+        prevComentarios.map((comentario) =>
+          comentario._id === comentarioAResponder
+            ? {
+                ...comentario,
+                respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
+              }
+            : comentario
+        )
+      );
+  
+      // Limpiar estados
+      setComentarioAResponder(null);
+      setRespuesta('');
     } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
+      console.error('Error al agregar la respuesta:', error);
     }
-};
+  };
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId, mencionUsuario = null) => {
@@ -309,6 +314,10 @@ const DetalleReceta = () => {
     setRespuesta(mencionUsuario ? `@${mencionUsuario} ` : ''); // Agregar mención si corresponde
 };
 
+const responderARespuesta = (respuestaId) => {
+  setRespuestaAResponder(respuestaId); // Si es una respuesta
+  setComentarioAResponder(null);  // Aseguramos que el estado de comentario principal esté vacío
+};
 
   const toggleRespuestas = (idComentario) => {
     setRespuestasVisibles((prev) => ({
@@ -809,7 +818,7 @@ const DetalleReceta = () => {
 </p>
 <button 
   className="boton-responder" 
-  onClick={() => responderComentario(respuesta._id, respuesta.usuario.nombre)}>
+  onClick={() => responderARespuesta(respuesta._id)}>
   Responder
 </button>
                                 </div>
@@ -830,6 +839,21 @@ const DetalleReceta = () => {
                           <button onClick={agregarRespuesta}>Enviar</button>
                         </div>
                       )}
+  {/* Mostrar input de respuesta si está en modo respuesta a respuesta */}
+                        {respuestaAResponder === respuesta._id && (
+                            <div className="input-respuesta">
+                                <input 
+                                    type="text" 
+                                    value={respuesta}
+                                    onChange={(e) => setRespuesta(e.target.value)}
+                                    placeholder="Escribe tu respuesta..."
+                                />
+                                <button onClick={agregarRespuesta}>Enviar</button>
+                            </div>
+                        )}
+
+
+
                     </div>
                   ))
                 ) : (
