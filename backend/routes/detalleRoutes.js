@@ -4,7 +4,7 @@ import Receta from '../models/Receta.js';
 
 const router = express.Router();
 
-// Ruta para obtener receta por ID con su comentario y respuestas
+// Ruta para obtener receta por ID junto con los comentarios y respuestas
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
@@ -21,19 +21,14 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ mensaje: 'Receta no encontrada' });
         }
 
-        const comentarios = receta.comentarios.map((comentario) => comentario.toObject()); // Asegura formato plano
+        // Estructurar los comentarios en un árbol (padres con respuestas)
+        const comentarios = receta.comentarios.map((comentario) => comentario.toObject()); // Convierte a objetos planos
         const comentariosRaiz = comentarios.filter((c) => !c.parentCommentId);
         const comentariosMap = new Map(comentarios.map((c) => [c._id.toString(), c]));
 
         comentariosRaiz.forEach((comentarioRaiz) => {
             comentarioRaiz.respuestas = comentarios
-                .filter((c) => c.parentCommentId?.toString() === comentarioRaiz._id.toString())
-                .map((respuesta) => ({
-                    ...respuesta,
-                    respuestas: comentarios.filter(
-                        (subRespuesta) => subRespuesta.parentCommentId?.toString() === respuesta._id.toString()
-                    )
-                }));
+                .filter((c) => c.parentCommentId?.toString() === comentarioRaiz._id.toString());
         });
 
         res.json({ ...receta.toObject(), comentarios: comentariosRaiz });
