@@ -43,10 +43,6 @@ const DetalleReceta = () => {
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
-  // Estado para manejar respuesta a una respuesta
-  const [respuestaARespuesta, setRespuestaARespuesta] = useState(null);
-  const [textoRespuestaARespuesta, setTextoRespuestaARespuesta] = useState('');
-
   const botonRef = useRef(null);
 
   
@@ -308,9 +304,10 @@ const DetalleReceta = () => {
 };
 
   // Función para manejar la respuesta
-  const responderComentario = (comentarioId) => {
-    setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
-  };
+  const responderComentario = (comentarioId, mencionUsuario = null) => {
+    setComentarioAResponder(comentarioId);
+    setRespuesta(mencionUsuario ? `@${mencionUsuario} ` : ''); // Agregar mención si corresponde
+};
 
 
   const toggleRespuestas = (idComentario) => {
@@ -321,50 +318,6 @@ const DetalleReceta = () => {
   };
   
 
-  const responderARespuesta = (respuestaId) => {
-    setRespuestaARespuesta(respuestaId); // Establece el ID de la respuesta que se está respondiendo
-  };
-
-  const agregarRespuestaARespuesta = async () => {
-    if (!textoRespuestaARespuesta) return;
-
-    try {
-        const respuestaOriginal = comentarios
-            .flatMap((comentario) => comentario.respuestas)
-            .find((respuesta) => respuesta._id === respuestaARespuesta);
-
-        const nuevaRespuesta = {
-            comentario: `@${respuestaOriginal.usuario.nombre} ${textoRespuestaARespuesta}`,
-            usuario: usuarioEnSesion._id,
-            parentCommentId: respuestaARespuesta,
-        };
-
-        const response = await axios.post(
-            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-            nuevaRespuesta
-        );
-
-        const respuestaGuardada = response.data.comentarioGuardado;
-
-        // Actualizar estado de comentarios
-        setComentarios((prevComentarios) =>
-            prevComentarios.map((comentario) => {
-                if (comentario.respuestas.some((res) => res._id === respuestaARespuesta)) {
-                    return {
-                        ...comentario,
-                        respuestas: [...comentario.respuestas, respuestaGuardada],
-                    };
-                }
-                return comentario;
-            })
-        );
-
-        setTextoRespuestaARespuesta('');
-        setRespuestaARespuesta(null);
-    } catch (error) {
-        console.error('Error al agregar respuesta a respuesta:', error);
-    }
-};
   
 
 
@@ -839,35 +792,28 @@ const DetalleReceta = () => {
                           </button>
                           {respuestasVisibles[comentario._id] && (
                             <div className="respuestas">
-                            {comentario.respuestas.map((respuesta) => (
-    <div key={respuesta._id} className="respuesta-comentario">
-        <div className="imagen-nombre">
-            <img
-                className="imagen-perfil-comentario"
-                src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                alt={respuesta.usuario.nombre}
-            />
-            <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
-        </div>
-        <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-        <p className="texto-respuesta">{respuesta.comentario}</p>
-        <button onClick={() => responderARespuesta(respuesta._id)} className="boton-responder">
-            Responder
-        </button>
-
-        {respuestaARespuesta === respuesta._id && (
-            <div className="input-respuesta">
-                <input
-                    type="text"
-                    value={textoRespuestaARespuesta}
-                    onChange={(e) => setTextoRespuestaARespuesta(e.target.value)}
-                    placeholder="Escribe tu respuesta..."
-                />
-                <button onClick={agregarRespuestaARespuesta}>Enviar</button>
-            </div>
-        )}
-    </div>
-))}
+                              {comentario.respuestas.map((respuesta) => (
+                                <div key={respuesta._id} className="respuesta-comentario">
+                                  <div className="imagen-nombre">
+                                    <img
+                                      className="imagen-perfil-comentario"
+                                      src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                      alt={respuesta.usuario.nombre}
+                                    />
+                                    <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
+                                  </div>
+                                  <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+                                  <p className="texto-respuesta">
+  {respuesta.mencion && <span className="mencion">{respuesta.mencion} </span>}
+  {respuesta.comentario}
+</p>
+<button 
+  className="boton-responder" 
+  onClick={() => responderComentario(respuesta._id, respuesta.usuario.nombre)}>
+  Responder
+</button>
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div> 
