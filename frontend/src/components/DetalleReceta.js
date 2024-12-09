@@ -327,52 +327,52 @@ const DetalleReceta = () => {
     setTextoRespuestaARespuesta(''); // Limpia el texto anterior
   };
 
-  
-  const agregarRespuestaARespuesta = async () => {
-    if (!textoRespuestaARespuesta) return;
-  
-    try {
-      const response = await axios.post(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-        {
-          comentario: textoRespuestaARespuesta,
-          usuario: usuarioEnSesion._id,
-          parentCommentId: respuestaARespuesta,
+
+ const agregarRespuestaARespuesta = async () => {
+  if (!textoRespuestaARespuesta) return;
+
+  try {
+    const response = await axios.post(
+      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+      {
+        comentario: textoRespuestaARespuesta,
+        usuario: usuarioEnSesion._id,
+        parentCommentId: respuestaARespuesta,
+      }
+    );
+
+    const nuevaRespuestaARespuesta = response.data.comentarioGuardado;
+
+    setComentarios((prevComentarios) =>
+      prevComentarios.map((comentario) => {
+        if (comentario.respuestas) {
+          return {
+            ...comentario,
+            respuestas: comentario.respuestas.map((respuesta) => {
+              if (respuesta._id === respuestaARespuesta) {
+                // Inserta la nueva respuesta en el lugar correcto
+                return {
+                  ...respuesta,
+                  respuestas: [
+                    ...(respuesta.respuestas || []),
+                    nuevaRespuestaARespuesta,
+                  ],
+                };
+              }
+              return respuesta;
+            }),
+          };
         }
-      );
-  
-      const nuevaRespuestaARespuesta = response.data.comentarioGuardado;
-  
-      // Actualiza la respuesta padre en el estado
-      setComentarios((prevComentarios) =>
-        prevComentarios.map((comentario) => {
-          if (comentario._id === comentarioAResponder) {
-            return {
-              ...comentario,
-              respuestas: comentario.respuestas.map((respuesta) => {
-                if (respuesta._id === respuestaARespuesta) {
-                  return {
-                    ...respuesta,
-                    respuestas: [
-                      ...(respuesta.respuestas || []),
-                      nuevaRespuestaARespuesta,
-                    ],
-                  };
-                }
-                return respuesta;
-              }),
-            };
-          }
-          return comentario;
-        })
-      );
-  
-      setTextoRespuestaARespuesta('');
-      setRespuestaARespuesta(null);
-    } catch (error) {
-      console.error('Error al agregar la respuesta a la respuesta:', error);
-    }
-  };
+        return comentario;
+      })
+    );
+
+    setTextoRespuestaARespuesta('');
+    setRespuestaARespuesta(null);
+  } catch (error) {
+    console.error('Error al agregar la respuesta a la respuesta:', error);
+  }
+};
 
   
 
@@ -883,6 +883,27 @@ const DetalleReceta = () => {
         <button onClick={agregarRespuestaARespuesta}>Enviar</button>
       </div>
     )}
+
+    {/* Renderizado de re-respuestas */}
+    {respuesta.respuestas &&
+      respuesta.respuestas.map((subRespuesta) => (
+        <div key={subRespuesta._id} className="respuesta-comentario sub-respuesta">
+          <div className="imagen-nombre">
+            <img
+              className="imagen-perfil-comentario"
+              src={subRespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+              alt={subRespuesta.usuario.nombre}
+            />
+            <span className="usuario-comentario">
+              {subRespuesta.usuario.nombre || 'Usuario desconocido'}
+            </span>
+          </div>
+          <span className="comentario-fecha">
+            {new Date(subRespuesta.fecha).toLocaleDateString()}
+          </span>
+          <p className="texto-respuesta">{subRespuesta.comentario}</p>
+        </div>
+      ))}
   </div>
 ))}
                             </div>
