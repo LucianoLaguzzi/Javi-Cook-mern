@@ -328,7 +328,10 @@ const DetalleReceta = () => {
 
 
   const agregarRespuestaARespuesta = async () => {
-    if (!respuesta) return;
+    if (!respuesta.trim()) {
+      alert('La respuesta no puede estar vacía');
+      return;
+    }
   
     try {
       const response = await axios.post(
@@ -863,18 +866,15 @@ const DetalleReceta = () => {
 
     {/* Mostrar input para respuesta de respuesta */}
     {respuestaARespuesta === respuesta._id && (
-  <>
-    {console.log('Estado actual de respuesta:', respuesta)}
-    <div className="input-respuesta">
-      <input
-        type="text"
-        value={typeof respuesta === 'string' ? respuesta : ''}
-        onChange={(e) => setRespuesta(e.target.value)}
-        placeholder={`Responder a @${respuesta.usuario?.nombre || ''}`}
-      />
-      <button onClick={agregarRespuestaARespuesta}>Enviar</button>
-    </div>
-  </>
+  <div className="input-respuesta">
+    <input
+      type="text"
+      value={respuesta} // Solo texto
+      onChange={(e) => setRespuesta(e.target.value)} // Actualizar estado con texto ingresado
+      placeholder={`Responder a @${respuesta.usuario?.nombre || ''}`}
+    />
+    <button onClick={agregarRespuestaARespuesta}>Enviar</button>
+  </div>
 )}
   </div>
 ))}
