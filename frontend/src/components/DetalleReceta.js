@@ -43,9 +43,10 @@ const DetalleReceta = () => {
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
-  // Nuevo estado para manejar el ID de la respuesta que está siendo respondida
-  const [respuestaARespuesta, setRespuestaARespuesta] = useState(null);
-  const [nombreUsuarioAResponder, setNombreUsuarioAResponder] = useState(''); // Nombre del usuario al que se responderá
+
+  const [respuestaARespuesta, setRespuestaARespuesta] = useState(null); // ID de la respuesta seleccionada
+  const [textoRespuestaARespuesta, setTextoRespuestaARespuesta] = useState(''); // Texto para la respuesta
+
 
   const botonRef = useRef(null);
 
@@ -319,57 +320,59 @@ const DetalleReceta = () => {
       [idComentario]: !prev[idComentario],
     }));
   };
+  
 
-
-  const responderRespuesta = (respuestaId, nombreUsuario) => {
-    setRespuestaARespuesta(respuestaId); // Establece el ID de la respuesta a la que se está respondiendo
-    setNombreUsuarioAResponder(nombreUsuario); // Guarda el nombre del usuario a mencionar
+  const responderRespuesta = (respuestaId) => {
+    setRespuestaARespuesta(respuestaId); // Configura la respuesta a la que se responderá
+    setTextoRespuestaARespuesta(''); // Limpia el texto anterior
   };
 
-
+  
   const agregarRespuestaARespuesta = async () => {
-    if (!respuesta.trim()) {
-      alert('La respuesta no puede estar vacía');
-      return;
-    }
+    if (!textoRespuestaARespuesta) return;
   
     try {
       const response = await axios.post(
         `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
         {
-          comentario: `@${nombreUsuarioAResponder} ${respuesta}`, // Formatea el texto con el nombre del usuario
+          comentario: textoRespuestaARespuesta,
           usuario: usuarioEnSesion._id,
-          parentCommentId: respuestaARespuesta, // ID de la respuesta padre
+          parentCommentId: respuestaARespuesta,
         }
       );
   
-      const nuevaRespuesta = response.data.comentarioGuardado;
+      const nuevaRespuestaARespuesta = response.data.comentarioGuardado;
   
+      // Actualiza la respuesta padre en el estado
       setComentarios((prevComentarios) =>
         prevComentarios.map((comentario) => {
-          if (comentario.respuestas.some((resp) => resp._id === respuestaARespuesta)) {
+          if (comentario._id === comentarioAResponder) {
             return {
               ...comentario,
-              respuestas: comentario.respuestas.map((resp) =>
-                resp._id === respuestaARespuesta
-                  ? { ...resp, respuestas: [...(resp.respuestas || []), nuevaRespuesta] }
-                  : resp
-              ),
+              respuestas: comentario.respuestas.map((respuesta) => {
+                if (respuesta._id === respuestaARespuesta) {
+                  return {
+                    ...respuesta,
+                    respuestas: [
+                      ...(respuesta.respuestas || []),
+                      nuevaRespuestaARespuesta,
+                    ],
+                  };
+                }
+                return respuesta;
+              }),
             };
           }
           return comentario;
         })
       );
   
-      // Limpia el estado
-      setRespuesta('');
+      setTextoRespuestaARespuesta('');
       setRespuestaARespuesta(null);
-      setNombreUsuarioAResponder('');
     } catch (error) {
-      console.error('Error al agregar la respuesta a respuesta:', error);
+      console.error('Error al agregar la respuesta a la respuesta:', error);
     }
   };
-  
 
   
 
@@ -853,29 +856,33 @@ const DetalleReceta = () => {
         src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
         alt={respuesta.usuario.nombre}
       />
-      <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
+      <span className="usuario-comentario">
+        {respuesta.usuario.nombre || 'Usuario desconocido'}
+      </span>
     </div>
-    <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+    <span className="comentario-fecha">
+      {new Date(respuesta.fecha).toLocaleDateString()}
+    </span>
     <p className="texto-respuesta">{respuesta.comentario}</p>
     <button
       className="boton-responder"
-      onClick={() => responderRespuesta(respuesta._id, respuesta.usuario.nombre)}
+      onClick={() => responderRespuesta(respuesta._id)}
     >
       Responder
     </button>
 
-    {/* Mostrar input para respuesta de respuesta */}
+    {/* Input para responder una respuesta */}
     {respuestaARespuesta === respuesta._id && (
-  <div className="input-respuesta">
-    <input
-      type="text"
-      value={respuesta} // Solo texto
-      onChange={(e) => setRespuesta(e.target.value)} // Actualizar estado con texto ingresado
-      placeholder={`Responder a @${respuesta.usuario?.nombre || ''}`}
-    />
-    <button onClick={agregarRespuestaARespuesta}>Enviar</button>
-  </div>
-)}
+      <div className="input-respuesta">
+        <input
+          type="text"
+          value={textoRespuestaARespuesta}
+          onChange={(e) => setTextoRespuestaARespuesta(e.target.value)}
+          placeholder="Escribe tu respuesta..."
+        />
+        <button onClick={agregarRespuestaARespuesta}>Enviar</button>
+      </div>
+    )}
   </div>
 ))}
                             </div>
