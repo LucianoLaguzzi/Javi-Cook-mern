@@ -4776,31 +4776,21 @@ i.fas.fa-undo {
 
 
 
-/* Estilo para respuestas de respuestas */
 .respuesta-comentario {
-    margin-top: 10px;
-  }
-  
-  .respuesta-comentario .imagen-nombre {
-    display: flex;
-    align-items: center;
-    padding-left: 0;
+    padding-left: 20px; /* Deja espacio para indentación */
+    border-left: 2px solid #ccc; /* Línea de separación */
   }
   
   .respuesta-comentario .usuario-comentario {
-    font-weight: bold;
+    font-weight: bold; /* Resaltar el nombre de usuario */
   }
   
-  .respuesta-comentario .texto-respuesta {
-    margin-top: 5px;
+  .re-respuesta-comentario {
+    padding-left: 40px; /* Más indentación para re-respuestas */
+    border-left: 2px dashed #aaa; /* Línea diferente para re-respuestas */
+    font-style: italic; /* Diferenciar el estilo */
   }
   
-  /* Para las re-respuestas (respuestas a respuestas) */
-  .respuesta-comentario.re-respuesta .imagen-nombre {
-    justify-content: flex-start; /* Solo mostrar nombre sin imagen */
-  }
-  
-  .respuesta-comentario.re-respuesta .usuario-comentario {
-    font-weight: bold;
-    color: #007bff; /* Diferente color para mostrar la distinción */
+  .re-respuesta-comentario .usuario-comentario {
+    color: #555; /* Color diferente para el usuario de la re-respuesta */
   }
