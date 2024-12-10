@@ -39,37 +39,45 @@ router.get('/:id', async (req, res) => {
 
 
 // Ruta para agregar un comentario a una receta
-// Ruta para agregar un comentario o respuesta
 router.post('/:id/comentarios', async (req, res) => {
+    const { id } = req.params; // ID de la receta
+    const { comentario, usuario, parentCommentId } = req.body; // Datos del comentario y respuesta
+
     try {
-      const { comentario, usuario, parentCommentId } = req.body;
-  
-      const nuevoComentario = new Comentario({
-        comentario,
-        usuario,
-        parentCommentId,
-      });
-  
-      // Guarda el comentario en la base de datos
-      await nuevoComentario.save();
-  
-      // Poblamos el comentario para incluir el usuario
-      const comentarioGuardado = await Comentario.findById(nuevoComentario._id).populate('usuario');
-  
-      // Si el comentario es una respuesta, añadimos a la lista de respuestas del comentario padre
-      if (parentCommentId) {
-        await Comentario.findByIdAndUpdate(
-          parentCommentId,
-          { $push: { respuestas: comentarioGuardado._id } },
-          { new: true }
-        );
-      }
-  
-      res.json({ comentarioGuardado });
+        // Buscar la receta por su ID
+        const receta = await Receta.findById(id);
+        if (!receta) {
+            return res.status(404).json({ message: 'Receta no encontrada' });
+        }
+
+        // Crear un nuevo comentario (respuesta si hay parentCommentId)
+        const nuevoComentario = new Comentario({
+            comentario,
+            usuario,
+            receta: receta._id,
+            fecha: new Date(),
+            parentCommentId: parentCommentId || null // Si es respuesta, asigna el ID del comentario padre
+        });
+
+        // Guardar el comentario en la base de datos
+        const comentarioGuardado = await nuevoComentario.save();
+
+        // Agregar el ID del comentario al array de comentarios de la receta
+        receta.comentarios.push(comentarioGuardado._id);
+        await receta.save(); // Guardar la receta actualizada
+
+        // Aquí hacemos un populate para incluir el usuario en el comentario
+        const comentarioConUsuario = await Comentario.findById(comentarioGuardado._id)
+            .populate('usuario', 'nombre imagenPerfil') // Aseguramos que se devuelvan estos campos
+            .populate('parentCommentId'); // Poblar el comentario padre si existe
+
+        // Devolver el comentario con la información del usuario
+        res.status(201).json({ comentarioGuardado: comentarioConUsuario });
     } catch (error) {
-      res.status(500).json({ mensaje: 'Error al agregar comentario', error });
+        console.error('Error en el backend:', error);
+        res.status(500).json({ message: 'Error al agregar el comentario' });
     }
-  });
+});
 
 
 export default router;
