@@ -830,14 +830,10 @@ const DetalleReceta = () => {
             {respuestasVisibles[comentario._id] && (
               <div className="respuestas">
                 {comentario.respuestas.map((respuesta) => (
-                  <div key={respuesta._id} className="respuesta-comentario">
+                  <div key={respuesta._id} className={`respuesta-comentario ${respuestaAResponder === respuesta._id ? 're-respuesta' : ''}`}>
+                    {/* Respuesta a comentario (sin imagen y con el @usuario) */}
                     <div className="imagen-nombre">
-                      <img
-                        className="imagen-perfil-comentario"
-                        src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                        alt={respuesta.usuario.nombre}
-                      />
-                      <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
+                      <span className="usuario-comentario">@{comentario.usuario.nombre}</span>
                     </div>
                     <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
                     <p className="texto-respuesta">{respuesta.comentario}</p>
@@ -850,7 +846,7 @@ const DetalleReceta = () => {
                           type="text" 
                           value={respuestaARespuesta} 
                           onChange={(e) => setRespuestaARespuesta(e.target.value)} 
-                          placeholder="Escribe tu respuesta..." 
+                          placeholder={`Escribe tu respuesta a @${comentario.usuario.nombre}...`} 
                         />
                         <button onClick={() => agregarRespuestaARespuesta(comentario._id)}>Enviar</button>
                       </div>
