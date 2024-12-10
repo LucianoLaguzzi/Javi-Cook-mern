@@ -274,6 +274,7 @@ const [respuestaARespuesta, setRespuestaARespuesta] = useState(null);  // Nueva 
 };
 
   // Función para agregar respuesta
+// Función para agregar respuesta
 const agregarRespuesta = async () => {
   if (!respuesta) return;
 
@@ -839,6 +840,26 @@ const responderARespuesta = (comentarioId, respuestaId) => {
                     >
                       Responder
                     </button>
+
+                    {/* Sub-respuestas */}
+                    {respuesta.respuestas && respuesta.respuestas.length > 0 && (
+                      <div className="sub-respuestas">
+                        {respuesta.respuestas.map((subrespuesta) => (
+                          <div key={subrespuesta._id} className="respuesta-comentario">
+                            <div className="imagen-nombre">
+                              <img
+                                className="imagen-perfil-comentario"
+                                src={subrespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                alt={subrespuesta.usuario.nombre}
+                              />
+                              <span className="usuario-comentario">{subrespuesta.usuario.nombre || 'Usuario desconocido'}</span>
+                            </div>
+                            <span className="comentario-fecha">{new Date(subrespuesta.fecha).toLocaleDateString()}</span>
+                            <p className="texto-respuesta">{subrespuesta.comentario}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
