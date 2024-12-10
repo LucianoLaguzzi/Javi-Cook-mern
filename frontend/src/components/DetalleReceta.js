@@ -818,7 +818,7 @@ const DetalleReceta = () => {
           </div>
           <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
           <p className="texto-comentario">{comentario.comentario}</p>
-          <button className="boton-responder" onClick={() => setComentarioAResponder(comentario._id)}>Responder</button>
+          <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>Responder</button>
         </div>
 
         {/* Respuestas */}
@@ -831,7 +831,6 @@ const DetalleReceta = () => {
               <div className="respuestas">
                 {comentario.respuestas.map((respuesta) => (
                   <div key={respuesta._id} className="respuesta-comentario">
-                    {/* Respuesta a comentario (mostrar imagen y texto) */}
                     <div className="imagen-nombre">
                       <img
                         className="imagen-perfil-comentario"
@@ -851,7 +850,7 @@ const DetalleReceta = () => {
                           type="text" 
                           value={respuestaARespuesta} 
                           onChange={(e) => setRespuestaARespuesta(e.target.value)} 
-                          placeholder={`Escribe tu respuesta a @${comentario.usuario.nombre}...`} 
+                          placeholder={`Escribe tu respuesta a @${respuesta.usuario.nombre}...`} 
                         />
                         <button onClick={() => agregarRespuestaARespuesta(comentario._id)}>Enviar</button>
                       </div>
@@ -863,32 +862,36 @@ const DetalleReceta = () => {
           </div>
         )}
 
-        {/* Re-respuesta (Respuesta a respuesta) */}
+        {/* Mostrar input de respuesta si está en modo respuesta */}
         {comentarioAResponder === comentario._id && (
           <div className="input-respuesta">
-            {/* Muestra solo el nombre del usuario que responde, pero mención al usuario al que responde */}
             <input 
               type="text" 
               value={respuesta} 
               onChange={(e) => setRespuesta(e.target.value)} 
-              placeholder={`Escribe tu respuesta a @${comentario.usuario.nombre}...`} 
+              placeholder="Escribe tu respuesta..." 
             />
             <button onClick={agregarRespuesta}>Enviar</button>
           </div>
         )}
-
-        {/* Mostrar las re-respuestas (sin imagen ni fecha) */}
-        {comentario.reRespuestas && comentario.reRespuestas.length > 0 && (
-          <div className="re-respuestas">
-            {comentario.reRespuestas.map((reRespuesta) => (
-              <div key={reRespuesta._id} className="re-respuesta-comentario">
-                {/* Mostrar solo el nombre del usuario que responde */}
-                <span className="usuario-re-respuesta">{reRespuesta.usuario.nombre || 'Usuario desconocido'}</span>
-                <p className="texto-re-respuesta">@{comentario.usuario.nombre} {reRespuesta.comentario}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        
+        {/* Mostrar re-respuestas (respuestas a respuestas) */}
+        {comentario.respuestas.map((respuesta) => (
+          respuesta.reRespuestas && respuesta.reRespuestas.length > 0 && (
+            <div className="re-respuestas">
+              {respuesta.reRespuestas.map((reRespuesta) => (
+                <div key={reRespuesta._id} className="re-respuesta-comentario">
+                  <span className="usuario-comentario">
+                    {reRespuesta.usuario.nombre}:
+                  </span>
+                  <span className="re-respuesta-mencion">
+                    @{respuesta.usuario.nombre} {reRespuesta.comentario}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )
+        ))}
       </div>
     ))
   ) : (
