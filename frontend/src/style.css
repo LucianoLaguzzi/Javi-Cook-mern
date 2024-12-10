@@ -4771,3 +4771,20 @@ i.fas.fa-undo {
     color: #007bff;
     margin-right: 5px;
 }
+
+
+
+
+
+
+.respuesta {
+    margin-left: 20px;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+}
+
+.re-respuesta {
+    margin-left: 40px;
+    font-style: italic;
+    color: #555;
+}

@@ -41,7 +41,10 @@ const DetalleReceta = () => {
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
-  
+
+  const [respuestaDeRespuesta, setRespuestaDeRespuesta] = useState('');
+  const [respuestaAResponder, setRespuestaAResponder] = useState(null); // ID de la respuesta
+
   const botonRef = useRef(null);
 
   
@@ -315,6 +318,52 @@ const DetalleReceta = () => {
     }));
   };
   
+
+  
+  const responderARespuesta = (respuestaId, usuarioNombre) => {
+    setRespuestaAResponder(respuestaId);
+    setRespuestaDeRespuesta(`@${usuarioNombre} `); // Prellena el input con el nombre del usuario
+};
+
+
+const agregarReRespuesta = async () => {
+  if (!respuestaDeRespuesta) return;
+
+  try {
+      const response = await axios.post(
+          `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+          {
+              comentario: respuestaDeRespuesta,
+              usuario: usuarioEnSesion._id,
+              parentCommentId: respuestaAResponder,
+          }
+      );
+
+      const nuevaReRespuesta = response.data.comentarioGuardado;
+
+      setComentarios((prevComentarios) =>
+          prevComentarios.map((comentario) => {
+              return {
+                  ...comentario,
+                  respuestas: comentario.respuestas?.map((respuesta) => {
+                      if (respuesta._id === respuestaAResponder) {
+                          return {
+                              ...respuesta,
+                              respuestas: [...(respuesta.respuestas || []), nuevaReRespuesta],
+                          };
+                      }
+                      return respuesta;
+                  }),
+              };
+          })
+      );
+
+      setRespuestaDeRespuesta('');
+      setRespuestaAResponder(null);
+  } catch (error) {
+      console.error('Error al agregar la re-respuesta:', error);
+  }
+};
 
   
 
@@ -790,20 +839,38 @@ const DetalleReceta = () => {
                           </button>
                           {respuestasVisibles[comentario._id] && (
                             <div className="respuestas">
-                              {comentario.respuestas.map((respuesta) => (
-                                <div key={respuesta._id} className="respuesta-comentario">
-                                  <div className="imagen-nombre">
-                                    <img
-                                      className="imagen-perfil-comentario"
-                                      src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                      alt={respuesta.usuario.nombre}
-                                    />
-                                    <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
-                                  </div>
-                                  <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                                  <p className='texto-respuesta'>{respuesta.comentario}</p>
-                                </div>
-                              ))}
+                             {comentario.respuestas?.map((respuesta) => (
+    <div key={respuesta._id} className="respuesta">
+        <div>
+            <p><strong>{respuesta.usuario.nombre}:</strong> {respuesta.comentario}</p>
+        </div>
+        <button onClick={() => responderARespuesta(respuesta._id, respuesta.usuario.nombre)}>
+            Responder
+        </button>
+        
+        {/* Input para responder a esta respuesta */}
+        {respuestaAResponder === respuesta._id && (
+            <div>
+                <textarea
+                    value={respuestaDeRespuesta}
+                    onChange={(e) => setRespuestaDeRespuesta(e.target.value)}
+                    placeholder={`@${respuesta.usuario.nombre} `}
+                />
+                <button onClick={agregarReRespuesta}>Enviar</button>
+            </div>
+        )}
+
+        {/* Mostrar las re-respuestas */}
+        {respuesta.respuestas?.map((reRespuesta) => (
+            <div key={reRespuesta._id} className="re-respuesta">
+                <p>
+                    <strong>@{reRespuesta.usuario.nombre}: </strong>
+                    {reRespuesta.comentario}
+                </p>
+            </div>
+        ))}
+    </div>
+))}
                             </div>
                           )}
                         </div> 
