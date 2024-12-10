@@ -4776,92 +4776,31 @@ i.fas.fa-undo {
 
 
 
-
-
-/* Estilo para los comentarios */
-.comentario-principal {
-    margin-bottom: 15px;
-  }
-  
-  .comentario-principal .imagen-nombre {
-    display: flex;
-    align-items: center;
-  }
-  
-  .comentario-principal .usuario-comentario {
-    font-weight: bold;
-    margin-left: 10px;
-  }
-  
-  .comentario-principal .comentario-fecha {
-    font-size: 12px;
-    color: gray;
-  }
-  
-  .comentario-principal .texto-comentario {
-    margin-top: 5px;
-  }
-  
-  /* Estilo para las respuestas */
-  .respuestas {
-    margin-left: 20px;
+/* Estilo para respuestas de respuestas */
+.respuesta-comentario {
+    margin-top: 10px;
   }
   
   .respuesta-comentario .imagen-nombre {
     display: flex;
     align-items: center;
+    padding-left: 0;
   }
   
   .respuesta-comentario .usuario-comentario {
     font-weight: bold;
-    margin-left: 10px;
   }
   
-  .respuesta-comentario .comentario-fecha {
-    font-size: 12px;
-    color: gray;
-  }
-  
-  .respuesta-comentario .texto-comentario {
+  .respuesta-comentario .texto-respuesta {
     margin-top: 5px;
   }
   
-  /* Estilo para las re-respuestas */
-  .re-respuestas {
-    margin-left: 40px; /* Indentación adicional para las re-respuestas */
+  /* Para las re-respuestas (respuestas a respuestas) */
+  .respuesta-comentario.re-respuesta .imagen-nombre {
+    justify-content: flex-start; /* Solo mostrar nombre sin imagen */
   }
   
-  .re-respuesta-comentario .re-respuesta-nombre {
+  .respuesta-comentario.re-respuesta .usuario-comentario {
     font-weight: bold;
-    color: #00aaff;
-    margin-left: 0;
-    display: flex;
-    align-items: center;
+    color: #007bff; /* Diferente color para mostrar la distinción */
   }
-  
-  .re-respuesta-comentario .comentario-fecha {
-    font-size: 12px;
-    color: gray;
-    margin-left: 10px;
-  }
-  
-  /* Estilo para el input de respuesta */
-  .input-respuesta {
-    margin-top: 10px;
-  }
-  
-  .input-respuesta input {
-    width: 80%;
-    padding: 5px;
-  }
-  
-  .input-respuesta button {
-    padding: 5px 10px;
-    background-color: #00aaff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-left: 10px;
-  }
-
