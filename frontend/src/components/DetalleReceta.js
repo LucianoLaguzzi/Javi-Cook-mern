@@ -303,10 +303,7 @@ const DetalleReceta = () => {
     }
 };
 
-  // Función para manejar la respuesta
-  const responderComentario = (comentarioId) => {
-    setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
-  };
+ 
 
 
   const toggleRespuestas = (idComentario) => {
@@ -317,10 +314,17 @@ const DetalleReceta = () => {
   };
   
 
+  const responderComentario = (comentarioId) => {
+    setComentarioAResponder(comentarioId);
+    setRespuesta(""); // Asegúrate de limpiar el input
+    setRespuestaAResponder(null); // Asegúrate de que no estés respondiendo otra respuesta
+  };
+  
   const responderRespuesta = (respuestaId, comentarioId) => {
-  setComentarioAResponder(null); // Ocultar otros inputs de respuesta a comentarios
-  setRespuestaAResponder(respuestaId); // Establecer la respuesta que se está respondiendo
-};
+    setRespuestaAResponder(respuestaId);
+    setComentarioAResponder(comentarioId);
+    setRespuesta(""); // Limpia el input
+  };
 
 const agregarReRespuesta = async (comentarioId, respuestaId) => {
   if (!respuesta) return;
@@ -871,11 +875,24 @@ const agregarReRespuesta = async (comentarioId, respuestaId) => {
           <div className="input-respuesta">
             <input
               type="text"
-              value={respuesta}
-              onChange={(e) => setRespuesta(e.target.value)}
-              placeholder="Escribe tu respuesta..."
+              value={respuesta} // Solo texto
+              onChange={(e) => setRespuesta(e.target.value)} // Actualiza el texto
+              placeholder={`Responde a @${comentario.usuario.nombre}...`}
             />
             <button onClick={() => agregarRespuesta(comentario._id)}>Enviar</button>
+          </div>
+        )}
+
+        {/* Mostrar input de respuesta si está en modo respuesta a esta respuesta */}
+        {respuestaAResponder === respuesta._id && (
+          <div className="input-respuesta">
+            <input
+              type="text"
+              value={respuesta} // Solo texto
+              onChange={(e) => setRespuesta(e.target.value)} // Actualiza el texto
+              placeholder={`Responde a @${respuesta.usuario.nombre}...`}
+            />
+            <button onClick={() => agregarReRespuesta(comentario._id, respuesta._id)}>Enviar</button>
           </div>
         )}
       </div>
