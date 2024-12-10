@@ -4778,45 +4778,90 @@ i.fas.fa-undo {
 
 
 
-
-
-/* Estilo general para las respuestas */
-.respuesta-comentario {
-    background-color: #f9f9f9;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 5px;
+/* Estilo para los comentarios */
+.comentario-principal {
+    margin-bottom: 15px;
   }
   
-  /* Estilo para la re-respuesta (respuesta a una respuesta) */
+  .comentario-principal .imagen-nombre {
+    display: flex;
+    align-items: center;
+  }
+  
+  .comentario-principal .usuario-comentario {
+    font-weight: bold;
+    margin-left: 10px;
+  }
+  
+  .comentario-principal .comentario-fecha {
+    font-size: 12px;
+    color: gray;
+  }
+  
+  .comentario-principal .texto-comentario {
+    margin-top: 5px;
+  }
+  
+  /* Estilo para las respuestas */
+  .respuestas {
+    margin-left: 20px;
+  }
+  
   .respuesta-comentario .imagen-nombre {
     display: flex;
     align-items: center;
-    padding-left: 0;
   }
   
-  .respuesta-comentario.re-respuesta {
-    background-color: #e6f7ff; /* Fondo azul claro para diferenciar */
-    border-left: 4px solid #00aaff; /* Borde izquierdo para destacar */
+  .respuesta-comentario .usuario-comentario {
+    font-weight: bold;
+    margin-left: 10px;
   }
   
-  .respuesta-comentario.re-respuesta .imagen-nombre {
-    justify-content: flex-start; /* Quitar la imagen y solo mostrar el nombre */
+  .respuesta-comentario .comentario-fecha {
+    font-size: 12px;
+    color: gray;
   }
   
-  /* El texto de las re-respuestas comienza con el nombre del usuario al que se responde */
-  .respuesta-comentario.re-respuesta .usuario-comentario {
+  .respuesta-comentario .texto-comentario {
+    margin-top: 5px;
+  }
+  
+  /* Estilo para las re-respuestas */
+  .re-respuestas {
+    margin-left: 40px; /* Indentación adicional para las re-respuestas */
+  }
+  
+  .re-respuesta-comentario .re-respuesta-nombre {
     font-weight: bold;
     color: #00aaff;
+    margin-left: 0;
+    display: flex;
+    align-items: center;
   }
   
-  /* Estilo para los botones de responder */
-  .boton-responder {
-    margin-top: 5px;
+  .re-respuesta-comentario .comentario-fecha {
+    font-size: 12px;
+    color: gray;
+    margin-left: 10px;
+  }
+  
+  /* Estilo para el input de respuesta */
+  .input-respuesta {
+    margin-top: 10px;
+  }
+  
+  .input-respuesta input {
+    width: 80%;
+    padding: 5px;
+  }
+  
+  .input-respuesta button {
+    padding: 5px 10px;
     background-color: #00aaff;
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
     cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
   }
+
