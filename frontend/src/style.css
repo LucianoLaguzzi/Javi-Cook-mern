@@ -4775,16 +4775,18 @@ i.fas.fa-undo {
 
 
 
-
-
-.respuesta {
+.respuesta-comentario {
     margin-left: 20px;
     border-left: 2px solid #ccc;
     padding-left: 10px;
 }
 
-.re-respuesta {
-    margin-left: 40px;
+.input-respuesta {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.texto-respuesta {
     font-style: italic;
     color: #555;
 }
