@@ -4777,20 +4777,18 @@ i.fas.fa-undo {
 
 
 .respuesta-comentario {
-    padding-left: 20px; /* Deja espacio para indentación */
-    border-left: 2px solid #ccc; /* Línea de separación */
-  }
-  
-  .respuesta-comentario .usuario-comentario {
-    font-weight: bold; /* Resaltar el nombre de usuario */
-  }
-  
-  .re-respuesta-comentario {
-    padding-left: 40px; /* Más indentación para re-respuestas */
-    border-left: 2px dashed #aaa; /* Línea diferente para re-respuestas */
-    font-style: italic; /* Diferenciar el estilo */
-  }
-  
-  .re-respuesta-comentario .usuario-comentario {
-    color: #555; /* Color diferente para el usuario de la re-respuesta */
-  }
+    margin-left: 20px; /* Ajuste de indentación para diferenciar */
+}
+
+.input-re-respuesta {
+    margin-left: 40px; /* Más indentación para las re-respuestas */
+}
+
+.texto-respuesta {
+    font-style: italic; /* Estilo distintivo para las re-respuestas */
+}
+
+.usuario-comentario::before {
+    content: '@'; /* Prefijo visual para el usuario a quien se responde */
+    font-weight: bold;
+}
