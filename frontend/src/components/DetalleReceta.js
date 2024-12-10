@@ -876,6 +876,19 @@ const DetalleReceta = () => {
             <button onClick={agregarRespuesta}>Enviar</button>
           </div>
         )}
+
+        {/* Mostrar las re-respuestas (sin imagen ni fecha) */}
+        {comentario.reRespuestas && comentario.reRespuestas.length > 0 && (
+          <div className="re-respuestas">
+            {comentario.reRespuestas.map((reRespuesta) => (
+              <div key={reRespuesta._id} className="re-respuesta-comentario">
+                {/* Mostrar solo el nombre del usuario que responde */}
+                <span className="usuario-re-respuesta">{reRespuesta.usuario.nombre || 'Usuario desconocido'}</span>
+                <p className="texto-re-respuesta">@{comentario.usuario.nombre} {reRespuesta.comentario}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     ))
   ) : (
