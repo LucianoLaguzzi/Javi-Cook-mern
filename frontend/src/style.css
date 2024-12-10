@@ -4774,21 +4774,33 @@ i.fas.fa-undo {
 
 
 
+.re-respuesta-comentario {
+    margin-left: 40px;
+    padding: 5px;
+    border-left: 2px solid #ccc;
+    font-size: 0.9em;
+    color: #555;
+}
 
-
-.respuesta-comentario {
-    margin-left: 20px; /* Ajuste de indentación para diferenciar */
+.re-respuesta-comentario .texto-re-respuesta {
+    font-style: italic;
+    margin: 0;
 }
 
 .input-re-respuesta {
-    margin-left: 40px; /* Más indentación para las re-respuestas */
+    margin-left: 40px;
+    margin-top: 5px;
+    display: flex;
+    gap: 5px;
 }
 
-.texto-respuesta {
-    font-style: italic; /* Estilo distintivo para las re-respuestas */
+.input-re-respuesta input {
+    flex: 1;
+    padding: 5px;
+    font-size: 0.9em;
 }
 
-.usuario-comentario::before {
-    content: '@'; /* Prefijo visual para el usuario a quien se responde */
-    font-weight: bold;
+.input-re-respuesta button {
+    padding: 5px 10px;
+    font-size: 0.9em;
 }
