@@ -830,10 +830,15 @@ const DetalleReceta = () => {
             {respuestasVisibles[comentario._id] && (
               <div className="respuestas">
                 {comentario.respuestas.map((respuesta) => (
-                 <div key={respuesta._id} className={`respuesta-comentario ${comentarioAResponder === respuesta._id ? 're-respuesta' : ''}`}>
-                    {/* Mostrar solo nombre del usuario y agregar @usuario en las re-respuestas */}
+                  <div key={respuesta._id} className="respuesta-comentario">
+                    {/* Respuesta a comentario (mostrar imagen y texto) */}
                     <div className="imagen-nombre">
-                      <span className="usuario-comentario">@{comentario.usuario.nombre}</span>
+                      <img
+                        className="imagen-perfil-comentario"
+                        src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                        alt={respuesta.usuario.nombre}
+                      />
+                      <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
                     </div>
                     <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
                     <p className="texto-respuesta">{respuesta.comentario}</p>
@@ -858,14 +863,15 @@ const DetalleReceta = () => {
           </div>
         )}
 
-        {/* Mostrar input de respuesta si está en modo respuesta */}
+        {/* Re-respuesta (Respuesta a respuesta) */}
         {comentarioAResponder === comentario._id && (
           <div className="input-respuesta">
+            {/* Muestra solo el nombre del usuario que responde, pero mención al usuario al que responde */}
             <input 
               type="text" 
               value={respuesta} 
               onChange={(e) => setRespuesta(e.target.value)} 
-              placeholder="Escribe tu respuesta..." 
+              placeholder={`Escribe tu respuesta a @${comentario.usuario.nombre}...`} 
             />
             <button onClick={agregarRespuesta}>Enviar</button>
           </div>
