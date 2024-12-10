@@ -4773,20 +4773,3 @@ i.fas.fa-undo {
 }
 
 
-
-
-.respuesta-comentario {
-    margin-left: 20px;
-    border-left: 2px solid #ccc;
-    padding-left: 10px;
-}
-
-.input-respuesta {
-    margin-top: 10px;
-    margin-left: 20px;
-}
-
-.texto-respuesta {
-    font-style: italic;
-    color: #555;
-}
