@@ -842,19 +842,6 @@ const DetalleReceta = () => {
                     <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
                     <p className="texto-respuesta">{respuesta.comentario}</p>
                     <button className="boton-responder" onClick={() => setRespuestaAResponder(respuesta._id)}>Responder</button>
-
-                    {/* Input para responder a respuestas */}
-                    {respuestaAResponder === respuesta._id && (
-                      <div className="input-respuesta">
-                        <input 
-                          type="text" 
-                          value={respuestaARespuesta} 
-                          onChange={(e) => setRespuestaARespuesta(e.target.value)} 
-                          placeholder={`Escribe tu respuesta a @${respuesta.usuario.nombre}...`} 
-                        />
-                        <button onClick={() => agregarRespuestaARespuesta(comentario._id)}>Enviar</button>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -881,11 +868,12 @@ const DetalleReceta = () => {
             <div className="re-respuestas">
               {respuesta.reRespuestas.map((reRespuesta) => (
                 <div key={reRespuesta._id} className="re-respuesta-comentario">
+                  {/* Solo mostramos el nombre del que responde y mención al usuario a quien se responde */}
                   <span className="usuario-comentario">
-                    {reRespuesta.usuario.nombre}:
+                    {reRespuesta.usuario.nombre}: 
                   </span>
                   <span className="re-respuesta-mencion">
-                    @{respuesta.usuario.nombre} {reRespuesta.comentario}
+                    @ {respuesta.usuario.nombre} {reRespuesta.comentario}
                   </span>
                 </div>
               ))}
