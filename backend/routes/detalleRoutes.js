@@ -9,32 +9,26 @@ router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
             .populate('usuario')
-            .populate({
+            .populate({ 
                 path: 'comentarios',
-                populate: { path: 'usuario', select: 'nombre imagenPerfil' }
+                populate: { 
+                    path: 'usuario',
+                    select: 'nombre imagenPerfil'
+                }
             });
 
         if (!receta) {
             return res.status(404).json({ mensaje: 'Receta no encontrada' });
         }
 
-        const comentarios = receta.comentarios.map((comentario) => comentario.toObject());
+        // Estructurar los comentarios en un árbol (padres con respuestas)
+        const comentarios = receta.comentarios.map((comentario) => comentario.toObject()); // Convierte a objetos planos
         const comentariosRaiz = comentarios.filter((c) => !c.parentCommentId);
         const comentariosMap = new Map(comentarios.map((c) => [c._id.toString(), c]));
 
         comentariosRaiz.forEach((comentarioRaiz) => {
-            comentarioRaiz.respuestas = comentarios.filter(
-                (c) => c.parentCommentId?.toString() === comentarioRaiz._id.toString()
-            );
-        });
-
-        comentarios.forEach((respuesta) => {
-            if (respuesta.parentCommentId) {
-                const parentComment = comentariosMap.get(respuesta.parentCommentId.toString());
-                if (parentComment) {
-                    respuesta.mencion = `@${parentComment.usuario.nombre}`;
-                }
-            }
+            comentarioRaiz.respuestas = comentarios
+                .filter((c) => c.parentCommentId?.toString() === comentarioRaiz._id.toString());
         });
 
         res.json({ ...receta.toObject(), comentarios: comentariosRaiz });
