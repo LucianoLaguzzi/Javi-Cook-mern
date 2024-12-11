@@ -807,6 +807,9 @@ const agregarRespuesta = async () => {
                                     </div>
                                     <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
                                     <p className='texto-respuesta'>{respuesta.comentario}</p>
+                                    
+                                    {/* Botón para responder a la respuesta */}
+                                    <button className="boton-responder" onClick={() => responderComentario(respuesta._id)}>Responder</button>
 
                                     {/* Respuestas a la respuesta */}
                                     {respuesta.respuestas && respuesta.respuestas.length > 0 && (
