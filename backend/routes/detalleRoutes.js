@@ -21,17 +21,20 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ mensaje: 'Receta no encontrada' });
         }
 
-        // Estructurar los comentarios en un árbol (padres con respuestas)
-        const comentarios = receta.comentarios.map((comentario) => comentario.toObject()); // Convierte a objetos planos
-        const comentariosRaiz = comentarios.filter((c) => !c.parentCommentId);
-        const comentariosMap = new Map(comentarios.map((c) => [c._id.toString(), c]));
+       // Función recursiva para construir el árbol de comentarios
+const construirArbolComentarios = (comentarios, parentId = null) => {
+    return comentarios
+        .filter((comentario) => comentario.parentCommentId?.toString() === parentId?.toString())
+        .map((comentario) => ({
+            ...comentario,
+            respuestas: construirArbolComentarios(comentarios, comentario._id),
+        }));
+};
 
-        comentariosRaiz.forEach((comentarioRaiz) => {
-            comentarioRaiz.respuestas = comentarios
-                .filter((c) => c.parentCommentId?.toString() === comentarioRaiz._id.toString());
-        });
+// Construir el árbol de comentarios comenzando desde los padres
+const comentariosArbol = construirArbolComentarios(comentarios);
 
-        res.json({ ...receta.toObject(), comentarios: comentariosRaiz });
+res.json({ ...receta.toObject(), comentarios: comentariosArbol });
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
