@@ -333,17 +333,13 @@ const agregarRespuestaARespuesta = async () => {
 
       setComentarios((prevComentarios) =>
           prevComentarios.map((comentario) => {
-              if (comentario._id === nuevaRespuesta.parentCommentId) {
-                  return {
-                      ...comentario,
-                      respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
-                  };
-              } else if (comentario.respuestas) {
-                  // Busca en las respuestas si el parentCommentId coincide
+              // Buscar si la nueva respuesta pertenece a este comentario
+              if (comentario.respuestas) {
                   return {
                       ...comentario,
                       respuestas: comentario.respuestas.map((respuesta) => {
                           if (respuesta._id === nuevaRespuesta.parentCommentId) {
+                              // Agregar la nueva respuesta dentro de las respuestas
                               return {
                                   ...respuesta,
                                   respuestas: [...(respuesta.respuestas || []), nuevaRespuesta],
@@ -369,6 +365,41 @@ const responderARespuesta = (respuestaId) => {
   setRespuestaARespuestaId(respuestaId);
   setComentarioAResponder(null); // Resetea cualquier input abierto en comentarios padres
 };
+
+
+
+// Función recursiva para renderizar respuestas y re-respuestas
+const renderizarRespuestas = (respuestas) => {
+  return respuestas.map((respuesta) => (
+      <div key={respuesta._id} className="respuesta-comentario">
+          <div className="imagen-nombre">
+              <img
+                  className="imagen-perfil-comentario"
+                  src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                  alt={respuesta.usuario.nombre}
+              />
+              <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
+          </div>
+          <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
+          <p className="texto-respuesta">{respuesta.comentario}</p>
+          <button className="boton-responder" onClick={() => responderARespuesta(respuesta._id)}>Responder</button>
+          {respuestaARespuestaId === respuesta._id && (
+              <div className="input-respuesta">
+                  <input
+                      type="text"
+                      value={respuestaARespuesta}
+                      onChange={(e) => setRespuestaARespuesta(e.target.value)}
+                      placeholder="Escribe tu respuesta..."
+                  />
+                  <button onClick={agregarRespuestaARespuesta}>Enviar</button>
+              </div>
+          )}
+          {/* Renderizar re-respuestas */}
+          {respuesta.respuestas && renderizarRespuestas(respuesta.respuestas)}
+      </div>
+  ));
+};
+
 
   
   // Función para capitalizar la primera letra de cada paso
@@ -839,45 +870,18 @@ const responderARespuesta = (respuestaId) => {
                         <button onClick={() => toggleRespuestas(comentario._id)}>
                             {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : `Mostrar ${comentario.respuestas.length} respuesta(s)`}
                         </button>
-                        {respuestasVisibles[comentario._id] && (
-                            comentario.respuestas.map((respuesta) => (
-                                <div key={respuesta._id} className="respuesta-comentario">
-                                    <div className="imagen-nombre">
-                                        <img
-                                            className="imagen-perfil-comentario"
-                                            src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                            alt={respuesta.usuario.nombre}
-                                        />
-                                        <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
-                                    </div>
-                                    <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                                    <p className="texto-respuesta">{respuesta.comentario}</p>
-                                    <button className="boton-responder" onClick={() => responderARespuesta(respuesta._id)}>Responder</button>
-                                    {respuestaARespuestaId === respuesta._id && (
-                                        <div className="input-respuesta">
-                                            <input
-                                                type="text"
-                                                value={respuestaARespuesta}
-                                                onChange={(e) => setRespuestaARespuesta(e.target.value)}
-                                                placeholder="Escribe tu respuesta..."
-                                            />
-                                            <button onClick={agregarRespuestaARespuesta}>Enviar</button>
-                                        </div>
-                                    )}
-                                </div>
-                            ))
-                        )}
+                        {respuestasVisibles[comentario._id] && renderizarRespuestas(comentario.respuestas)}
                     </div>
                 )}
 
                 {/* Input para respuesta general */}
                 {comentarioAResponder === comentario._id && (
                     <div className="input-respuesta">
-                        <input 
-                            type="text" 
-                            value={respuesta} 
-                            onChange={(e) => setRespuesta(e.target.value)} 
-                            placeholder="Escribe tu respuesta..." 
+                        <input
+                            type="text"
+                            value={respuesta}
+                            onChange={(e) => setRespuesta(e.target.value)}
+                            placeholder="Escribe tu respuesta..."
                         />
                         <button onClick={agregarRespuesta}>Enviar</button>
                     </div>
