@@ -326,7 +326,11 @@ const agregarRespuestaARespuesta = async () => {
   try {
       const response = await axios.post(
           `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-          { comentario: respuestaARespuesta, usuario: usuarioEnSesion._id, parentCommentId: respuestaARespuestaId }
+          { 
+              comentario: respuestaARespuesta, 
+              usuario: usuarioEnSesion._id, 
+              parentCommentId: respuestaARespuestaId // Asignar el ID de la respuesta a la que se está respondiendo
+          }
       );
 
       const nuevaRespuesta = response.data.comentarioGuardado;
