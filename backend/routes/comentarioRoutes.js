@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 
 
 
-// Ruta para agregar un comentario a una receta
+// Ruta para agregar un comentario o respuesta a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
     const { comentario, usuario, parentCommentId } = req.body; // Datos del comentario y respuesta
