@@ -49,53 +49,38 @@ const DetalleReceta = () => {
   
 
   useEffect(() => {
-    // Obtener detalles de la receta desde el backend usando Axios
     const obtenerReceta = async () => {
-      try {
-        setIsLoading(true); // Activa el loading antes de empezar
+        try {
+            setIsLoading(true);
+            const response = await axios.get(`https://javicook-mern.onrender.com/api/detalles/${id}`);
+            setReceta(response.data);
 
-        const response = await axios.get(`https://javicook-mern.onrender.com/api/detalles/${id}`);
-        setReceta(response.data);
+            // Comparar IDs para determinar si es propietario
+            if (response.data.usuario._id === usuarioEnSesion._id) {
+                setEsPropietario(true);
+            }
 
-        // Comparar IDs para determinar si es propietario
-        if (response.data.usuario._id === usuarioEnSesion._id) {
-          console.log("Es propietario de la receta")
-          setEsPropietario(true);
+            setIngredientesCantidades(response.data.ingredientesCantidades.join('\r\n'));
+            setPasos(response.data.pasos.join('\r\n'));
+
+            // Estructurar comentarios y respuestas
+            const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
+                return {
+                    ...comentario,
+                    respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
+                };
+            });
+
+            setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
+
+        } catch (error) {
+            console.error('Error al cargar la receta', error);
+        } finally {
+            setIsLoading(false);
         }
-
-        setIngredientesCantidades(response.data.ingredientesCantidades.join('\r\n'));
-        setPasos(response.data.pasos.join('\r\n'));
-
-
-
-        // Aquí estamos asignando los comentarios correctamente
-        const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
-          // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
-          return {
-            ...comentario,
-            respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
-          };
-        });
-
-        setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
-
-
-        // Obtener la valoración del usuario
-        const valoracionResponse = await axios.get(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
-        if (valoracionResponse.data.valoracionUsuario) {
-          setValoracionUsuario(valoracionResponse.data.valoracionUsuario);
-          setYaValorado(true);
-        }
-
-
-      } catch (error) {
-        console.error('Error al cargar la receta', error);
-       } finally {
-        setIsLoading(false); // Desactiva el loading después de completar la carga
-      }
     };
     obtenerReceta();
-  }, [id]);
+}, [id]);
 
   
   // Temporizador
@@ -276,47 +261,47 @@ const DetalleReceta = () => {
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
     if (!respuesta) return;
-  
+
     try {
-      const response = await axios.post(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-        {
-          comentario: respuesta,
-          usuario: usuarioEnSesion._id,
-          parentCommentId: comentarioAResponder,
-          parentResponseId: respuestaAResponder,  // Indica que es una respuesta a una respuesta
-        }
-      );
-  
-      const nuevaRespuesta = response.data.comentarioGuardado;
-  
-      setComentarios((prevComentarios) =>
-        prevComentarios.map((comentario) => {
-          if (comentario._id === comentarioAResponder) {
-            return {
-              ...comentario,
-              respuestas: comentario.respuestas.map((resp) => {
-                if (resp._id === respuestaAResponder) {
-                  return {
-                    ...resp,
-                    respuestas: [...(resp.respuestas || []), nuevaRespuesta],
-                  };
+        const response = await axios.post(
+            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+            {
+                comentario: respuesta,
+                usuario: usuarioEnSesion._id,
+                parentCommentId: comentarioAResponder,
+                parentResponseId: respuestaAResponder,  // Indica que es una respuesta a una respuesta
+            }
+        );
+
+        const nuevaRespuesta = response.data.comentarioGuardado;
+
+        setComentarios((prevComentarios) =>
+            prevComentarios.map((comentario) => {
+                if (comentario._id === comentarioAResponder) {
+                    return {
+                        ...comentario,
+                        respuestas: comentario.respuestas.map((resp) => {
+                            if (resp._id === respuestaAResponder) {
+                                return {
+                                    ...resp,
+                                    respuestas: [...(resp.respuestas || []), nuevaRespuesta],  // Aquí se agrega la re-respuesta correctamente
+                                };
+                            }
+                            return resp;
+                        }),
+                    };
                 }
-                return resp;
-              }),
-            };
-          }
-          return comentario;
-        })
-      );
-  
-      setRespuesta('');
-      setComentarioAResponder(null);
-      setRespuestaAResponder(null);
+                return comentario;
+            })
+        );
+
+        setRespuesta('');
+        setComentarioAResponder(null);
+        setRespuestaAResponder(null);
     } catch (error) {
-      console.error('Error al agregar la respuesta:', error);
+        console.error('Error al agregar la respuesta:', error);
     }
-  };
+};
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
@@ -845,13 +830,22 @@ const DetalleReceta = () => {
                   {respuestasDeRespuestasVisibles[comentario._id]?.[respuesta._id] ? `Ocultar respuestas` : `Mostrar ${respuesta.respuestas.length} respuesta(s)`}
                 </button>
                 {respuestasDeRespuestasVisibles[comentario._id]?.[respuesta._id] && (
-                  <div className="respuestas-de-respuesta">
-                    {respuesta.respuestas.map((respuestaDeRespuesta) => (
-                      <div key={respuestaDeRespuesta._id} className="respuesta-de-respuesta-comentario">
-                        <p>{respuestaDeRespuesta.comentario}</p>
-                      </div>
-                    ))}
-                  </div>
+                 <div className="respuestas-de-respuesta">
+                 {respuesta.respuestas.map((respuestaDeRespuesta) => (
+                   <div key={respuestaDeRespuesta._id} className="respuesta-de-respuesta-comentario">
+                     <div className="imagen-nombre">
+                       <img
+                         className="imagen-perfil-comentario"
+                         src={respuestaDeRespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                         alt={respuestaDeRespuesta.usuario.nombre}
+                       />
+                       <span className="usuario-comentario">{respuestaDeRespuesta.usuario.nombre || 'Usuario desconocido'}</span>
+                     </div>
+                     <span className="comentario-fecha">{new Date(respuestaDeRespuesta.fecha).toLocaleDateString()}</span>
+                     <p>{respuestaDeRespuesta.comentario}</p>
+                   </div>
+                 ))}
+               </div>
                 )}
               </div>
             )}
