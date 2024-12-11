@@ -26,12 +26,18 @@ router.get('/:id', async (req, res) => {
         const comentariosRaiz = comentarios.filter((c) => !c.parentCommentId);
         const comentariosMap = new Map(comentarios.map((c) => [c._id.toString(), c]));
 
-        comentariosRaiz.forEach((comentarioRaiz) => {
-            comentarioRaiz.respuestas = comentarios
-                .filter((c) => c.parentCommentId?.toString() === comentarioRaiz._id.toString());
-        });
-
-        res.json({ ...receta.toObject(), comentarios: comentariosRaiz });
+        function construirArbolComentarios(comentarios, parentId = null) {
+            return comentarios
+                .filter((comentario) => (comentario.parentCommentId ? comentario.parentCommentId.toString() : null) === parentId)
+                .map((comentario) => ({
+                    ...comentario,
+                    respuestas: construirArbolComentarios(comentarios, comentario._id.toString())
+                }));
+        }
+        
+        // En la ruta
+        const comentariosArbol = construirArbolComentarios(comentarios);
+        res.json({ ...receta.toObject(), comentarios: comentariosArbol });
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al cargar la receta', error });
     }
