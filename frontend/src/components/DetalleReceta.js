@@ -42,8 +42,9 @@ const DetalleReceta = () => {
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
 
-  const [respuestaARespuesta, setRespuestaARespuesta] = useState(null);  // Para gestionar la respuesta a una respuesta
-  const [respuestaDeRespuesta, setRespuestaDeRespuesta] = useState('');  // El contenido de la respuesta a una respuesta
+const [respuestaARespuesta, setRespuestaARespuesta] = useState(null); // Responder a una respuesta
+
+const [respuestaDeRespuesta, setRespuestaDeRespuesta] = useState(''); // Contenido de la respuesta a la respuesta
   
   const botonRef = useRef(null);
 
@@ -308,8 +309,8 @@ const DetalleReceta = () => {
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
     setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
+    setRespuesta(''); // Limpiar el campo de respuesta
   };
-
 
   const toggleRespuestas = (idComentario) => {
     setRespuestasVisibles((prev) => ({
@@ -319,49 +320,46 @@ const DetalleReceta = () => {
   };
   
 
+  const responderARespuesta = (respuestaId) => {
+    setRespuestaARespuesta(respuestaId); // Establecer la respuesta a la que se va a responder
+    setRespuestaDeRespuesta(''); // Limpiar el campo de respuesta
+  };
 
-  // Función para manejar la respuesta a una respuesta
-const responderARespuesta = (respuestaId) => {
-  setRespuestaARespuesta(respuestaId); // Establecer la respuesta a la que se va a responder
-};
-
-// Función para agregar la respuesta a la respuesta
-const agregarRespuestaARespuesta = async () => {
-  if (!respuestaDeRespuesta) return;
-
-  try {
-    const response = await axios.post(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-      {
-        comentario: respuestaDeRespuesta,
-        usuario: usuarioEnSesion._id,
-        parentCommentId: respuestaARespuesta,  // Aquí se usa el ID de la respuesta como parent
-      }
-    );
-
-    const nuevaRespuestaARespuesta = response.data.comentarioGuardado;
-
-    // Actualizar el estado de los comentarios
-    setComentarios((prevComentarios) =>
-      prevComentarios.map((comentario) => {
-        if (comentario._id === respuestaARespuesta) {
-          return {
-            ...comentario,
-            respuestas: [...(comentario.respuestas || []), nuevaRespuestaARespuesta], // Agregar la nueva respuesta a la respuesta
-          };
+  const agregarRespuestaARespuesta = async () => {
+    if (!respuestaDeRespuesta) return;
+  
+    try {
+      const response = await axios.post(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+        {
+          comentario: respuestaDeRespuesta,
+          usuario: usuarioEnSesion._id,
+          parentCommentId: respuestaARespuesta, // Usamos la respuesta como parent
         }
-        return comentario;
-      })
-    );
-
-    // Limpiar los estados
-    setRespuestaDeRespuesta('');
-    setRespuestaARespuesta(null);
-  } catch (error) {
-    console.error('Error al agregar la respuesta a la respuesta:', error);
-  }
-};
-
+      );
+  
+      const nuevaRespuestaARespuesta = response.data.comentarioGuardado;
+  
+      // Actualizar el estado de los comentarios
+      setComentarios((prevComentarios) =>
+        prevComentarios.map((comentario) => {
+          if (comentario._id === respuestaARespuesta) {
+            return {
+              ...comentario,
+              respuestas: [...(comentario.respuestas || []), nuevaRespuestaARespuesta],
+            };
+          }
+          return comentario;
+        })
+      );
+  
+      // Limpiar los estados
+      setRespuestaDeRespuesta('');
+      setRespuestaARespuesta(null);
+    } catch (error) {
+      console.error('Error al agregar la respuesta a la respuesta:', error);
+    }
+  };
   
 
 
@@ -829,7 +827,7 @@ const agregarRespuestaARespuesta = async () => {
                       </div>
 
                       {/* Respuestas */}
-                      {comentario.respuestas && comentario.respuestas.length > 0 && (
+      {comentario.respuestas && comentario.respuestas.length > 0 && (
         <div className="toggle-respuestas">
           <button onClick={() => toggleRespuestas(comentario._id)}>
             {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : `Mostrar ${comentario.respuestas.length} respuesta(s)`}
@@ -856,7 +854,7 @@ const agregarRespuestaARespuesta = async () => {
         </div>
       )}
                       {/* Mostrar input de respuesta si está en modo respuesta */}
-                      {comentarioAResponder === comentario._id && (
+      {comentarioAResponder === comentario._id && (
         <div className="input-respuesta">
           <input
             type="text"
@@ -868,8 +866,8 @@ const agregarRespuestaARespuesta = async () => {
         </div>
       )}
 
-       {/* Mostrar input de respuesta a respuesta si está en modo respuesta */}
-       {respuestaARespuesta === comentario._id && (
+         {/* Mostrar input de respuesta a respuesta si está en modo respuesta */}
+         {respuestaARespuesta === comentario._id && (
         <div className="input-respuesta">
           <input
             type="text"
