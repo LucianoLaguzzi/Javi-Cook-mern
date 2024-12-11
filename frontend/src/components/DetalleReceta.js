@@ -344,6 +344,9 @@ const agregarRespuesta = async () => {
   
       const nuevaRespuesta = response.data.comentarioGuardado;
   
+      // Asegúrate de que la respuesta se guarde correctamente
+      console.log("Respuesta guardada:", nuevaRespuesta);
+  
       setComentarios((prevComentarios) =>
         prevComentarios.map((comentario) => {
           // Buscamos el comentario que contiene la respuesta a la que se va a agregar una "re-respuesta"
