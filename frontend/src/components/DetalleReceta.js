@@ -41,6 +41,8 @@ const DetalleReceta = () => {
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
+  const [respuestaAResponder, setRespuestaAResponder] = useState(null);
+  const [respuestaTexto, setRespuestaTexto] = useState("");
   
   const botonRef = useRef(null);
 
@@ -272,39 +274,34 @@ const DetalleReceta = () => {
 };
 
   // Función para agregar respuesta
-  // Función para agregar respuesta
-const agregarRespuesta = async () => {
-  if (!respuesta) return;
+  const agregarRespuesta = async () => {
+    if (!respuesta) return;
 
-  try {
-    const response = await axios.post(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-      {
-        comentario: respuesta,
-        usuario: usuarioEnSesion._id,
-        parentCommentId: comentarioAResponder, // Mantén el parentCommentId
-      }
-    );
+    try {
+        const response = await axios.post(
+            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+            { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
+        );
 
-    const nuevaRespuesta = response.data.comentarioGuardado;
+        const nuevaRespuesta = response.data.comentarioGuardado;
 
-    setComentarios((prevComentarios) =>
-      prevComentarios.map((comentario) => {
-        if (comentario._id === comentarioAResponder) {
-          return {
-            ...comentario,
-            respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
-          };
-        }
-        return comentario;
-      })
-    );
+        setComentarios((prevComentarios) =>
+            prevComentarios.map((comentario) => {
+                if (comentario._id === comentarioAResponder) {
+                    return {
+                        ...comentario,
+                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
+                    };
+                }
+                return comentario;
+            })
+        );
 
-    setRespuesta('');
-    setComentarioAResponder(null);
-  } catch (error) {
-    console.error('Error al agregar la respuesta:', error);
-  }
+        setRespuesta('');
+        setComentarioAResponder(null);
+    } catch (error) {
+        console.error('Error al agregar la respuesta:', error);
+    }
 };
 
   // Función para manejar la respuesta
@@ -319,6 +316,42 @@ const agregarRespuesta = async () => {
       [idComentario]: !prev[idComentario],
     }));
   };
+
+
+  const responderARespuesta = (comentarioId, respuestaId) => {
+    setRespuestaAResponder(respuestaId);
+    setComentarioAResponder(comentarioId); // Asegura que sabemos de qué comentario proviene
+};
+
+const agregarRespuestaARespuesta = async (comentarioId, respuestaId) => {
+    if (!respuestaTexto) return;
+
+    try {
+        const response = await axios.post(
+            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+            { comentario: respuestaTexto, usuario: usuarioEnSesion._id, parentCommentId: respuestaId }
+        );
+
+        const nuevaRespuesta = response.data.comentarioGuardado;
+
+        setComentarios((prevComentarios) =>
+            prevComentarios.map((comentario) => {
+                if (comentario._id === comentarioId) {
+                    return {
+                        ...comentario,
+                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
+                    };
+                }
+                return comentario;
+            })
+        );
+
+        setRespuestaTexto("");
+        setRespuestaAResponder(null);
+    } catch (error) {
+        console.error("Error al agregar la respuesta:", error);
+    }
+};
   
 
   
@@ -752,9 +785,9 @@ const agregarRespuesta = async () => {
               )}
 
               
-             {/* Comentarios */}
+// Comentarios
 <div className="detalles-comentarios">
-  <i class="far fa-comment-alt"></i>
+  <i className="far fa-comment-alt"></i>
   <h3>Comentarios</h3>
 </div>
 
@@ -765,7 +798,7 @@ const agregarRespuesta = async () => {
     onChange={(e) => setNuevoComentario(e.target.value)}
     placeholder="Agregar comentario..."
   />
-  <button className='boton-comentario' onClick={agregarComentario}>Enviar</button>
+  <button className="boton-comentario" onClick={agregarComentario}>Enviar</button>
 </div>
 
 <div className="comentarios-usuarios">
@@ -791,27 +824,36 @@ const agregarRespuesta = async () => {
         {comentario.respuestas && comentario.respuestas.length > 0 && (
           <div className="toggle-respuestas">
             <button onClick={() => toggleRespuestas(comentario._id)}>
-              {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : `Mostrar ${comentario.respuestas.length} respuesta(s)`} 
+              {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : `Mostrar ${comentario.respuestas.length} respuesta(s)`}
             </button>
             {respuestasVisibles[comentario._id] && (
               <div className="respuestas">
                 {comentario.respuestas.map((respuesta) => (
                   <div key={respuesta._id} className="respuesta-comentario">
                     <div className="imagen-nombre">
-                      {/* Si la respuesta es una "respuesta de respuesta", no mostrar avatar */}
-                      {respuesta.parentCommentId && respuesta.parentCommentId.parentCommentId ? null : (
-                        <img
-                          className="imagen-perfil-comentario"
-                          src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                          alt={respuesta.usuario.nombre}
-                        />
-                      )}
+                      <img
+                        className="imagen-perfil-comentario"
+                        src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                        alt={respuesta.usuario.nombre}
+                      />
                       <span className="usuario-comentario">{respuesta.usuario.nombre || 'Usuario desconocido'}</span>
                     </div>
                     <span className="comentario-fecha">{new Date(respuesta.fecha).toLocaleDateString()}</span>
-                    <p className="texto-respuesta">{respuesta.comentario}</p>
-                    {/* Agregar el botón de respuesta en las respuestas */}
-                    <button className="boton-responder" onClick={() => responderComentario(respuesta._id)}>Responder</button>
+                    <p className='texto-respuesta'>{respuesta.comentario}</p>
+                    <button className="boton-responder" onClick={() => responderARespuesta(comentario._id, respuesta._id)}>Responder</button>
+
+                    {/* Input para responder a respuesta */}
+                    {respuestaAResponder === respuesta._id && (
+                      <div className="input-respuesta">
+                        <input
+                          type="text"
+                          value={respuestaTexto}
+                          onChange={(e) => setRespuestaTexto(e.target.value)}
+                          placeholder="Escribe tu respuesta..."
+                        />
+                        <button onClick={() => agregarRespuestaARespuesta(comentario._id, respuesta._id)}>Enviar</button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -822,11 +864,11 @@ const agregarRespuesta = async () => {
         {/* Mostrar input de respuesta si está en modo respuesta */}
         {comentarioAResponder === comentario._id && (
           <div className="input-respuesta">
-            <input 
-              type="text" 
-              value={respuesta} 
-              onChange={(e) => setRespuesta(e.target.value)} 
-              placeholder="Escribe tu respuesta..." 
+            <input
+              type="text"
+              value={respuesta}
+              onChange={(e) => setRespuesta(e.target.value)}
+              placeholder="Escribe tu respuesta..."
             />
             <button onClick={agregarRespuesta}>Enviar</button>
           </div>
