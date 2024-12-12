@@ -274,38 +274,59 @@ const DetalleReceta = () => {
 
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
-    if (!respuesta) return;
-
+    if (!respuestaTexto.trim()) return; // No enviar si está vacío
+  
     try {
-        const response = await axios.post(
-            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
-            { comentario: respuesta, usuario: usuarioEnSesion._id, parentCommentId: comentarioAResponder }
-        );
-
-        const nuevaRespuesta = response.data.comentarioGuardado;
-
-        setComentarios((prevComentarios) =>
-            prevComentarios.map((comentario) => {
-                if (comentario._id === comentarioAResponder) {
-                    return {
-                        ...comentario,
-                        respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
-                    };
-                }
-                return comentario;
-            })
-        );
-
-        setRespuesta('');
-        setComentarioAResponder(null);
+      const response = await axios.post(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+        {
+          comentario: respuestaTexto, // Texto de la respuesta
+          usuario: usuarioEnSesion._id, // Usuario actual
+          parentCommentId: comentarioAResponder, // ID del comentario o respuesta al que responde
+        }
+      );
+  
+      const nuevaRespuesta = response.data.comentarioGuardado;
+  
+      // Actualizar los comentarios en el estado local
+      setComentarios((prevComentarios) =>
+        prevComentarios.map((comentario) => {
+          // Buscar el comentario o respuesta al que se responde
+          if (comentario._id === comentarioAResponder) {
+            return {
+              ...comentario,
+              respuestas: [...(comentario.respuestas || []), nuevaRespuesta],
+            };
+          }
+  
+          // Revisar respuestas de nivel superior para manejar re-respuestas
+          if (comentario.respuestas) {
+            comentario.respuestas = comentario.respuestas.map((respuesta) => {
+              if (respuesta._id === comentarioAResponder) {
+                return {
+                  ...respuesta,
+                  respuestas: [...(respuesta.respuestas || []), nuevaRespuesta],
+                };
+              }
+              return respuesta;
+            });
+          }
+          return comentario;
+        })
+      );
+  
+      // Limpiar el estado
+      setRespuestaTexto("");
+      setComentarioAResponder(null);
     } catch (error) {
-        console.error('Error al agregar la respuesta:', error);
+      console.error("Error al agregar la respuesta:", error);
     }
-};
+  };
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
-    setComentarioAResponder(comentarioId); // Establecer el comentario al que se va a responder
+    setComentarioAResponder(comentarioId); // Establecer el comentario o respuesta a la que se responde
+    setRespuestaTexto(""); // Limpiar el texto del input
   };
 
 
@@ -851,16 +872,16 @@ const DetalleReceta = () => {
 
                     {/* Input para re-responder */}
                     {comentarioAResponder === respuesta._id && (
-                      <div className="input-respuesta reresp-input">
-                        <input
-                          type="text"
-                          value={respuestaTexto}
-                          onChange={(e) => setRespuestaTexto(e.target.value)}
-                          placeholder="Escribe tu re-respuesta..."
-                        />
-                        <button onClick={agregarRespuesta}>Enviar</button>
-                      </div>
-                    )}
+  <div className="input-respuesta reresp-input">
+    <input
+      type="text"
+      value={respuestaTexto}
+      onChange={(e) => setRespuestaTexto(e.target.value)}
+      placeholder="Escribe tu re-respuesta..."
+    />
+    <button onClick={agregarRespuesta}>Enviar</button>
+  </div>
+)}
                   </div>
                 ))}
               </div>
