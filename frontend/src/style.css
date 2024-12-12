@@ -4754,7 +4754,7 @@ i.fas.fa-undo {
 .texto-respuesta{
     margin-left: 7px;
 }
-
+/*
 .toggle-respuestas button {
     background: none;
     border: none;
@@ -4763,7 +4763,7 @@ i.fas.fa-undo {
     padding: 0;
     font-size: 0.9rem;
   }
-
+*/
 
 
   .mencion {
@@ -4773,9 +4773,14 @@ i.fas.fa-undo {
 }
 
 
-link-ocultar-respuestas{
+.link-ocultar-respuestas{
     margin-bottom: 10px;
     margin-top: 15px;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: .9rem;
 }
 
 .boton-enviar-re-respuesta{
@@ -4805,8 +4810,10 @@ link-ocultar-respuestas{
 
 .reresp-comentarios{
     margin-top: 10px;
+    border-left: 1px dotted #787878;
 }
 
 .reresp-comentario{
     margin-bottom: 10px;
+    margin-left: 14px;
 }

@@ -323,8 +323,8 @@ const DetalleReceta = () => {
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
-    setComentarioAResponder(comentarioId); // Establecer el comentario o respuesta a la que se responde
-    setRespuestaTexto(""); // Limpiar el texto del input
+    setComentarioAResponder((prevId) => (prevId === comentarioId ? null : comentarioId)); // Alternar entre abrir y cerrar el input
+    setRespuestaTexto(""); // Limpiar el texto del input siempre que se abra un nuevo input
   };
 
 
@@ -831,7 +831,7 @@ const DetalleReceta = () => {
                                 {respuesta.respuestas && respuesta.respuestas.length > 0 && (
                                   <div className="toggle-respuestas reresp">
                                     <button className='link-ocultar-respuestas' onClick={() => toggleRespuestas(respuesta._id)}>
-                                      {respuestasVisibles[respuesta._id] ? `Ocultar re-respuestas` : ` ${respuesta.respuestas.length} re-respuesta(s)`}
+                                      {respuestasVisibles[respuesta._id] ? `Ocultar conversación` : `Ver conversación (${respuesta.respuestas.length})`}
                                     </button>
                                     {respuestasVisibles[respuesta._id] && (
                                       <div className="respuestas reresp-comentarios">
