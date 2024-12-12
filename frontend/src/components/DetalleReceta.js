@@ -12,7 +12,6 @@ const DetalleReceta = () => {
   const { id } = useParams(); // Para obtener el id de la receta desde la URL
   const navigate = useNavigate();
 
-
   const [receta, setReceta] = useState({});
   const [esPropietario, setEsPropietario] = useState(false);
   const [comentarios, setComentarios] = useState([]);
@@ -40,7 +39,6 @@ const DetalleReceta = () => {
   const [comentarioAResponder, setComentarioAResponder] = useState(null);
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
-
   const [respuestaTexto, setRespuestaTexto] = useState("");
   
   const botonRef = useRef(null);
@@ -218,17 +216,17 @@ const DetalleReceta = () => {
     setIngredientesEditable(false);
   };
 
-    // Guardar ingredientes
-    const guardarIngredientes = async () => {
-        try {
-          await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/ingredientesCantidades`, { ingredientesCantidades });
-          setIngredientesEditable(false);
-        } catch (error) {
-        console.error('Error al guardar ingredientes', error);
-        }
-    };
+  // Guardar ingredientes
+  const guardarIngredientes = async () => {
+      try {
+        await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/ingredientesCantidades`, { ingredientesCantidades });
+        setIngredientesEditable(false);
+      } catch (error) {
+      console.error('Error al guardar ingredientes', error);
+      }
+  };
 
-    // Guardar pasos
+  // Guardar pasos
   const guardarPasos = async () => {
     try {
         // Combina los pasos en un solo string separado por '\r\n'
@@ -270,7 +268,7 @@ const DetalleReceta = () => {
     } catch (error) {
         console.error('Error al agregar el comentario:', error);
     }
-};
+  };
 
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
@@ -472,7 +470,7 @@ const DetalleReceta = () => {
 
 
 
-                              //Evento para cancelar la edicion de valorar
+  //Evento para cancelar la edicion de valorar
   // Aquí defines el useRef
   const estrellasRef = useRef(null);
 
@@ -512,479 +510,462 @@ const DetalleReceta = () => {
  //const imageUrl = `${window.location.origin}/${receta.imagen?.replace('\\', '/')}`;
  const imageUrl = receta.imagen;
 
-    return (
-      <div>
-        <Helmet>
-        <title>{`JaviCook - ${receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}`}</title>
-        <link rel="icon" href="/receta-icon.png"/>
-        </Helmet>
-      
-        <div className="body-detalles">
-          <div className="encabezado">
-            <div className="barra-navegacion">
-              <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
-              <span className="bienvenido-text">Bienvenido, {usuarioEnSesion?.nombre}!</span>
+  return (
+    <div>
+      <Helmet>
+      <title>{`JaviCook - ${receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}`}</title>
+      <link rel="icon" href="/receta-icon.png"/>
+      </Helmet>
+    
+      <div className="body-detalles">
+        <div className="encabezado">
+          <div className="barra-navegacion">
+            <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
+            <span className="bienvenido-text">Bienvenido, {usuarioEnSesion?.nombre}!</span>
 
-              <span class="subtitulo-detalle-receta"> Detalles de la receta </span>
-              <img src="../images/cubiertos-cruzados.png" className="img-cerrar-sesion" alt="Cerrar Sesión" 
-                onClick={() => {
-                    localStorage.removeItem('usuario');
-                    console.log('Cerrar sesión');
-                    navigate('/login');
-                    window.history.pushState(null, '', '/login'); // Asegura que no pueda regresar a la página anterior
-                }}  />
-            </div>
+            <span class="subtitulo-detalle-receta"> Detalles de la receta </span>
+            <img src="../images/cubiertos-cruzados.png" className="img-cerrar-sesion" alt="Cerrar Sesión" 
+              onClick={() => {
+                  localStorage.removeItem('usuario');
+                  console.log('Cerrar sesión');
+                  navigate('/login');
+                  window.history.pushState(null, '', '/login'); // Asegura que no pueda regresar a la página anterior
+              }}  />
           </div>
-    
-          <main className="principal">
-            <section className="tarjeta-grande">
-              <div className="panel-detalles">
+        </div>
+  
+        <main className="principal">
+          <section className="tarjeta-grande">
+            <div className="panel-detalles">
 
-
-              {/* Mostrar un cartel de carga hasta q se traigan los datos */}
-              {isLoading && (
-                   <div className="loading-container-eliminar">
-                    <div className="spinner-eliminar"></div>
-                    <p className="loading-message-eliminar">Creando receta...</p>
-                  </div>
-                )}
-
-
-
-
-
-                <div className="div-detalles-titulo">
-                  {!tituloEditable ? (
-                    <>
-                      <p className='detalles-titulo'>
-                        {receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}
-                      </p>
-
-                      
-                      {!esPropietario && (
-                        <a className="btn-editar-titulo"  style={{opacity : 0, cursor: 'default'}}>
-                          <i className="fas fa-pencil-alt"></i>
-                        </a>
-                      )}
-                      {esPropietario && (
-                        <a className="btn-editar-titulo" onClick={cambiarTitulo}>
-                          <i className="fas fa-pencil-alt" title='Editar titulo'></i>
-                        </a>
-                      )}
-                    </>
-
-                  ) : (
-                    <>
-                      <input className='nuevo-titulo'
-                        value= {receta.titulo}
-                        onChange={(e) => setReceta({ ...receta, titulo: e.target.value })}
-                      />
-
-                      <div className='cancel-ok-titulo'>
-                        <a className='btn-cancelar-titulo' onClick={cancelarTitulo}>
-                          <i className="fas fa-times-circle"></i>
-                        </a>
-                        <a className='btn-guardar-titulo' onClick={guardarTitulo}>
-                          <i className="fas fa-check-circle"></i>
-                        </a>
-                      </div>
-                    </>
-                  )}
-                </div>
-    
-                <div className="imagen-contenedor">
-                  <img src={imageUrl} alt={receta.titulo} className="panel-img" />
-                  <div className="detalles-usuario-fecha">
-                    <span>{receta.usuario?.nombre}</span>
-                    <span>{new Date(receta.fecha).toLocaleDateString()}</span>
-                  </div>
-                </div>
-    
-                <p className="detalles-tiempo-dificultad">
-                  <span>Tiempo de preparación: {receta.tiempoPreparacion}' <i class="far fa-clock"/></span>
-                  <span className={`detalles-dificultad-${receta.dificultad?.toLowerCase()}`}>{receta.dificultad}</span>
-                </p>
-    
-                <div className="detalles-categoria">
-                  <p>Categoría:</p>
-                  <span>{receta.categoria}</span>
-                </div>
-    
-                <div className="detalles-cantidades">
-                  <p>Ingredientes</p>
-                  {!ingredientesEditable ? (
-                      <>
-                          <div className='valores-cantidad'>
-                              {ingredientesCantidades.split('\n').map((ingrediente, index) => {
-                                  const partes = ingrediente.split(':');
-                                  if (partes.length === 2) {
-                                      const ingredienteFormateado = `${partes[0].trim()}: ${partes[1].trim()}`;
-                                      return <div key={index}>{ingredienteFormateado}</div>;
-                                  }
-                                  return <div key={index}>{ingrediente}</div>; 
-                              })}
-                          </div>
-                          {esPropietario && (
-                              <a className='btn-editar-ingredientes' onClick={cambiarIngredientes}>
-                                  <i className="fas fa-pencil-alt" title='Editar ingredientes'></i>
-                              </a>
-                          )}
-                      </>
-                  ) : (
-                      <>
-                          <textarea
-                              className='text-area-ingredientes'
-                              value={ingredientesCantidades}
-                              onChange={(e) => setIngredientesCantidades(e.target.value)}
-                          />
-                          <div className='cancel-ok-ingredientes'>
-                              <a className='btn-cancelar-ingredientes' onClick={cancelarIngredientes}>
-                                  <i className="fas fa-times-circle"></i>
-                              </a>
-                              <a className='btn-guardar-ingredientes' onClick={guardarIngredientes}>
-                                  <i className="fas fa-check-circle"></i>
-                              </a>
-                          </div>
-                      </>
-                  )}
-                </div>
-                
-                <hr className='divider'></hr>
-    
-                <div className="detalles-pasos">
-                  <p>Pasos</p>
-                  {!pasosEditable ? (
-                      <>
-                        {/* Mapear los pasos para mostrar el número y el contenido */}
-                        {pasos.split('\n').map((paso, index) => (
-                            <div className="paso-item" key={index}>
-                                <div className="numero-paso">{index + 1}</div> {/* Número de paso */}
-                                <div className="texto-paso">{capitalizarPrimeraLetra(paso)}</div> {/* Texto del paso */}
-                            </div>
-                        ))}
-
-                        {esPropietario && (
-                            <a className='btn-editar-pasos' onClick={() => setPasosEditable(true)}>
-                                <i className="fas fa-pencil-alt" title='Editar pasos'></i>
-                            </a>
-                        )}
-                      </>
-                  ) : (
-                        <>
-                        {/* Mostrar textarea para cada paso en modo edición */}
-                        <div class="div-pasos-receta">
-                          <div id="pasosPanel" className="pasos-panel">
-                            {pasosEditados.map((paso, index) => (
-                              <div key={index} className="paso">
-                                <label htmlFor={`paso${index + 1}`} className="label-pasos">Paso {index + 1}:</label>
-                                <textarea
-                                  id={`paso${index + 1}`}
-                                  className="text-area-pasos"
-                                  placeholder="Escribe el paso..."
-                                  value={paso}
-                                  onChange={(e) => manejarCambioPaso(index, e.target.value)}
-                                />
-                              </div>
-                            ))} 
-                             
-                          </div>
-
-                          {/* Botones para agregar o quitar pasos */}
-                          <div className="div-agregar-quitar-pasos">
-                              <button className="btn-agregar-paso" onClick={agregarPaso}>
-                                  <i className="fas fa-plus"></i> Paso
-                              </button>
-                              <button
-                                  className="btn-quitar-paso"
-                                  onClick={quitarPaso}
-                                  style={{ display: pasosEditados.length > 1 ? 'block' : 'none' }}
-                              >
-                                  <i className="fas fa-minus"></i> Paso
-                              </button>
-                          </div>
-
-                          <div className='cancel-ok-pasos'>
-                              <a className='btn-cancelar-pasos' onClick={() => setPasosEditable(false)}>
-                                  <i className="fas fa-times-circle"></i>
-                              </a>
-                              <a className='btn-guardar-pasos' onClick={guardarPasos}>
-                                  <i className="fas fa-check-circle"></i>
-                              </a>
-                          </div>
-                        
-                        </div>
-                        </>
-                      )}
-                </div>
-
-
-                <hr className='divider'></hr>
-
-
-
-              {/*Aca va la valoracion*/}
-              <span className='titulo-valoracion'>Tu valoración para esta receta</span>
-                <div className="detalles-valoracion" ref={estrellasRef}>
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <i
-                      key={i}
-                      className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
-                      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-                      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-                      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-                      onMouseLeave={() => setValoracionHover(0)}
-                    />
-                  ))}
-                </div>
-
-                {/* Botón para activar la edición */}
-                {yaValorado && !edicionActiva && (
-                  <a onClick={() => setEdicionActiva(true)} className="boton-editar">
-                    Editar valoración
-                  </a>
-                )}
-
-                {/* Mostrar mensaje de edición */}
-                {edicionActiva && (
-                  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-                )}
-
-              {esPropietario && (
-                <hr className='divider'></hr>
-              )}
-
-              {/* Eliminar receta */}
-              {esPropietario && (
-                <button className="link-eliminar-receta" onClick={confirmarEliminar}>
-                  <i className="fas fa-trash-alt" title="Eliminar receta"></i>
-                </button>
-              )}
-
-              {/* Mostrar un cartel de carga si está eliminando */}
-              {loading && (
+            {/* Mostrar un cartel de carga hasta q se traigan los datos */}
+            {isLoading && (
                   <div className="loading-container-eliminar">
                   <div className="spinner-eliminar"></div>
-                  <p className="loading-message-eliminar">Eliminando receta...</p>
+                  <p className="loading-message-eliminar">Creando receta...</p>
                 </div>
               )}
 
-              
-              {/* Comentarios */}
-              <div className="detalles-comentarios">
-                <i class="far fa-comment-alt"></i>
-                <h3>Comentarios</h3>
-              </div>
+              <div className="div-detalles-titulo">
+                {!tituloEditable ? (
+                  <>
+                    <p className='detalles-titulo'>
+                      {receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}
+                    </p>
 
-              <div className="input-comentarios">
-                <input
-                  className="input-comentario"
-                  value={nuevoComentario}
-                  onChange={(e) => setNuevoComentario(e.target.value)}
-                  placeholder="Agregar comentario..."
-                />
-                <button className='boton-comentario' onClick={agregarComentario}>Enviar</button>
-              </div>
-              
-              <div className="comentarios-usuarios">
-  {comentarios && comentarios.length > 0 ? (
-    comentarios.map((comentario) => (
-      <div key={comentario._id} className="contenedores-spam">
-        {/* Comentario principal */}
-        <div className="comentario-principal">
-          <div className="imagen-nombre">
-            <img
-              className="imagen-perfil-comentario"
-              src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-              alt={comentario.usuario.nombre}
-            />
-            <span className="usuario-comentario">{comentario.usuario.nombre || "Usuario desconocido"}</span>
-          </div>
-          <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-          <p className="texto-comentario">{comentario.comentario}</p>
-          <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
-            Responder
-          </button>
-        </div>
+                    {!esPropietario && (
+                      <a className="btn-editar-titulo"  style={{opacity : 0, cursor: 'default'}}>
+                        <i className="fas fa-pencil-alt"></i>
+                      </a>
+                    )}
+                    {esPropietario && (
+                      <a className="btn-editar-titulo" onClick={cambiarTitulo}>
+                        <i className="fas fa-pencil-alt" title='Editar titulo'></i>
+                      </a>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <input className='nuevo-titulo'
+                      value= {receta.titulo}
+                      onChange={(e) => setReceta({ ...receta, titulo: e.target.value })}
+                    />
 
-        {/* Respuestas */}
-        {comentario.respuestas && comentario.respuestas.length > 0 && (
-          <div className="toggle-respuestas">
-            <button onClick={() => toggleRespuestas(comentario._id)}>
-              {respuestasVisibles[comentario._id]
-                ? `Ocultar respuestas`
-                : `Mostrar ${comentario.respuestas.length} respuesta(s)`}
-            </button>
-            {respuestasVisibles[comentario._id] && (
-              <div className="respuestas">
-                {comentario.respuestas.map((respuesta) => (
-                  <div key={respuesta._id} className="respuesta-comentario">
-                    <div className="imagen-nombre">
-                      <img
-                        className="imagen-perfil-comentario"
-                        src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                        alt={respuesta.usuario.nombre}
-                      />
-                      <span className="usuario-comentario">{respuesta.usuario.nombre || "Usuario desconocido"}</span>
+                    <div className='cancel-ok-titulo'>
+                      <a className='btn-cancelar-titulo' onClick={cancelarTitulo}>
+                        <i className="fas fa-times-circle"></i>
+                      </a>
+                      <a className='btn-guardar-titulo' onClick={guardarTitulo}>
+                        <i className="fas fa-check-circle"></i>
+                      </a>
                     </div>
-                    <span className="comentario-fecha">
-                      {new Date(respuesta.fecha).toLocaleDateString()}
-                    </span>
-                    <p className="texto-respuesta">{respuesta.comentario}</p>
-                    <button
-                      className="boton-responder"
-                      onClick={() => responderComentario(respuesta._id)}
-                    >
-                      Responder
-                    </button>
+                  </>
+                )}
+              </div>
+  
+              <div className="imagen-contenedor">
+                <img src={imageUrl} alt={receta.titulo} className="panel-img" />
+                <div className="detalles-usuario-fecha">
+                  <span>{receta.usuario?.nombre}</span>
+                  <span>{new Date(receta.fecha).toLocaleDateString()}</span>
+                </div>
+              </div>
+  
+              <p className="detalles-tiempo-dificultad">
+                <span>Tiempo de preparación: {receta.tiempoPreparacion}' <i class="far fa-clock"/></span>
+                <span className={`detalles-dificultad-${receta.dificultad?.toLowerCase()}`}>{receta.dificultad}</span>
+              </p>
+  
+              <div className="detalles-categoria">
+                <p>Categoría:</p>
+                <span>{receta.categoria}</span>
+              </div>
+  
+              <div className="detalles-cantidades">
+                <p>Ingredientes</p>
+                {!ingredientesEditable ? (
+                    <>
+                        <div className='valores-cantidad'>
+                            {ingredientesCantidades.split('\n').map((ingrediente, index) => {
+                                const partes = ingrediente.split(':');
+                                if (partes.length === 2) {
+                                    const ingredienteFormateado = `${partes[0].trim()}: ${partes[1].trim()}`;
+                                    return <div key={index}>{ingredienteFormateado}</div>;
+                                }
+                                return <div key={index}>{ingrediente}</div>; 
+                            })}
+                        </div>
+                        {esPropietario && (
+                            <a className='btn-editar-ingredientes' onClick={cambiarIngredientes}>
+                                <i className="fas fa-pencil-alt" title='Editar ingredientes'></i>
+                            </a>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        <textarea
+                            className='text-area-ingredientes'
+                            value={ingredientesCantidades}
+                            onChange={(e) => setIngredientesCantidades(e.target.value)}
+                        />
+                        <div className='cancel-ok-ingredientes'>
+                            <a className='btn-cancelar-ingredientes' onClick={cancelarIngredientes}>
+                                <i className="fas fa-times-circle"></i>
+                            </a>
+                            <a className='btn-guardar-ingredientes' onClick={guardarIngredientes}>
+                                <i className="fas fa-check-circle"></i>
+                            </a>
+                        </div>
+                    </>
+                )}
+              </div>
+              
+              <hr className='divider'></hr>
+  
+              <div className="detalles-pasos">
+                <p>Pasos</p>
+                {!pasosEditable ? (
+                    <>
+                      {/* Mapear los pasos para mostrar el número y el contenido */}
+                      {pasos.split('\n').map((paso, index) => (
+                          <div className="paso-item" key={index}>
+                              <div className="numero-paso">{index + 1}</div> {/* Número de paso */}
+                              <div className="texto-paso">{capitalizarPrimeraLetra(paso)}</div> {/* Texto del paso */}
+                          </div>
+                      ))}
 
-                    {/* Re-Respuestas */}
-                    {respuesta.respuestas && respuesta.respuestas.length > 0 && (
-                      <div className="toggle-respuestas reresp">
-                        <button onClick={() => toggleRespuestas(respuesta._id)}>
-                          {respuestasVisibles[respuesta._id]
-                            ? `Ocultar re-respuestas`
-                            : `Mostrar ${respuesta.respuestas.length} re-respuesta(s)`}
+                      {esPropietario && (
+                          <a className='btn-editar-pasos' onClick={() => setPasosEditable(true)}>
+                              <i className="fas fa-pencil-alt" title='Editar pasos'></i>
+                          </a>
+                      )}
+                    </>
+                ) : (
+                      <>
+                      {/* Mostrar textarea para cada paso en modo edición */}
+                      <div class="div-pasos-receta">
+                        <div id="pasosPanel" className="pasos-panel">
+                          {pasosEditados.map((paso, index) => (
+                            <div key={index} className="paso">
+                              <label htmlFor={`paso${index + 1}`} className="label-pasos">Paso {index + 1}:</label>
+                              <textarea
+                                id={`paso${index + 1}`}
+                                className="text-area-pasos"
+                                placeholder="Escribe el paso..."
+                                value={paso}
+                                onChange={(e) => manejarCambioPaso(index, e.target.value)}
+                              />
+                            </div>
+                          ))} 
+                            
+                        </div>
+
+                        {/* Botones para agregar o quitar pasos */}
+                        <div className="div-agregar-quitar-pasos">
+                            <button className="btn-agregar-paso" onClick={agregarPaso}>
+                                <i className="fas fa-plus"></i> Paso
+                            </button>
+                            <button
+                                className="btn-quitar-paso"
+                                onClick={quitarPaso}
+                                style={{ display: pasosEditados.length > 1 ? 'block' : 'none' }}
+                            >
+                                <i className="fas fa-minus"></i> Paso
+                            </button>
+                        </div>
+
+                        <div className='cancel-ok-pasos'>
+                            <a className='btn-cancelar-pasos' onClick={() => setPasosEditable(false)}>
+                                <i className="fas fa-times-circle"></i>
+                            </a>
+                            <a className='btn-guardar-pasos' onClick={guardarPasos}>
+                                <i className="fas fa-check-circle"></i>
+                            </a>
+                        </div>
+                      
+                      </div>
+                      </>
+                    )}
+              </div>
+
+
+              <hr className='divider'></hr>
+
+
+
+            {/*Aca va la valoracion*/}
+            <span className='titulo-valoracion'>Tu valoración para esta receta</span>
+              <div className="detalles-valoracion" ref={estrellasRef}>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <i
+                    key={i}
+                    className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
+                    style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+                    onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
+                    onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+                    onMouseLeave={() => setValoracionHover(0)}
+                  />
+                ))}
+              </div>
+
+              {/* Botón para activar la edición */}
+              {yaValorado && !edicionActiva && (
+                <a onClick={() => setEdicionActiva(true)} className="boton-editar">
+                  Editar valoración
+                </a>
+              )}
+
+              {/* Mostrar mensaje de edición */}
+              {edicionActiva && (
+                <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+              )}
+
+            {esPropietario && (
+              <hr className='divider'></hr>
+            )}
+
+            {/* Eliminar receta */}
+            {esPropietario && (
+              <button className="link-eliminar-receta" onClick={confirmarEliminar}>
+                <i className="fas fa-trash-alt" title="Eliminar receta"></i>
+              </button>
+            )}
+
+            {/* Mostrar un cartel de carga si está eliminando */}
+            {loading && (
+                <div className="loading-container-eliminar">
+                <div className="spinner-eliminar"></div>
+                <p className="loading-message-eliminar">Eliminando receta...</p>
+              </div>
+            )}
+
+            
+            {/* Comentarios */}
+            <div className="detalles-comentarios">
+              <i class="far fa-comment-alt"></i>
+              <h3>Comentarios</h3>
+            </div>
+
+            <div className="input-comentarios">
+              <input
+                className="input-comentario"
+                value={nuevoComentario}
+                onChange={(e) => setNuevoComentario(e.target.value)}
+                placeholder="Agregar comentario..."
+              />
+              <button className='boton-comentario' onClick={agregarComentario}>Enviar</button>
+            </div>
+            
+            <div className="comentarios-usuarios">
+              {comentarios && comentarios.length > 0 ? (
+                comentarios.map((comentario) => (
+                  <div key={comentario._id} className="contenedores-spam">
+
+                    {/* Comentario principal */}
+                    <div className="comentario-principal">
+                      <div className="imagen-nombre">
+                        <img
+                          className="imagen-perfil-comentario"
+                          src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                          alt={comentario.usuario.nombre}
+                        />
+                        <span className="usuario-comentario">{comentario.usuario.nombre || "Usuario desconocido"}</span>
+                      </div>
+                      <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
+                      <p className="texto-comentario">{comentario.comentario}</p>
+                      <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
+                        Responder
+                      </button>
+                    </div>
+
+                    {/* Respuestas */}
+                    {comentario.respuestas && comentario.respuestas.length > 0 && (
+                      <div className="toggle-respuestas">
+                        <button onClick={() => toggleRespuestas(comentario._id)}>
+                          {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : ` ${comentario.respuestas.length} respuesta(s)`}
                         </button>
-                        {respuestasVisibles[respuesta._id] && (
-                          <div className="respuestas reresp-comentarios">
-                            {respuesta.respuestas.map((rerespuesta) => (
-                              <div key={rerespuesta._id} className="reresp-comentario">
+                        {respuestasVisibles[comentario._id] && (
+                          <div className="respuestas">
+                            {comentario.respuestas.map((respuesta) => (
+                              <div key={respuesta._id} className="respuesta-comentario">
                                 <div className="imagen-nombre">
                                   <img
                                     className="imagen-perfil-comentario"
-                                    src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                    alt={rerespuesta.usuario.nombre}
+                                    src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                    alt={respuesta.usuario.nombre}
                                   />
-                                  <span className="usuario-comentario">
-                                    {rerespuesta.usuario.nombre || "Usuario desconocido"}
-                                  </span>
+                                  <span className="usuario-comentario">{respuesta.usuario.nombre || "Usuario desconocido"}</span>
                                 </div>
                                 <span className="comentario-fecha">
-                                  {new Date(rerespuesta.fecha).toLocaleDateString()}
+                                  {new Date(respuesta.fecha).toLocaleDateString()}
                                 </span>
-                                <p className="texto-respuesta">{rerespuesta.comentario}</p>
+                                <p className="texto-respuesta">{respuesta.comentario}</p>
+                                <button
+                                  className="boton-responder"
+                                  onClick={() => responderComentario(respuesta._id)}
+                                >
+                                  Responder
+                                </button>
+
+                                {/* Re-Respuestas */}
+                                {respuesta.respuestas && respuesta.respuestas.length > 0 && (
+                                  <div className="toggle-respuestas reresp">
+                                    <button className='link-ocultar-respuestas' onClick={() => toggleRespuestas(respuesta._id)}>
+                                      {respuestasVisibles[respuesta._id] ? `Ocultar re-respuestas` : ` ${respuesta.respuestas.length} re-respuesta(s)`}
+                                    </button>
+                                    {respuestasVisibles[respuesta._id] && (
+                                      <div className="respuestas reresp-comentarios">
+                                        {respuesta.respuestas.map((rerespuesta) => (
+                                          <div key={rerespuesta._id} className="reresp-comentario">
+                                            <div className="imagen-nombre">
+                                              <img
+                                                className="imagen-perfil-comentario"
+                                                src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                                alt={rerespuesta.usuario.nombre}
+                                              />
+                                              <span className="usuario-comentario">
+                                                {rerespuesta.usuario.nombre || "Usuario desconocido"}
+                                              </span>
+                                            </div>
+                                            <span className="comentario-fecha">
+                                              {new Date(rerespuesta.fecha).toLocaleDateString()}
+                                            </span>
+                                            <p className="texto-respuesta">{rerespuesta.comentario}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Input para re-responder */}
+                                {comentarioAResponder === respuesta._id && (
+                                  <div className="input-respuesta reresp-input">
+                                    <input
+                                      type="text"
+                                      value={respuestaTexto}
+                                      onChange={(e) => setRespuestaTexto(e.target.value)}
+                                      placeholder={`Responder a @${respuesta.usuario.nombre || 'usuario'}`}
+                                    />
+                                    <button className='boton-enviar-re-respuesta' onClick={agregarRespuesta}>Enviar</button>
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>
                         )}
                       </div>
+                    )} {/*Cierre respuestas*/}
+
+                    {/* Input para responder un comentario */}
+                    {comentarioAResponder === comentario._id && (
+                      <div className="input-respuesta">
+                        <input
+                          type="text"
+                          value={respuestaTexto}
+                          onChange={(e) => setRespuestaTexto(e.target.value)}
+                          placeholder="Escribe tu respuesta..."
+                        />
+                        <button onClick={agregarRespuesta}>Enviar</button>
+                      </div>
                     )}
-
-                    {/* Input para re-responder */}
-                    {comentarioAResponder === respuesta._id && (
-  <div className="input-respuesta reresp-input">
-    <input
-      type="text"
-      value={respuestaTexto}
-      onChange={(e) => setRespuestaTexto(e.target.value)}
-      placeholder="Escribe tu re-respuesta..."
-    />
-    <button onClick={agregarRespuesta}>Enviar</button>
-  </div>
-)}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                ))
+              ) : (
+                <p>No hay comentarios aún.</p>
+              )}
+            </div>
 
-        {/* Input para responder un comentario */}
-        {comentarioAResponder === comentario._id && (
-          <div className="input-respuesta">
-            <input
-              type="text"
-              value={respuestaTexto}
-              onChange={(e) => setRespuestaTexto(e.target.value)}
-              placeholder="Escribe tu respuesta..."
+            <hr className='divider'></hr>
+
+            <a className="link"  onClick={() => {navigate('/inicio');}} >Ver otras recetas
+              <i class="fas fa-undo"></i>
+            </a>
+
+          </div>
+          </section>
+        </main>
+      </div>
+
+
+      <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`}>
+        {/* Botón para desplegar/ocultar */}
+        <button  ref={botonRef} className="boton-abre-tempo"title='Temporizador'
+          onClick={() => setMostrarControles(!mostrarControles)}
+          style={{
+            marginBottom: mostrarControles ? "10px" : "0",
+            padding: mostrarControles ? "5px" : "17px",
+          }}
+        >
+          {mostrarControles ? (
+            "Minimizar" // Texto cuando está desplegado
+          ) : (
+            <img 
+              src="../images/cronometro.png" // Ruta de la imagen
+              alt="Abrir Temporizador" 
+              style={{ width: "25px", height: "25px" }} // Ajusta el tamaño
             />
-            <button onClick={agregarRespuesta}>Enviar</button>
+          )}
+        </button>
+
+        {/* Controles visibles solo si mostrarControles es true */}
+        {mostrarControles && (
+          <div>
+            <h4 className="titulo-tempo">Temporizador</h4>
+            <p 
+              className={`reloj-tempo ${
+                !activo && tiempo > 0 ? "parpadeo" : ""
+              }`}
+            >
+                <span className={!activo ? "pausa" : ""}>
+                {Math.floor(tiempo / 60)}:
+                {String(tiempo % 60).padStart(2, "0")}
+              </span>
+            </p>
+            <input
+              className="input-tempo"
+              type="number"
+              placeholder="Minutos"
+              value={inputTiempo} // Mostrar el valor fijo ingresado
+              onChange={handleTiempoInput}
+            />
+            <div className="contenedor-botones-tempo">
+              <button className="iniciar-tempo" onClick={iniciarTemporizador}>
+                <i className="fas fa-play" style={{ color: "#0a7e1e" }}></i>
+              </button>
+              <button className="pausar-tempo" onClick={pausarTemporizador}>
+                <i className="fas fa-pause" style={{ color: "#fff" }}></i>
+              </button>
+              <button className="reiniciar-tempo" onClick={reiniciarTemporizador}>
+                <i class="fas fa-undo-alt" style={{ color: "#b50a0a" }}></i>
+              </button>
+            </div>
           </div>
         )}
       </div>
-    ))
-  ) : (
-    <p>No hay comentarios aún.</p>
-  )}
-</div>
 
-              <hr className='divider'></hr>
-
-              <a className="link"  onClick={() => {navigate('/inicio');}} >Ver otras recetas
-                <i class="fas fa-undo"></i>
-              </a>
-
-            </div>
-            </section>
-          </main>
-        </div>
-
-
-
-
-
-        <div className={`temporizador ${mostrarControles ? "mostrar" : ""}`}>
-          {/* Botón para desplegar/ocultar */}
-          <button  ref={botonRef} className="boton-abre-tempo"title='Temporizador'
-            onClick={() => setMostrarControles(!mostrarControles)}
-            style={{
-              marginBottom: mostrarControles ? "10px" : "0",
-              padding: mostrarControles ? "5px" : "17px",
-            }}
-          >
-           {mostrarControles ? (
-              "Minimizar" // Texto cuando está desplegado
-            ) : (
-              <img 
-                src="../images/cronometro.png" // Ruta de la imagen
-                alt="Abrir Temporizador" 
-                style={{ width: "25px", height: "25px" }} // Ajusta el tamaño
-              />
-            )}
-          </button>
-
-          {/* Controles visibles solo si mostrarControles es true */}
-          {mostrarControles && (
-            <div>
-              <h4 className="titulo-tempo">Temporizador</h4>
-              <p 
-                className={`reloj-tempo ${
-                  !activo && tiempo > 0 ? "parpadeo" : ""
-                }`}
-              >
-                 <span className={!activo ? "pausa" : ""}>
-                  {Math.floor(tiempo / 60)}:
-                  {String(tiempo % 60).padStart(2, "0")}
-                </span>
-              </p>
-              <input
-                className="input-tempo"
-                type="number"
-                placeholder="Minutos"
-                value={inputTiempo} // Mostrar el valor fijo ingresado
-                onChange={handleTiempoInput}
-              />
-              <div className="contenedor-botones-tempo">
-                <button className="iniciar-tempo" onClick={iniciarTemporizador}>
-                  <i className="fas fa-play" style={{ color: "#0a7e1e" }}></i>
-                </button>
-                <button className="pausar-tempo" onClick={pausarTemporizador}>
-                  <i className="fas fa-pause" style={{ color: "#fff" }}></i>
-                </button>
-                <button className="reiniciar-tempo" onClick={reiniciarTemporizador}>
-                  <i class="fas fa-undo-alt" style={{ color: "#b50a0a" }}></i>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-
-
-      
-      </div>
-      );
+    </div>
+  );
 };
     
-
 export default DetalleReceta;

@@ -4652,19 +4652,21 @@ i.fas.fa-undo {
 
 .boton-responder {
     align-self: flex-start;
-    margin-top: 10px;
-    padding: 5px 10px;
+    background-color: transparent;
     border: none;
-    background-color: #007bff;
-    color: #fff;
     border-radius: 4px;
+    color: #a7a7a7;
     cursor: pointer;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     margin-left: 15px;
+    margin-top: 6px;
+    padding: 4px 10px;
 }
 
 .boton-responder:hover {
-    background-color: #0056b3;
+    background-color: #0756ab;
+    border-radius: 20px;
+    color: #e2dddd;
 }
 
 .input-respuesta {
@@ -4678,7 +4680,7 @@ i.fas.fa-undo {
     background-color: #f9f9f9;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.3s ease;
-    width: 85%;
+    width: 100%;
 }
 
 @keyframes fadeIn {
@@ -4770,4 +4772,22 @@ i.fas.fa-undo {
     font-weight: bold;
     color: #007bff;
     margin-right: 5px;
+}
+
+
+link-ocultar-respuestas{
+    margin-bottom: 10px;
+    margin-top: 15px;
+}
+
+.boton-enviar-re-respuesta{
+    padding: 4px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
 }
