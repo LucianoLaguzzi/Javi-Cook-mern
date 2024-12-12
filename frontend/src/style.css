@@ -4659,7 +4659,6 @@ i.fas.fa-undo {
     cursor: pointer;
     margin-bottom: 6px;
     margin-left: 15px;
-    margin-top: 6px;
     padding: 4px 10px;
 }
 
@@ -4754,19 +4753,8 @@ i.fas.fa-undo {
 .texto-respuesta{
     margin-left: 7px;
 }
-/*
-.toggle-respuestas button {
-    background: none;
-    border: none;
-    color: #007BFF;
-    cursor: pointer;
-    padding: 0;
-    font-size: 0.9rem;
-  }
-*/
 
-
-  .mencion {
+.mencion {
     font-weight: bold;
     color: #007bff;
     margin-right: 5px;
@@ -4778,7 +4766,7 @@ i.fas.fa-undo {
     margin-top: 15px;
     background: none;
     border: none;
-    color: #007bff;
+    color: #5884be;
     cursor: pointer;
     font-size: .9rem;
 }
@@ -4809,8 +4797,8 @@ i.fas.fa-undo {
   }
 
 .reresp-comentarios{
-    margin-top: 10px;
     border-left: 1px dotted #787878;
+    margin-left: 50px;
 }
 
 .reresp-comentario{
