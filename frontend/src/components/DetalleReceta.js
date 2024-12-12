@@ -801,7 +801,7 @@ const DetalleReceta = () => {
                     {/* Respuestas */}
                     {comentario.respuestas && comentario.respuestas.length > 0 && (
                       <div className="toggle-respuestas">
-                        <button onClick={() => toggleRespuestas(comentario._id)}>
+                        <button className='ocultar-mostrar-respuestas' onClick={() => toggleRespuestas(comentario._id)}>
                           {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : ` ${comentario.respuestas.length} respuesta(s)`}
                         </button>
                         {respuestasVisibles[comentario._id] && (

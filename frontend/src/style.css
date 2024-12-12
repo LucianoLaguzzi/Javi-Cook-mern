@@ -4763,9 +4763,7 @@ i.fas.fa-undo {
     padding: 0;
     font-size: 0.9rem;
   }
-  .toggle-respuestas button:hover {
-    text-decoration: underline;
-  }
+
 
 
   .mencion {
@@ -4790,4 +4788,25 @@ link-ocultar-respuestas{
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-decoration: none;
+}
+
+.ocultar-mostrar-respuestas{
+    background: none;
+    border: none;
+    color: #007BFF;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.ocultar-mostrar-respuestas:hover {
+    text-decoration: underline;
+  }
+
+.reresp-comentarios{
+    margin-top: 10px;
+}
+
+.reresp-comentario{
+    margin-bottom: 10px;
 }
