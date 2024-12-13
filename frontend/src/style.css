@@ -4705,7 +4705,7 @@ i.fas.fa-undo {
 
 @media (max-width: 650px) {
     .input-respuesta input  {
-        font-size: 12px;
+        font-size: 11px;
     }
 }
 
@@ -4727,7 +4727,7 @@ i.fas.fa-undo {
 
 @media (max-width: 650px) {
     .input-respuesta button  {
-        font-size: 12px;
+        font-size: 11px;
     }
 }
 
@@ -4768,7 +4768,7 @@ i.fas.fa-undo {
     color: #5884be;
     cursor: pointer;
     font-size: .9rem;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 
 .boton-enviar-re-respuesta{
