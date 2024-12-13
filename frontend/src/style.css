@@ -4746,8 +4746,9 @@ i.fas.fa-undo {
     position: relative;
     margin-left: 60px;
     padding: 10px;
-    border-left: 1px solid #007bff;
+    border-left: 1px solid #787878;
     font-size: 14px;
+    padding-bottom: 20px;
 }
 
 .texto-respuesta{
@@ -4762,13 +4763,12 @@ i.fas.fa-undo {
 
 
 .link-ocultar-respuestas{
-    margin-bottom: 10px;
-    margin-top: 15px;
     background: none;
     border: none;
     color: #5884be;
     cursor: pointer;
     font-size: .9rem;
+    margin-bottom: 30px;
 }
 
 .boton-enviar-re-respuesta{
@@ -4786,7 +4786,7 @@ i.fas.fa-undo {
 .ocultar-mostrar-respuestas{
     background: none;
     border: none;
-    color: #007BFF;
+    color: #3498DB;
     cursor: pointer;
     padding: 0;
     font-size: 0.9rem;
@@ -4798,7 +4798,7 @@ i.fas.fa-undo {
 
 .reresp-comentarios{
     border-left: 1px dotted #787878;
-    margin-left: 50px;
+    margin-left: 65px;
 }
 
 .reresp-comentario{

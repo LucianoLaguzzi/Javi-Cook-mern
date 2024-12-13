@@ -850,7 +850,9 @@ const DetalleReceta = () => {
                                             <span className="comentario-fecha">
                                               {new Date(rerespuesta.fecha).toLocaleDateString()}
                                             </span>
-                                            <p className="texto-respuesta">{rerespuesta.comentario}</p>
+                                            <p className="texto-respuesta">
+                                              <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
+                                            </p>
                                           </div>
                                         ))}
                                       </div>
