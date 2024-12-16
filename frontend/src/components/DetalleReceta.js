@@ -375,13 +375,13 @@ const guardarEdicion = async (comentarioId, nivel) => {
 
       const comentarioActualizado = response.data.comentarioActualizado;
 
-      // Actualiza el estado local con los datos completamente poblados
+      // Actualiza el estado local
       setComentarios((prev) =>
           prev.map((comentario) => {
               if (comentario._id === comentarioId && nivel === "comentario") {
-                  return comentarioActualizado; // Edita el comentario principal
+                  return comentarioActualizado; // Editar comentario principal
               }
-              return comentario;
+              return comentario; // No modifica otros comentarios
           })
       );
 
