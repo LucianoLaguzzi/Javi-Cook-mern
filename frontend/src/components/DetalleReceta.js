@@ -42,8 +42,7 @@ const DetalleReceta = () => {
   const [respuestaTexto, setRespuestaTexto] = useState("");
   
   const botonRef = useRef(null);
-  const inputRef = useRef(null); // Ref para el input
-
+  const inputRef = useRef(null); // Referencia al input
   
 
   useEffect(() => {
@@ -148,13 +147,13 @@ const DetalleReceta = () => {
   }, [activo, ultimaActualizacion, tiempoInicial]);
   
 
-  useEffect(() => {
-    // Focus automático cuando el input se abre
+   // Efecto para enfocar y desplazar al input cuando se abre
+   useEffect(() => {
     if (comentarioAResponder === respuesta._id && inputRef.current) {
-      inputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      inputRef.current.focus();
+      inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Desplaza al input
+      inputRef.current.focus(); // Enfoca el input
     }
-  }, [comentarioAResponder]);
+  }, [comentarioAResponder, respuesta._id]);
 
 
 
@@ -895,7 +894,7 @@ const DetalleReceta = () => {
                     {comentarioAResponder === comentario._id && (
                       <div className="input-respuesta">
                         <input
-                          ref={inputRef}
+                          ref={inputRef} // Asigna la referencia al input
                           type="text"
                           value={respuestaTexto}
                           onChange={(e) => setRespuestaTexto(e.target.value)}
