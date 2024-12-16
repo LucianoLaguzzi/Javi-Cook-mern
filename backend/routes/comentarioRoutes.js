@@ -82,9 +82,10 @@ router.post('/:id/comentarios', async (req, res) => {
 
 
 // Ruta para editar un comentario
+// Ruta para editar un comentario
 router.put('/:id/comentarios/:comentarioId', async (req, res) => {
     const { comentarioId } = req.params;
-    const { nuevoTexto, usuarioId } = req.body; // Recupera el texto y el ID del usuario
+    const { nuevoTexto, usuarioId } = req.body;
 
     try {
         // Buscar el comentario
@@ -101,7 +102,18 @@ router.put('/:id/comentarios/:comentarioId', async (req, res) => {
         // Actualizar el comentario
         comentario.comentario = nuevoTexto;
         comentario.fechaEditado = new Date();
-        const comentarioActualizado = await comentario.save();
+        await comentario.save();
+
+        // Retornar el comentario actualizado completamente poblado
+        const comentarioActualizado = await Comentario.findById(comentarioId)
+            .populate('usuario', 'nombre imagenPerfil') // Poblamos el usuario con los campos necesarios
+            .populate({
+                path: 'respuestas', // Poblamos las respuestas
+                populate: {
+                    path: 'usuario', // Y los usuarios dentro de las respuestas
+                    select: 'nombre imagenPerfil',
+                },
+            });
 
         res.json({ comentarioActualizado });
     } catch (error) {
