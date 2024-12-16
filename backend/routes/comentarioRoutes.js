@@ -84,8 +84,8 @@ router.post('/:id/comentarios', async (req, res) => {
 // Ruta para editar un comentario
 router.put('/:id/comentarios/:comentarioId', async (req, res) => {
     const { comentarioId } = req.params;
-    const { nuevoTexto } = req.body;
-    const  {usuarioId} =  req.body;
+    const { nuevoTexto, usuarioId } = req.body; // Recupera el texto y el ID del usuario
+
     try {
         // Buscar el comentario
         const comentario = await Comentario.findById(comentarioId);

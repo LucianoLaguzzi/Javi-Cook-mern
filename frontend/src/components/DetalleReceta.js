@@ -359,45 +359,35 @@ const guardarEdicion = async (comentarioId, nivel) => {
   if (!textoEditado.trim()) return;
 
   try {
+      const usuario = JSON.parse(localStorage.getItem("usuario")); // Recupera el usuario del localStorage
+      if (!usuario || !usuario._id) {
+          console.error("No se encontró un usuario en sesión.");
+          return;
+      }
+
       const response = await axios.put(
           `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}`,
-          { nuevoTexto: textoEditado }
+          {
+              nuevoTexto: textoEditado,
+              usuarioId: usuario._id, // Envía el ID del usuario actual
+          }
       );
 
       const comentarioActualizado = response.data.comentarioActualizado;
 
-      // Actualizamos el comentario en la lista local según el nivel (comentario, respuesta, o re-respuesta)
+      // Actualiza el estado local
       setComentarios((prev) =>
           prev.map((comentario) => {
               if (comentario._id === comentarioId && nivel === "comentario") {
                   return comentarioActualizado; // Editar comentario principal
               }
-              if (nivel === "respuesta" || nivel === "re-respuesta") {
-                  return {
-                      ...comentario,
-                      respuestas: comentario.respuestas.map((respuesta) => {
-                          if (respuesta._id === comentarioId && nivel === "respuesta") {
-                              return comentarioActualizado; // Editar respuesta
-                          }
-                          if (nivel === "re-respuesta") {
-                              return {
-                                  ...respuesta,
-                                  respuestas: respuesta.respuestas.map((rerespuesta) =>
-                                      rerespuesta._id === comentarioId ? comentarioActualizado : rerespuesta
-                                  ),
-                              }; // Editar re-respuesta
-                          }
-                          return respuesta;
-                      }),
-                  };
-              }
-              return comentario;
+              return comentario; // No modifica otros comentarios
           })
       );
 
       setComentarioEditando(null); // Salir del modo edición
   } catch (error) {
-      console.error('Error al editar el comentario:', error);
+      console.error("Error al editar el comentario:", error);
   }
 };
   
