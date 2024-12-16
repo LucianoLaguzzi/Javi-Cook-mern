@@ -871,6 +871,7 @@ const DetalleReceta = () => {
                                 {comentarioAResponder === respuesta._id && (
                                   <div className="input-respuesta reresp-input">
                                     <input
+                                      ref={inputRef}
                                       type="text"
                                       value={respuestaTexto}
                                       onChange={(e) => setRespuestaTexto(e.target.value)}
