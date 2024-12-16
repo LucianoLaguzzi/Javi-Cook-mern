@@ -80,45 +80,35 @@ router.post('/:id/comentarios', async (req, res) => {
 });
 
 
-
-// Ruta para editar un comentario
 // Ruta para editar un comentario
 router.put('/:id/comentarios/:comentarioId', async (req, res) => {
     const { comentarioId } = req.params;
-    const { nuevoTexto, usuarioId } = req.body;
+    const { nuevoTexto } = req.body;
+    const usuarioId = req.usuario.id; // Asumiendo que req.usuario proviene del middleware de autenticación
 
     try {
-        // Buscar el comentario
-        const comentario = await Comentario.findById(comentarioId);
+        // Buscar el comentario y popular la información del usuario
+        const comentario = await Comentario.findById(comentarioId).populate('usuario');
         if (!comentario) {
             return res.status(404).json({ mensaje: 'Comentario no encontrado' });
         }
 
-        // Verificar si el usuario actual es el autor
-        if (comentario.usuario.toString() !== usuarioId) {
+        // Verificar que el usuario actual sea el autor
+        if (comentario.usuario._id.toString() !== usuarioId) {
             return res.status(403).json({ mensaje: 'No tienes permiso para editar este comentario' });
         }
 
         // Actualizar el comentario
         comentario.comentario = nuevoTexto;
         comentario.fechaEditado = new Date();
-        await comentario.save();
+        const comentarioActualizado = await comentario.save();
 
-        // Retornar el comentario actualizado completamente poblado
-        const comentarioActualizado = await Comentario.findById(comentarioId)
-            .populate('usuario', 'nombre imagenPerfil') // Poblamos el usuario con los campos necesarios
-            .populate({
-                path: 'respuestas', // Poblamos las respuestas
-                populate: {
-                    path: 'usuario', // Y los usuarios dentro de las respuestas
-                    select: 'nombre imagenPerfil',
-                },
-            });
-
+        // Devolver el comentario actualizado con los datos completos del usuario
         res.json({ comentarioActualizado });
     } catch (error) {
         res.status(500).json({ mensaje: 'Error al editar el comentario', error });
     }
 });
+
 
 export default router;

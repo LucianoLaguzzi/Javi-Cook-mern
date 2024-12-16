@@ -348,47 +348,50 @@ const DetalleReceta = () => {
   const habilitarEdicion = (comentarioId, textoActual) => {
     setComentarioEditando(comentarioId); // Activamos modo edición para este comentario/respuesta
     setTextoEditado(textoActual);       // Precargamos el texto actual en el input
-};
+  };
 
-const cancelarEdicion = () => {
-    setComentarioEditando(null);
-    setTextoEditado("");
-};
+  const cancelarEdicion = () => {
+      setComentarioEditando(null);
+      setTextoEditado("");
+  };
 
-const guardarEdicion = async (comentarioId, nivel) => {
-  if (!textoEditado.trim()) return;
+  const guardarEdicion = async (comentarioId, nivel) => {
+    if (!textoEditado.trim()) return;
 
-  try {
-      const usuario = JSON.parse(localStorage.getItem("usuario")); // Recupera el usuario del localStorage
-      if (!usuario || !usuario._id) {
-          console.error("No se encontró un usuario en sesión.");
-          return;
-      }
+    try {
+        // Recupera el usuario del localStorage
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+        if (!usuario || !usuario._id) {
+            console.error("No se encontró un usuario en sesión.");
+            return;
+        }
 
-      const response = await axios.put(
-          `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}`,
-          {
-              nuevoTexto: textoEditado,
-              usuarioId: usuario._id, // Envía el ID del usuario actual
-          }
-      );
+        // Llamada al backend para editar el comentario
+        const response = await axios.put(
+            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}`,
+            {
+                nuevoTexto: textoEditado,
+                usuarioId: usuario._id, // Se envía el ID del usuario
+            }
+        );
 
-      const comentarioActualizado = response.data.comentarioActualizado;
+        // Comentario actualizado desde el backend
+        const comentarioActualizado = response.data.comentarioActualizado;
 
-      // Actualiza el estado local
-      setComentarios((prev) =>
-          prev.map((comentario) => {
-              if (comentario._id === comentarioId && nivel === "comentario") {
-                  return comentarioActualizado; // Editar comentario principal
-              }
-              return comentario; // No modifica otros comentarios
-          })
-      );
+        // Actualiza el estado solo para el comentario que fue editado
+        setComentarios((prevComentarios) => 
+            prevComentarios.map((comentario) => {
+                if (comentario._id === comentarioId) {
+                    return { ...comentario, comentario: comentarioActualizado.comentario }; // Actualiza solo el texto
+                }
+                return comentario;
+            })
+        );
 
-      setComentarioEditando(null); // Salir del modo edición
-  } catch (error) {
-      console.error("Error al editar el comentario:", error);
-  }
+        setComentarioEditando(null); // Sale del modo de edición
+    } catch (error) {
+        console.error("Error al editar el comentario:", error);
+    }
 };
   
 
