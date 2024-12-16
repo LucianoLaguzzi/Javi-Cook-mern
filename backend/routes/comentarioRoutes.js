@@ -80,4 +80,34 @@ router.post('/:id/comentarios', async (req, res) => {
 });
 
 
+
+// Ruta para editar un comentario
+router.put('/:id/comentarios/:comentarioId', async (req, res) => {
+    const { comentarioId } = req.params;
+    const { nuevoTexto } = req.body;
+    const usuarioId = req.usuario.id; // Asumiendo que `req.usuario` viene del middleware de autenticación
+
+    try {
+        // Buscar el comentario
+        const comentario = await Comentario.findById(comentarioId);
+        if (!comentario) {
+            return res.status(404).json({ mensaje: 'Comentario no encontrado' });
+        }
+
+        // Verificar si el usuario actual es el autor
+        if (comentario.usuario.toString() !== usuarioId) {
+            return res.status(403).json({ mensaje: 'No tienes permiso para editar este comentario' });
+        }
+
+        // Actualizar el comentario
+        comentario.comentario = nuevoTexto;
+        comentario.fechaEditado = new Date();
+        const comentarioActualizado = await comentario.save();
+
+        res.json({ comentarioActualizado });
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al editar el comentario', error });
+    }
+});
+
 export default router;

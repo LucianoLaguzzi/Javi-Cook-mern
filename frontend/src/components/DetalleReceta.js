@@ -40,6 +40,9 @@ const DetalleReceta = () => {
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
   const [respuestaTexto, setRespuestaTexto] = useState("");
+
+  const [comentarioEditando, setComentarioEditando] = useState(null); // ID del comentario en edición
+  const [textoEditado, setTextoEditado] = useState("");              // Texto editado
   
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -341,6 +344,62 @@ const DetalleReceta = () => {
       [idComentario]: !prev[idComentario],
     }));
   };
+
+  const habilitarEdicion = (comentarioId, textoActual) => {
+    setComentarioEditando(comentarioId); // Activamos modo edición para este comentario/respuesta
+    setTextoEditado(textoActual);       // Precargamos el texto actual en el input
+};
+
+const cancelarEdicion = () => {
+    setComentarioEditando(null);
+    setTextoEditado("");
+};
+
+const guardarEdicion = async (comentarioId, nivel) => {
+  if (!textoEditado.trim()) return;
+
+  try {
+      const response = await axios.put(
+          `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}`,
+          { nuevoTexto: textoEditado }
+      );
+
+      const comentarioActualizado = response.data.comentarioActualizado;
+
+      // Actualizamos el comentario en la lista local según el nivel (comentario, respuesta, o re-respuesta)
+      setComentarios((prev) =>
+          prev.map((comentario) => {
+              if (comentario._id === comentarioId && nivel === "comentario") {
+                  return comentarioActualizado; // Editar comentario principal
+              }
+              if (nivel === "respuesta" || nivel === "re-respuesta") {
+                  return {
+                      ...comentario,
+                      respuestas: comentario.respuestas.map((respuesta) => {
+                          if (respuesta._id === comentarioId && nivel === "respuesta") {
+                              return comentarioActualizado; // Editar respuesta
+                          }
+                          if (nivel === "re-respuesta") {
+                              return {
+                                  ...respuesta,
+                                  respuestas: respuesta.respuestas.map((rerespuesta) =>
+                                      rerespuesta._id === comentarioId ? comentarioActualizado : rerespuesta
+                                  ),
+                              }; // Editar re-respuesta
+                          }
+                          return respuesta;
+                      }),
+                  };
+              }
+              return comentario;
+          })
+      );
+
+      setComentarioEditando(null); // Salir del modo edición
+  } catch (error) {
+      console.error('Error al editar el comentario:', error);
+  }
+};
   
 
   
@@ -799,7 +858,35 @@ const DetalleReceta = () => {
                         <span className="usuario-comentario">{comentario.usuario.nombre || "Usuario desconocido"}</span>
                       </div>
                       <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-                      <p className="texto-comentario">{comentario.comentario}</p>
+                      <p className="texto-comentario">
+        {comentarioEditando === comentario._id ? (
+            <>
+                <input
+                    value={textoEditado}
+                    onChange={(e) => setTextoEditado(e.target.value)}
+                    placeholder="Editar comentario..."
+                />
+                <button onClick={() => guardarEdicion(comentario._id, "comentario")}>Guardar</button>
+                <button onClick={cancelarEdicion}>Cancelar</button>
+            </>
+        ) : (
+            comentario.comentario
+        )}
+    </p>
+
+    {comentario.usuario._id === usuarioEnSesion._id && ( // Solo muestra si el usuario es el autor
+        <button onClick={() => habilitarEdicion(comentario._id, comentario.comentario)}>Editar</button>
+    )}
+
+
+
+
+
+
+
+
+
+
                       <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
                         Responder
                       </button>
