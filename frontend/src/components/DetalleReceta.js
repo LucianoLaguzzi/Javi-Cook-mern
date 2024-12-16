@@ -42,6 +42,7 @@ const DetalleReceta = () => {
   const [respuestaTexto, setRespuestaTexto] = useState("");
   
   const botonRef = useRef(null);
+  const inputRef = useRef(null); // Ref para el input
 
   
 
@@ -146,6 +147,17 @@ const DetalleReceta = () => {
 
   }, [activo, ultimaActualizacion, tiempoInicial]);
   
+
+  useEffect(() => {
+    // Focus automático cuando el input se abre
+    if (comentarioAResponder === respuesta._id && inputRef.current) {
+      inputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      inputRef.current.focus();
+    }
+  }, [comentarioAResponder]);
+
+
+
   // Métodos del temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) {
@@ -883,6 +895,7 @@ const DetalleReceta = () => {
                     {comentarioAResponder === comentario._id && (
                       <div className="input-respuesta">
                         <input
+                          ref={inputRef}
                           type="text"
                           value={respuestaTexto}
                           onChange={(e) => setRespuestaTexto(e.target.value)}
