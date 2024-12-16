@@ -41,8 +41,8 @@ const DetalleReceta = () => {
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
   const [respuestaTexto, setRespuestaTexto] = useState("");
 
-  const [comentarioEditando, setComentarioEditando] = useState(null); // ID del comentario en edición
-  const [textoEditado, setTextoEditado] = useState("");              // Texto editado
+  // Estados para la edición
+const [comentarioEditado, setComentarioEditado] = useState(null);
   
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -344,56 +344,47 @@ const DetalleReceta = () => {
       [idComentario]: !prev[idComentario],
     }));
   };
-
-  const habilitarEdicion = (comentarioId, textoActual) => {
-    setComentarioEditando(comentarioId); // Activamos modo edición para este comentario/respuesta
-    setTextoEditado(textoActual);       // Precargamos el texto actual en el input
-  };
-
-  const cancelarEdicion = () => {
-      setComentarioEditando(null);
-      setTextoEditado("");
-  };
-
-  const guardarEdicion = async (comentarioId, nivel) => {
-    if (!textoEditado.trim()) return;
-
-    try {
-        // Recupera el usuario del localStorage
-        const usuario = JSON.parse(localStorage.getItem("usuario"));
-        if (!usuario || !usuario._id) {
-            console.error("No se encontró un usuario en sesión.");
-            return;
-        }
-
-        // Llamada al backend para editar el comentario
-        const response = await axios.put(
-            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}`,
-            {
-                nuevoTexto: textoEditado,
-                usuarioId: usuario._id, // Se envía el ID del usuario
-            }
-        );
-
-        // Comentario actualizado desde el backend
-        const comentarioActualizado = response.data.comentarioActualizado;
-
-        // Actualiza el estado solo para el comentario que fue editado
-        setComentarios((prevComentarios) => 
-            prevComentarios.map((comentario) => {
-                if (comentario._id === comentarioId) {
-                    return { ...comentario, comentario: comentarioActualizado.comentario }; // Actualiza solo el texto
-                }
-                return comentario;
-            })
-        );
-
-        setComentarioEditando(null); // Sale del modo de edición
-    } catch (error) {
-        console.error("Error al editar el comentario:", error);
-    }
-};
   
+
+  // Función para manejar la edición
+const editarComentario = (comentarioId, textoActual) => {
+  setComentarioEditado(comentarioId);
+  setNuevoComentario(textoActual);
+};
+
+
+// Función para guardar la edición
+const guardarEdicion = async () => {
+  if (!nuevoComentario) return;
+
+  try {
+      const response = await axios.put(
+          `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
+          {
+              comentario: nuevoComentario,
+              usuario: usuarioEnSesion._id
+          }
+      );
+
+      // Actualizar los comentarios con la respuesta del servidor
+      const comentarioActualizado = response.data.comentarioActualizado;
+
+      // Actualizar los comentarios en el estado
+      setComentarios((prevComentarios) =>
+          prevComentarios.map((comentario) =>
+              comentario._id === comentarioEditado
+                  ? { ...comentario, comentario: comentarioActualizado.comentario }
+                  : comentario
+          )
+      );
+
+      // Limpiar estado de edición
+      setComentarioEditado(null);
+      setNuevoComentario('');
+  } catch (error) {
+      console.error('Error al guardar la edición:', error);
+  }
+};
 
   
 
@@ -851,29 +842,32 @@ const DetalleReceta = () => {
                         <span className="usuario-comentario">{comentario.usuario.nombre || "Usuario desconocido"}</span>
                       </div>
                       <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-                      <p className="texto-comentario">
-        {comentarioEditando === comentario._id ? (
-            <>
-                <input
-                    value={textoEditado}
-                    onChange={(e) => setTextoEditado(e.target.value)}
-                    placeholder="Editar comentario..."
-                />
-                <button onClick={() => guardarEdicion(comentario._id, "comentario")}>Guardar</button>
-                <button onClick={cancelarEdicion}>Cancelar</button>
-            </>
-        ) : (
-            comentario.comentario
-        )}
-    </p>
-
-    {comentario.usuario._id === usuarioEnSesion._id && ( // Solo muestra si el usuario es el autor
-        <button onClick={() => habilitarEdicion(comentario._id, comentario.comentario)}>Editar</button>
-    )}
 
 
 
 
+
+
+                       {/* Modo de edición */}
+            {comentarioEditado === comentario._id ? (
+                <div>
+                    <input
+                        type="text"
+                        value={nuevoComentario}
+                        onChange={(e) => setNuevoComentario(e.target.value)}
+                    />
+                    <button onClick={guardarEdicion}>Guardar</button>
+                </div>
+            ) : (
+                <p className="texto-comentario">{comentario.comentario}</p>
+            )}
+
+ {/* Botón de edición (solo si el usuario es el autor del comentario) */}
+ {usuarioEnSesion._id === comentario.usuario._id && !comentarioEditado && (
+                <button onClick={() => editarComentario(comentario._id, comentario.comentario)}>
+                    Editar
+                </button>
+            )}
 
 
 

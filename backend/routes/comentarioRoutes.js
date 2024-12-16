@@ -82,31 +82,39 @@ router.post('/:id/comentarios', async (req, res) => {
 
 // Ruta para editar un comentario
 router.put('/:id/comentarios/:comentarioId', async (req, res) => {
-    const { comentarioId } = req.params;
-    const { nuevoTexto } = req.body;
-    const usuarioId = req.usuario.id; // Asumiendo que req.usuario proviene del middleware de autenticación
+    const { id, comentarioId } = req.params; // ID de la receta y del comentario
+    const { comentario, usuario } = req.body; // Comentario editado y usuario en sesión
 
     try {
-        // Buscar el comentario y popular la información del usuario
-        const comentario = await Comentario.findById(comentarioId).populate('usuario');
-        if (!comentario) {
-            return res.status(404).json({ mensaje: 'Comentario no encontrado' });
+        // Buscar la receta por su ID
+        const receta = await Receta.findById(id);
+        if (!receta) {
+            return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
-        // Verificar que el usuario actual sea el autor
-        if (comentario.usuario._id.toString() !== usuarioId) {
-            return res.status(403).json({ mensaje: 'No tienes permiso para editar este comentario' });
+        // Buscar el comentario por su ID
+        const comentarioExistente = await Comentario.findById(comentarioId);
+        if (!comentarioExistente) {
+            return res.status(404).json({ message: 'Comentario no encontrado' });
+        }
+
+        // Verificar que el usuario sea el autor del comentario
+        if (comentarioExistente.usuario.toString() !== usuario) {
+            return res.status(403).json({ message: 'No tienes permiso para editar este comentario' });
         }
 
         // Actualizar el comentario
-        comentario.comentario = nuevoTexto;
-        comentario.fechaEditado = new Date();
-        const comentarioActualizado = await comentario.save();
+        comentarioExistente.comentario = comentario;
+        await comentarioExistente.save();
 
-        // Devolver el comentario actualizado con los datos completos del usuario
+        // Poblar el usuario para devolverlo con la información actualizada
+        const comentarioActualizado = await Comentario.findById(comentarioId)
+            .populate('usuario', 'nombre imagenPerfil');
+
         res.json({ comentarioActualizado });
     } catch (error) {
-        res.status(500).json({ mensaje: 'Error al editar el comentario', error });
+        console.error('Error al editar el comentario:', error);
+        res.status(500).json({ message: 'Error al editar el comentario' });
     }
 });
 
