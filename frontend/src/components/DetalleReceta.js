@@ -42,7 +42,8 @@ const DetalleReceta = () => {
   const [respuestaTexto, setRespuestaTexto] = useState("");
   
   const botonRef = useRef(null);
-  const inputRef = useRef(null); // Referencia al input
+  const inputRef = useRef(null);
+
   
 
   useEffect(() => {
@@ -146,17 +147,6 @@ const DetalleReceta = () => {
 
   }, [activo, ultimaActualizacion, tiempoInicial]);
   
-
-   // Efecto para enfocar y desplazar al input cuando se abre
-   useEffect(() => {
-    if (comentarioAResponder === respuesta._id && inputRef.current) {
-      inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Desplaza al input
-      inputRef.current.focus(); // Enfoca el input
-    }
-  }, [comentarioAResponder, respuesta._id]);
-
-
-
   // Métodos del temporizador
   const iniciarTemporizador = () => {
     if (tiempo > 0) {
@@ -335,6 +325,12 @@ const DetalleReceta = () => {
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
     setComentarioAResponder((prevId) => (prevId === comentarioId ? null : comentarioId)); // Alternar entre abrir y cerrar el input
+    setTimeout(() => { // Pequeño delay para asegurar que el input está en el DOM
+      if (inputRef.current) {
+        inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inputRef.current.focus(); // Lleva el focus al input
+      }
+    }, 100);
     setRespuestaTexto(""); // Limpiar el texto del input siempre que se abra un nuevo input
   };
 
@@ -894,7 +890,7 @@ const DetalleReceta = () => {
                     {comentarioAResponder === comentario._id && (
                       <div className="input-respuesta">
                         <input
-                          ref={inputRef} // Asigna la referencia al input
+                          ref={inputRef} // Asigna la referencia aquí
                           type="text"
                           value={respuestaTexto}
                           onChange={(e) => setRespuestaTexto(e.target.value)}
