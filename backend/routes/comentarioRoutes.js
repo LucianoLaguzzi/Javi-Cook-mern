@@ -85,8 +85,7 @@ router.post('/:id/comentarios', async (req, res) => {
 router.put('/:id/comentarios/:comentarioId', async (req, res) => {
     const { comentarioId } = req.params;
     const { nuevoTexto } = req.body;
-    const usuarioId = req.usuario.id; // Asumiendo que `req.usuario` viene del middleware de autenticación
-
+    const  {usuarioId} =  req.body;
     try {
         // Buscar el comentario
         const comentario = await Comentario.findById(comentarioId);
