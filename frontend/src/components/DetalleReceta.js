@@ -855,6 +855,7 @@ const guardarEdicion = async () => {
                       {comentarioEditado === comentario._id ? (
                         <div>
                           <input
+                            className='input-respuesta-edicion'
                             type="text"
                             value={nuevoComentarioEditado}
                             onChange={(e) => setNuevoComentarioEditado(e.target.value)}
