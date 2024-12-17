@@ -4817,7 +4817,7 @@ i.fas.fa-undo {
     color: #a91515;
 }
 .btn-cancelar-edicion:hover {
-    background-color: #d9363e;
+    color: #d9363e;
 }
 
 .btn-guardar-edicion{
@@ -4825,7 +4825,7 @@ i.fas.fa-undo {
 }
 
 .btn-guardar-edicion:hover {
-    background-color: #056705;;
+    color: #056705;
 }
 
 
@@ -4853,9 +4853,18 @@ i.fas.fa-undo {
 }
 
 .modo-edicion{
-    align-self: center;
     display: flex;
     flex-direction: row-reverse;
-    font-size: 28px;
+    font-size: 30px;
     gap: 40px;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+
+@media (max-width: 750px) {
+    .modo-edicion {
+        font-size: 16px;
+        gap:35px
+    }
 }

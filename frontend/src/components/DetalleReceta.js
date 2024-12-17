@@ -863,19 +863,13 @@ const guardarEdicion = async () => {
 
 
 
-                            <a className='btn-cancelar-pasos' onClick={() => setPasosEditable(false)}>
-                                <i className="fas fa-times-circle"></i>
-                            </a>aaaaaaaaaaa
-
-
-
 
                           <div className="modo-edicion">
-                            <a className="btn-guardar-edicion" onClick={guardarEdicion}>Guardar
+                            <a className="btn-guardar-edicion" onClick={guardarEdicion} title='Guardar'>
                              <i className="fas fa-check-circle"></i> 
                             </a>
                           
-                            <a className="btn-cancelar-edicion" onClick={cancelarEdicion} >Cancelar
+                            <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
                               <i className="fas fa-times-circle"></i>
                             </a>
                             
