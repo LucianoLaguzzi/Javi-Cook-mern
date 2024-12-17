@@ -853,16 +853,16 @@ const guardarEdicion = async () => {
 
                       {/* Modo de edición de comentario */}
                       {comentarioEditado === comentario._id ? (
-                        <div  className="modo-edicion">
+                        <div>
                           <input
                             type="text"
                             value={nuevoComentarioEditado}
                             onChange={(e) => setNuevoComentarioEditado(e.target.value)}
                           />
-                          <button onClick={guardarEdicion}>Guardar</button>
-                          <button onClick={cancelarEdicion} className="btn-cancelar-edicion">
-                            Cancelar
-                          </button>
+                          <div className="modo-edicion">
+                            <button className="btn-guardar-edicion" onClick={guardarEdicion}>Guardar</button>
+                            <button className="btn-cancelar-edicion" onClick={cancelarEdicion} >Cancelar</button>
+                          </div>
                         </div>
                       ) : (
                         <p className="texto-comentario">{comentario.comentario}</p>
