@@ -41,9 +41,11 @@ const DetalleReceta = () => {
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
   const [respuestaTexto, setRespuestaTexto] = useState("");
 
-  // Estados para la edición
-const [comentarioEditado, setComentarioEditado] = useState(null);
   
+  // Estados para la edición
+  const [comentarioEditado, setComentarioEditado] = useState(null);
+  const [nuevoComentarioEditado, setNuevoComentarioEditado] = useState('');
+
   const botonRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -349,19 +351,24 @@ const [comentarioEditado, setComentarioEditado] = useState(null);
   // Función para manejar la edición
 const editarComentario = (comentarioId, textoActual) => {
   setComentarioEditado(comentarioId);
-  setNuevoComentario(textoActual);
+  setNuevoComentarioEditado(textoActual);
+};
+
+const cancelarEdicion = () => {
+  setComentarioEditado(null); // Sale del modo edición
+  setNuevoComentarioEditado(""); // Limpia el texto del input
 };
 
 
 // Función para guardar la edición
 const guardarEdicion = async () => {
-  if (!nuevoComentario) return;
+  if (!nuevoComentarioEditado) return;
 
   try {
       const response = await axios.put(
           `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
           {
-              comentario: nuevoComentario,
+              comentario: nuevoComentarioEditado,
               usuario: usuarioEnSesion._id
           }
       );
@@ -380,7 +387,7 @@ const guardarEdicion = async () => {
 
       // Limpiar estado de edición
       setComentarioEditado(null);
-      setNuevoComentario('');
+      setNuevoComentarioEditado('');
   } catch (error) {
       console.error('Error al guardar la edición:', error);
   }
@@ -846,13 +853,16 @@ const guardarEdicion = async () => {
 
                       {/* Modo de edición de comentario */}
                       {comentarioEditado === comentario._id ? (
-                        <div>
-                            <input
-                                type="text"
-                                value={nuevoComentario}
-                                onChange={(e) => setNuevoComentario(e.target.value)}
-                            />
-                            <button onClick={guardarEdicion}>Guardar</button>
+                        <div  className="modo-edicion">
+                          <input
+                            type="text"
+                            value={nuevoComentarioEditado}
+                            onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                          />
+                          <button onClick={guardarEdicion}>Guardar</button>
+                          <button onClick={cancelarEdicion} className="btn-cancelar-edicion">
+                            Cancelar
+                          </button>
                         </div>
                       ) : (
                         <p className="texto-comentario">{comentario.comentario}</p>
@@ -864,8 +874,6 @@ const guardarEdicion = async () => {
                           <i class="fas fa-pencil-alt" title="Editar comentario"></i>
                         </a>
                       )}
-
-
 
                       <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
                         Responder

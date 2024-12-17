@@ -4805,3 +4805,18 @@ i.fas.fa-undo {
     margin-bottom: 10px;
     margin-left: 14px;
 }
+
+
+.btn-cancelar-edicion {
+    background-color: #ff4d4f; /* Rojo claro */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  
+  .btn-cancelar-edicion:hover {
+    background-color: #d9363e;
+  }
