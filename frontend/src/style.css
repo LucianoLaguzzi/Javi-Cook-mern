@@ -4815,8 +4815,23 @@ i.fas.fa-undo {
     padding: 5px 10px;
     cursor: pointer;
     margin-left: 5px;
-  }
+}
   
-  .btn-cancelar-edicion:hover {
+.btn-cancelar-edicion:hover {
     background-color: #d9363e;
-  }
+}
+
+.btn-guardar-edicion{
+    background-color: #038e03; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.btn-guardar-edicion:hover {
+    background-color: #056705;;
+}
+
