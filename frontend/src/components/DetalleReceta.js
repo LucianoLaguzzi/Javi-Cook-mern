@@ -844,33 +844,26 @@ const guardarEdicion = async () => {
                       <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
 
 
+                      {/* Modo de edición de comentario */}
+                      {comentarioEditado === comentario._id ? (
+                        <div>
+                            <input
+                                type="text"
+                                value={nuevoComentario}
+                                onChange={(e) => setNuevoComentario(e.target.value)}
+                            />
+                            <button onClick={guardarEdicion}>Guardar</button>
+                        </div>
+                      ) : (
+                        <p className="texto-comentario">{comentario.comentario}</p>
+                      )}
 
-
-
-
-                       {/* Modo de edición */}
-            {comentarioEditado === comentario._id ? (
-                <div>
-                    <input
-                        type="text"
-                        value={nuevoComentario}
-                        onChange={(e) => setNuevoComentario(e.target.value)}
-                    />
-                    <button onClick={guardarEdicion}>Guardar</button>
-                </div>
-            ) : (
-                <p className="texto-comentario">{comentario.comentario}</p>
-            )}
-
- {/* Botón de edición (solo si el usuario es el autor del comentario) */}
- {usuarioEnSesion._id === comentario.usuario._id && !comentarioEditado && (
-                <button onClick={() => editarComentario(comentario._id, comentario.comentario)}>
-                    Editar
-                </button>
-            )}
-
-
-
+                      {/* Botón de edición (solo si el usuario es el autor del comentario) */}
+                      {usuarioEnSesion._id === comentario.usuario._id && !comentarioEditado && (
+                        <a className='btn-editar-pasos' onClick={() => editarComentario(comentario._id, comentario.comentario)}>
+                          <i class="fas fa-pencil-alt" title="Editar comentario"></i>
+                        </a>
+                      )}
 
 
 
