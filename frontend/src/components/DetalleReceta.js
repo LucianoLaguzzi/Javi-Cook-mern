@@ -382,24 +382,24 @@ const guardarEdicion = async () => {
         { comentario: nuevoComentarioEditado, usuario: usuarioEnSesion._id }
       );
     } else {
-      // Actualizar un comentario padre
+      // Actualizar un comentario principal
       response = await axios.put(
         `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
         { comentario: nuevoComentarioEditado, usuario: usuarioEnSesion._id }
       );
     }
 
-    // Obtener el comentario/ respuesta actualizada desde la respuesta del servidor
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    // Actualizar los comentarios en el estado local
     setComentarios((prevComentarios) =>
       prevComentarios.map((comentario) => {
-        if (comentario._id === comentarioEditado && !esRespuesta) {
-          // Actualizar el comentario principal
+        if (!esRespuesta && comentario._id === comentarioEditado) {
+          // Si es un comentario principal
           return { ...comentario, comentario: comentarioActualizado.comentario };
-        } else if (comentario._id === comentarioPadreId && esRespuesta) {
-          // Actualizar la respuesta dentro del comentario padre
+        }
+
+        if (esRespuesta && comentario._id === comentarioPadreId) {
+          // Si es una respuesta, busca dentro del array 'respuestas'
           const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
             respuesta._id === comentarioEditado
               ? { ...respuesta, comentario: comentarioActualizado.comentario }
@@ -407,12 +407,12 @@ const guardarEdicion = async () => {
           );
           return { ...comentario, respuestas: respuestasActualizadas };
         }
+
         return comentario; // No modificar otros comentarios
       })
     );
 
-
-    // Restablecer estados
+    // Limpiar estados de edición
     setComentarioEditado(null);
     setNuevoComentarioEditado('');
     setEsRespuesta(false);
