@@ -391,23 +391,22 @@ const guardarEdicion = async () => {
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
+    // Actualizar el estado basándote en la respuesta del servidor
     setComentarios((prevComentarios) =>
       prevComentarios.map((comentario) => {
         if (!esRespuesta && comentario._id === comentarioEditado) {
           return { ...comentario, comentario: comentarioActualizado.comentario };
         }
-    
+
         if (esRespuesta && comentario._id === comentarioPadreId) {
-          return {
-            ...comentario,
-            respuestas: comentario.respuestas.map((respuesta) =>
-              respuesta._id === comentarioEditado
-                ? { ...respuesta, comentario: comentarioActualizado.comentario }
-                : respuesta
-            ),
-          };
+          const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
+            respuesta._id === comentarioEditado
+              ? { ...respuesta, comentario: comentarioActualizado.comentario }
+              : respuesta
+          );
+          return { ...comentario, respuestas: [...respuestasActualizadas] };
         }
-    
+
         return comentario;
       })
     );
