@@ -863,18 +863,15 @@ const guardarEdicion = async () => {
 
 
 
-
                           <div className="modo-edicion">
                             <a className="btn-guardar-edicion" onClick={guardarEdicion} title='Guardar'>
                              <i className="fas fa-check-circle"></i> 
                             </a>
-                          
                             <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
                               <i className="fas fa-times-circle"></i>
                             </a>
-                            
-
                           </div>
+
                         </div>
                       ) : (
                         <p className="texto-comentario">{comentario.comentario}</p>
@@ -913,7 +910,65 @@ const guardarEdicion = async () => {
                                 <span className="comentario-fecha">
                                   {new Date(respuesta.fecha).toLocaleDateString()}
                                 </span>
+
+
+
+
+
+
+
+                                {/* Modo de edición de comentario */}
+                                {comentarioEditado === respuesta._id ? (
+                                  <div>
+                                    <input
+                                      className='input-respuesta-edicion'
+                                      type="text"
+                                      value={nuevoComentarioEditado}
+                                      onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                                    />
+
+
+
+                                    <div className="modo-edicion">
+                                      <a className="btn-guardar-edicion" onClick={guardarEdicion} title='Guardar'>
+                                      <i className="fas fa-check-circle"></i> 
+                                      </a>
+                                      <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
+                                        <i className="fas fa-times-circle"></i>
+                                      </a>
+                                    </div>
+
+                                  </div>
+                                ) : (
+                                  <p className="texto-comentario">{respuesta.comentario}</p>
+                                )}
+
+                                {/* Botón de edición (solo si el usuario es el autor del comentario) */}
+                                {usuarioEnSesion._id === respuesta.usuario._id && !comentarioEditado && (
+                                  <a className='btn-editar-pasos' onClick={() => editarComentario(respuesta._id, respuesta.comentario)}>
+                                    <i class="fas fa-pencil-alt" title="Editar respuesta"></i>
+                                  </a>
+                                )}
+
+
+
+
+
+
+
+
+
+
                                 <p className="texto-respuesta">{respuesta.comentario}</p>
+
+
+
+
+
+
+
+
+
                                 <button
                                   className="boton-responder"
                                   onClick={() => responderComentario(respuesta._id)}
