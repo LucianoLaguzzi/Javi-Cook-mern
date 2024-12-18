@@ -46,6 +46,12 @@ const DetalleReceta = () => {
   const [comentarioEditado, setComentarioEditado] = useState(null);
   const [nuevoComentarioEditado, setNuevoComentarioEditado] = useState('');
 
+
+
+  const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
+const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
+
+
   const botonRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -348,7 +354,7 @@ const DetalleReceta = () => {
   };
   
 
-  // Función para manejar la edición
+// Función para manejar la edición
 const editarComentario = (comentarioId, textoActual) => {
   setComentarioEditado(comentarioId);
   setNuevoComentarioEditado(textoActual);
@@ -356,7 +362,9 @@ const editarComentario = (comentarioId, textoActual) => {
 
 const cancelarEdicion = () => {
   setComentarioEditado(null); // Sale del modo edición
-  setNuevoComentarioEditado(""); // Limpia el texto del input
+  setNuevoComentarioEditado(''); // Limpia el texto del input
+  setEsRespuesta(false);
+  setComentarioPadreId(null);
 };
 
 
@@ -365,31 +373,50 @@ const guardarEdicion = async () => {
   if (!nuevoComentarioEditado) return;
 
   try {
-      const response = await axios.put(
-          `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
-          {
-              comentario: nuevoComentarioEditado,
-              usuario: usuarioEnSesion._id
-          }
+    let response;
+
+    if (esRespuesta) {
+      // Actualizar una respuesta específica
+      response = await axios.put(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`,
+        { comentario: nuevoComentarioEditado, usuario: usuarioEnSesion._id }
       );
-
-      // Actualizar los comentarios con la respuesta del servidor
-      const comentarioActualizado = response.data.comentarioActualizado;
-
-      // Actualizar los comentarios en el estado
-      setComentarios((prevComentarios) =>
-          prevComentarios.map((comentario) =>
-              comentario._id === comentarioEditado
-                  ? { ...comentario, comentario: comentarioActualizado.comentario }
-                  : comentario
-          )
+    } else {
+      // Actualizar un comentario padre
+      response = await axios.put(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
+        { comentario: nuevoComentarioEditado, usuario: usuarioEnSesion._id }
       );
+    }
 
-      // Limpiar estado de edición
-      setComentarioEditado(null);
-      setNuevoComentarioEditado('');
+    // Obtener el comentario/ respuesta actualizada desde la respuesta del servidor
+    const comentarioActualizado = response.data.comentarioActualizado;
+
+    // Actualizar los comentarios en el estado
+    setComentarios((prevComentarios) =>
+      prevComentarios.map((comentario) => {
+        if (comentario._id === comentarioEditado) {
+          return { ...comentario, comentario: comentarioActualizado.comentario }; // Comentario principal
+        } else if (comentario._id === comentarioPadreId) {
+          // Actualizar la respuesta dentro del comentario padre
+          const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
+            respuesta._id === comentarioEditado
+              ? { ...respuesta, comentario: comentarioActualizado.comentario }
+              : respuesta
+          );
+          return { ...comentario, respuestas: respuestasActualizadas };
+        }
+        return comentario;
+      })
+    );
+
+    // Restablecer estados
+    setComentarioEditado(null);
+    setNuevoComentarioEditado('');
+    setEsRespuesta(false);
+    setComentarioPadreId(null);
   } catch (error) {
-      console.error('Error al guardar la edición:', error);
+    console.error('Error al guardar la edición:', error);
   }
 };
 
@@ -863,15 +890,18 @@ const guardarEdicion = async () => {
 
 
 
+
                           <div className="modo-edicion">
                             <a className="btn-guardar-edicion" onClick={guardarEdicion} title='Guardar'>
                              <i className="fas fa-check-circle"></i> 
                             </a>
+                          
                             <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
                               <i className="fas fa-times-circle"></i>
                             </a>
-                          </div>
+                            
 
+                          </div>
                         </div>
                       ) : (
                         <p className="texto-comentario">{comentario.comentario}</p>
@@ -915,39 +945,26 @@ const guardarEdicion = async () => {
 
 
 
-
-
-                                {/* Modo de edición de comentario */}
+                                {/* Modo de edición para respuestas */}
                                 {comentarioEditado === respuesta._id ? (
-                                  <div>
+                                  <div className="modo-edicion-respuesta">
                                     <input
                                       className='input-respuesta-edicion'
                                       type="text"
                                       value={nuevoComentarioEditado}
                                       onChange={(e) => setNuevoComentarioEditado(e.target.value)}
                                     />
-
-
-
                                     <div className="modo-edicion">
-                                      <a className="btn-guardar-edicion" onClick={guardarEdicion} title='Guardar'>
-                                      <i className="fas fa-check-circle"></i> 
+                                      <a className="btn-guardar-edicion" onClick={() => guardarEdicion(respuesta._id)} title='Guardar'>
+                                        <i className="fas fa-check-circle"></i> 
                                       </a>
                                       <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
                                         <i className="fas fa-times-circle"></i>
                                       </a>
                                     </div>
-
                                   </div>
                                 ) : (
-                                  <p className="texto-comentario">{respuesta.comentario}</p>
-                                )}
-
-                                {/* Botón de edición (solo si el usuario es el autor del comentario) */}
-                                {usuarioEnSesion._id === respuesta.usuario._id && !comentarioEditado && (
-                                  <a className='btn-editar-pasos' onClick={() => editarComentario(respuesta._id, respuesta.comentario)}>
-                                    <i class="fas fa-pencil-alt" title="Editar respuesta"></i>
-                                  </a>
+                                  <p className="texto-respuesta">{respuesta.comentario}</p>
                                 )}
 
 
@@ -959,7 +976,25 @@ const guardarEdicion = async () => {
 
 
 
-                                <p className="texto-respuesta">{respuesta.comentario}</p>
+                              {/* Botón de edición para respuestas (solo si el usuario es el autor) */}
+                              {usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && (
+                                <a
+                                  className='btn-editar-pasos'
+                                  onClick={() => editarComentario(respuesta._id, respuesta.comentario, true, comentario._id)}
+                                >
+                                  <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
+                                </a>
+                              )}
+
+
+
+
+
+
+
+
+
+
 
 
 
