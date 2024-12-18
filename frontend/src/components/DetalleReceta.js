@@ -370,63 +370,60 @@ const cancelarEdicion = () => {
 
 // Función para guardar la edición
 const guardarEdicion = async () => {
-  if (!nuevoComentarioEditado) return;
+  if (!nuevoComentarioEditado.trim()) return;
 
   try {
-    let response;
-
-    if (esRespuesta) {
-      // Actualizar una respuesta específica
-      response = await axios.put(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`,
-        { comentario: nuevoComentarioEditado, usuario: usuarioEnSesion._id }
-      );
-    } else {
-      // Actualizar un comentario principal
-      response = await axios.put(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
-        { comentario: nuevoComentarioEditado, usuario: usuarioEnSesion._id }
-      );
-    }
+    // Llamada al servidor para editar comentario o respuesta
+    const response = await axios.put(
+      esRespuesta
+        ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`
+        : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
+      {
+        comentario: nuevoComentarioEditado,
+        usuario: usuarioEnSesion._id,
+      }
+    );
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    // Actualizar estado de comentarios
-    const actualizarComentarios = (comentarios) =>
-      comentarios.map((comentario) => {
-        if (!esRespuesta && comentario._id === comentarioEditado) {
-          // Actualizar comentario principal
-          return { ...comentario, comentario: comentarioActualizado.comentario };
-        }
-
-        if (esRespuesta) {
-          // Buscar y actualizar la respuesta correspondiente
-          if (comentario._id === comentarioPadreId) {
-            return {
-              ...comentario,
-              respuestas: comentario.respuestas.map((respuesta) =>
-                respuesta._id === comentarioEditado
-                  ? { ...respuesta, comentario: comentarioActualizado.comentario }
-                  : respuesta
-              ),
-            };
+    // Actualizar estado local de los comentarios
+    setComentarios((prevComentarios) => {
+      const actualizarComentarios = (comentarios) =>
+        comentarios.map((comentario) => {
+          // Si es un comentario principal
+          if (!esRespuesta && comentario._id === comentarioEditado) {
+            return { ...comentario, comentario: comentarioActualizado.comentario };
           }
 
-          // Buscar en respuestas de nivel superior para manejar re-respuestas
-          if (comentario.respuestas) {
-            return {
-              ...comentario,
-              respuestas: actualizarComentarios(comentario.respuestas),
-            };
+          // Si es una respuesta
+          if (esRespuesta) {
+            if (comentario._id === comentarioPadreId) {
+              return {
+                ...comentario,
+                respuestas: comentario.respuestas.map((respuesta) =>
+                  respuesta._id === comentarioEditado
+                    ? { ...respuesta, comentario: comentarioActualizado.comentario }
+                    : respuesta
+                ),
+              };
+            }
+
+            // Si hay respuestas anidadas, recorremos recursivamente
+            if (comentario.respuestas) {
+              return {
+                ...comentario,
+                respuestas: actualizarComentarios(comentario.respuestas),
+              };
+            }
           }
-        }
 
-        return comentario;
-      });
+          return comentario; // Sin cambios
+        });
 
-    setComentarios((prevComentarios) => actualizarComentarios(prevComentarios));
+      return actualizarComentarios(prevComentarios);
+    });
 
-    // Limpiar estados de edición
+    // Limpiar los estados de edición
     setComentarioEditado(null);
     setNuevoComentarioEditado("");
     setEsRespuesta(false);
@@ -435,10 +432,6 @@ const guardarEdicion = async () => {
     console.error("Error al guardar la edición:", error);
   }
 };
-
-useEffect(() => {
-  console.log("Estado actualizado de comentarios:", comentarios);
-}, [comentarios]);
 
 
   
