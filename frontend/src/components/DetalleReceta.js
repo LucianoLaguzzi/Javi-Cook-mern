@@ -355,9 +355,11 @@ const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del come
   
 
 // Función para manejar la edición
-const editarComentario = (comentarioId, textoActual) => {
+const editarComentario = (comentarioId, textoActual, esRespuesta = false, comentarioPadreId = null) => {
   setComentarioEditado(comentarioId);
   setNuevoComentarioEditado(textoActual);
+  setEsRespuesta(esRespuesta);
+  setComentarioPadreId(comentarioPadreId); // Esto será null para comentarios padres
 };
 
 const cancelarEdicion = () => {
@@ -391,6 +393,8 @@ const guardarEdicion = async () => {
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
+    console.log("Comentario actualizado desde backend:", comentarioActualizado);
+
     setComentarios((prevComentarios) =>
       prevComentarios.map((comentario) => {
         if (!esRespuesta && comentario._id === comentarioEditado) {
@@ -399,12 +403,8 @@ const guardarEdicion = async () => {
         }
 
         if (esRespuesta && comentario._id === comentarioPadreId) {
-          // Si es una respuesta, busca dentro del array 'respuestas'
-          const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
-            respuesta._id === comentarioEditado
-              ? { ...respuesta, comentario: comentarioActualizado.comentario }
-              : respuesta
-          );
+          // Actualizar respuestas del comentario padre
+          const respuestasActualizadas = comentarioActualizado.respuestas || [];
           return { ...comentario, respuestas: respuestasActualizadas };
         }
 
@@ -969,15 +969,6 @@ const guardarEdicion = async () => {
                                   <p className="texto-respuesta">{respuesta.comentario}</p>
                                 )}
 
-
-
-
-
-
-
-
-
-
                               {/* Botón de edición para respuestas (solo si el usuario es el autor) */}
                               {usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && (
                                 <a
@@ -990,28 +981,15 @@ const guardarEdicion = async () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                 <button
                                   className="boton-responder"
                                   onClick={() => responderComentario(respuesta._id)}
                                 >
                                   Responder
                                 </button>
+
+
+
 
                                 {/* Re-Respuestas */}
                                 {respuesta.respuestas && respuesta.respuestas.length > 0 && (
