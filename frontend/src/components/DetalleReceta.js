@@ -391,35 +391,48 @@ const guardarEdicion = async () => {
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    // Actualizar el estado local de comentarios
-    setComentarios((prevComentarios) =>
-      prevComentarios.map((comentario) => {
+    // Actualizar estado de comentarios
+    const actualizarComentarios = (comentarios) =>
+      comentarios.map((comentario) => {
         if (!esRespuesta && comentario._id === comentarioEditado) {
           // Actualizar comentario principal
           return { ...comentario, comentario: comentarioActualizado.comentario };
         }
 
-        if (esRespuesta && comentario._id === comentarioPadreId) {
-          // Actualizar una respuesta específica
-          const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
-            respuesta._id === comentarioEditado
-              ? { ...respuesta, comentario: comentarioActualizado.comentario }
-              : respuesta
-          );
-          return { ...comentario, respuestas: [...respuestasActualizadas] };
+        if (esRespuesta) {
+          // Buscar y actualizar la respuesta correspondiente
+          if (comentario._id === comentarioPadreId) {
+            return {
+              ...comentario,
+              respuestas: comentario.respuestas.map((respuesta) =>
+                respuesta._id === comentarioEditado
+                  ? { ...respuesta, comentario: comentarioActualizado.comentario }
+                  : respuesta
+              ),
+            };
+          }
+
+          // Buscar en respuestas de nivel superior para manejar re-respuestas
+          if (comentario.respuestas) {
+            return {
+              ...comentario,
+              respuestas: actualizarComentarios(comentario.respuestas),
+            };
+          }
         }
 
         return comentario;
-      })
-    );
+      });
+
+    setComentarios((prevComentarios) => actualizarComentarios(prevComentarios));
 
     // Limpiar estados de edición
     setComentarioEditado(null);
-    setNuevoComentarioEditado('');
+    setNuevoComentarioEditado("");
     setEsRespuesta(false);
     setComentarioPadreId(null);
   } catch (error) {
-    console.error('Error al guardar la edición:', error);
+    console.error("Error al guardar la edición:", error);
   }
 };
 
