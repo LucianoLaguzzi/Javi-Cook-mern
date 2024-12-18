@@ -392,12 +392,13 @@ const guardarEdicion = async () => {
     // Obtener el comentario/ respuesta actualizada desde la respuesta del servidor
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    // Actualizar los comentarios en el estado
+    // Actualizar los comentarios en el estado local
     setComentarios((prevComentarios) =>
       prevComentarios.map((comentario) => {
-        if (comentario._id === comentarioEditado) {
-          return { ...comentario, comentario: comentarioActualizado.comentario }; // Comentario principal
-        } else if (comentario._id === comentarioPadreId) {
+        if (comentario._id === comentarioEditado && !esRespuesta) {
+          // Actualizar el comentario principal
+          return { ...comentario, comentario: comentarioActualizado.comentario };
+        } else if (comentario._id === comentarioPadreId && esRespuesta) {
           // Actualizar la respuesta dentro del comentario padre
           const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
             respuesta._id === comentarioEditado
@@ -406,9 +407,10 @@ const guardarEdicion = async () => {
           );
           return { ...comentario, respuestas: respuestasActualizadas };
         }
-        return comentario;
+        return comentario; // No modificar otros comentarios
       })
     );
+
 
     // Restablecer estados
     setComentarioEditado(null);
