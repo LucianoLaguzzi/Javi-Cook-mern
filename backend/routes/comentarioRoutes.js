@@ -119,4 +119,51 @@ router.put('/:id/comentarios/:comentarioId', async (req, res) => {
 });
 
 
+// Ruta para editar una respuesta específica
+router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req, res) => {
+    const { id, comentarioId, respuestaId } = req.params; // ID de la receta, comentario y respuesta
+    const { comentario, usuario } = req.body; // Comentario editado y usuario en sesión
+
+    try {
+        // Buscar la receta por su ID
+        const receta = await Receta.findById(id);
+        if (!receta) {
+            return res.status(404).json({ message: 'Receta no encontrada' });
+        }
+
+        // Buscar el comentario padre
+        const comentarioPadre = await Comentario.findById(comentarioId);
+        if (!comentarioPadre) {
+            return res.status(404).json({ message: 'Comentario padre no encontrado' });
+        }
+
+        // Verificar que la respuesta existe dentro de las respuestas del comentario
+        const respuestaExistente = comentarioPadre.respuestas.find(
+            (respuesta) => respuesta._id.toString() === respuestaId
+        );
+        if (!respuestaExistente) {
+            return res.status(404).json({ message: 'Respuesta no encontrada' });
+        }
+
+        // Verificar que el usuario sea el autor de la respuesta
+        if (respuestaExistente.usuario.toString() !== usuario) {
+            return res.status(403).json({ message: 'No tienes permiso para editar esta respuesta' });
+        }
+
+        // Actualizar la respuesta
+        respuestaExistente.comentario = comentario;
+        await comentarioPadre.save();
+
+        // Poblar el usuario de la respuesta actualizada para devolverla
+        const respuestaActualizada = comentarioPadre.respuestas
+            .find((respuesta) => respuesta._id.toString() === respuestaId);
+
+        res.json({ comentarioActualizado: respuestaActualizada });
+    } catch (error) {
+        console.error('Error al editar la respuesta:', error);
+        res.status(500).json({ message: 'Error al editar la respuesta' });
+    }
+});
+
+
 export default router;

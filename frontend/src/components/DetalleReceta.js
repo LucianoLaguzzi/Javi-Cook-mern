@@ -355,11 +355,9 @@ const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del come
   
 
 // Función para manejar la edición
-const editarComentario = (comentarioId, textoActual, esRespuesta = false, comentarioPadreId = null) => {
+const editarComentario = (comentarioId, textoActual) => {
   setComentarioEditado(comentarioId);
   setNuevoComentarioEditado(textoActual);
-  setEsRespuesta(esRespuesta);
-  setComentarioPadreId(comentarioPadreId); // Esto será null para comentarios padres
 };
 
 const cancelarEdicion = () => {
@@ -393,8 +391,6 @@ const guardarEdicion = async () => {
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    console.log("Comentario actualizado desde backend:", comentarioActualizado);
-
     setComentarios((prevComentarios) =>
       prevComentarios.map((comentario) => {
         if (!esRespuesta && comentario._id === comentarioEditado) {
@@ -403,8 +399,12 @@ const guardarEdicion = async () => {
         }
 
         if (esRespuesta && comentario._id === comentarioPadreId) {
-          // Actualizar respuestas del comentario padre
-          const respuestasActualizadas = comentarioActualizado.respuestas || [];
+          // Si es una respuesta, busca dentro del array 'respuestas'
+          const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
+            respuesta._id === comentarioEditado
+              ? { ...respuesta, comentario: comentarioActualizado.comentario }
+              : respuesta
+          );
           return { ...comentario, respuestas: respuestasActualizadas };
         }
 
@@ -980,16 +980,12 @@ const guardarEdicion = async () => {
                               )}
 
 
-
                                 <button
                                   className="boton-responder"
                                   onClick={() => responderComentario(respuesta._id)}
                                 >
                                   Responder
                                 </button>
-
-
-
 
                                 {/* Re-Respuestas */}
                                 {respuesta.respuestas && respuesta.respuestas.length > 0 && (
