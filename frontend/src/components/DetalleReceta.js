@@ -390,36 +390,26 @@ const guardarEdicion = async () => {
     setComentarios((prevComentarios) => {
       const actualizarComentarios = (comentarios) =>
         comentarios.map((comentario) => {
-          // Si es un comentario principal
+          // Si estamos editando un comentario principal
           if (!esRespuesta && comentario._id === comentarioEditado) {
             return { ...comentario, comentario: comentarioActualizado.comentario };
           }
-
-          // Si es una respuesta
-          if (esRespuesta) {
-            if (comentario._id === comentarioPadreId) {
-              return {
-                ...comentario,
-                respuestas: comentario.respuestas.map((respuesta) =>
-                  respuesta._id === comentarioEditado
-                    ? { ...respuesta, comentario: comentarioActualizado.comentario }
-                    : respuesta
-                ),
-              };
-            }
-
-            // Si hay respuestas anidadas, recorremos recursivamente
-            if (comentario.respuestas) {
-              return {
-                ...comentario,
-                respuestas: actualizarComentarios(comentario.respuestas),
-              };
-            }
+    
+          // Si estamos editando una respuesta
+          if (comentario.respuestas) {
+            return {
+              ...comentario,
+              respuestas: comentario.respuestas.map((respuesta) =>
+                respuesta._id === comentarioEditado
+                  ? { ...respuesta, comentario: comentarioActualizado.comentario }
+                  : { ...respuesta, respuestas: actualizarComentarios(respuesta.respuestas || []) } // Recurre si hay respuestas anidadas
+              ),
+            };
           }
-
+    
           return comentario; // Sin cambios
         });
-
+    
       return actualizarComentarios(prevComentarios);
     });
 
