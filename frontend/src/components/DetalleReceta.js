@@ -391,26 +391,26 @@ const guardarEdicion = async () => {
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    console.log("Antes de setComentarios", comentarios);
     setComentarios((prevComentarios) =>
       prevComentarios.map((comentario) => {
         if (!esRespuesta && comentario._id === comentarioEditado) {
           return { ...comentario, comentario: comentarioActualizado.comentario };
         }
-
+    
         if (esRespuesta && comentario._id === comentarioPadreId) {
-          const respuestasActualizadas = comentario.respuestas.map((respuesta) =>
-            respuesta._id === comentarioEditado
-              ? { ...respuesta, comentario: comentarioActualizado.comentario }
-              : respuesta
-          );
-          return { ...comentario, respuestas: respuestasActualizadas };
+          return {
+            ...comentario,
+            respuestas: comentario.respuestas.map((respuesta) =>
+              respuesta._id === comentarioEditado
+                ? { ...respuesta, comentario: comentarioActualizado.comentario }
+                : respuesta
+            ),
+          };
         }
-
+    
         return comentario;
       })
     );
-    console.log("Después de setComentarios", comentarios);
 
     // Limpiar estados de edición
     setComentarioEditado(null);
