@@ -166,62 +166,53 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 });
 
 
-
 // Ruta para editar una re-respuesta
-router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/:rerespuestaId', async (req, res) => {
+router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/reresp/:rerespuestaId', async (req, res) => {
     const { id, comentarioId, respuestaId, rerespuestaId } = req.params;
     const { comentario, usuario } = req.body;
-
+  
     try {
-        // Buscar la receta por su ID
-        const receta = await Receta.findById(id);
-        if (!receta) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
-        }
-
-        // Buscar el comentario padre
-        const comentarioPadre = await Comentario.findById(comentarioId);
-        if (!comentarioPadre) {
-            return res.status(404).json({ message: 'Comentario padre no encontrado' });
-        }
-
-        // Buscar la respuesta padre dentro de las respuestas del comentario
-        const respuestaPadre = comentarioPadre.respuestas.find(
-            (respuesta) => respuesta._id.toString() === respuestaId
-        );
-        if (!respuestaPadre) {
-            return res.status(404).json({ message: 'Respuesta padre no encontrada' });
-        }
-
-        // Buscar la re-respuesta dentro de las respuestas anidadas
-        const rerespuestaExistente = respuestaPadre.respuestas.find(
-            (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
-        );
-        if (!rerespuestaExistente) {
-            return res.status(404).json({ message: 'Re-respuesta no encontrada' });
-        }
-
-        // Verificar que el usuario sea el autor de la re-respuesta
-        if (rerespuestaExistente.usuario.toString() !== usuario) {
-            return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
-        }
-
-        // Actualizar la re-respuesta
-        rerespuestaExistente.comentario = comentario;
-        await comentarioPadre.save();
-
-        // Poblar el usuario de la re-respuesta actualizada para devolverla
-        const rerespuestaActualizada = respuestaPadre.respuestas.find(
-            (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
-        );
-
-        res.json({ comentarioActualizado: rerespuestaActualizada });
+      // Buscar la receta
+      const receta = await Receta.findById(id);
+      if (!receta) {
+        return res.status(404).json({ message: 'Receta no encontrada' });
+      }
+  
+      // Buscar el comentario principal
+      const comentarioPadre = await Comentario.findById(comentarioId);
+      if (!comentarioPadre) {
+        return res.status(404).json({ message: 'Comentario no encontrado' });
+      }
+  
+      // Buscar la respuesta dentro del comentario
+      const respuesta = comentarioPadre.respuestas.find((resp) => resp._id.toString() === respuestaId);
+      if (!respuesta) {
+        return res.status(404).json({ message: 'Respuesta no encontrada' });
+      }
+  
+      // Buscar la re-respuesta dentro de la respuesta
+      const rerespuesta = respuesta.respuestas.find((reres) => reres._id.toString() === rerespuestaId);
+      if (!rerespuesta) {
+        return res.status(404).json({ message: 'Re-respuesta no encontrada' });
+      }
+  
+      // Verificar que el usuario es el autor de la re-respuesta
+      if (rerespuesta.usuario.toString() !== usuario) {
+        return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
+      }
+  
+      // Actualizar la re-respuesta
+      rerespuesta.comentario = comentario;
+      await comentarioPadre.save();
+  
+      // Devolver la re-respuesta actualizada
+      const rerespuestaActualizada = respuesta.respuestas.find((reres) => reres._id.toString() === rerespuestaId);
+      res.json({ comentarioActualizado: rerespuestaActualizada });
     } catch (error) {
-        console.error('Error al editar la re-respuesta:', error);
-        res.status(500).json({ message: 'Error al editar la re-respuesta' });
+      console.error('Error al editar la re-respuesta:', error);
+      res.status(500).json({ message: 'Error al editar la re-respuesta' });
     }
-});
-
+  });
 
 
 export default router;
