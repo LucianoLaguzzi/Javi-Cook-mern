@@ -167,52 +167,51 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 
 
 // Ruta para editar una re-respuesta específica
-router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/:reRespuestaId', async (req, res) => {
-    const { id, comentarioId, respuestaId, reRespuestaId } = req.params;
+router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/:rerespuestaId', async (req, res) => {
+    const { id, comentarioId, respuestaId, rerespuestaId } = req.params;
     const { comentario, usuario } = req.body;
-
+  
     try {
-        const receta = await Receta.findById(id);
-        if (!receta) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
-        }
-
-        const comentarioPadre = await Comentario.findById(comentarioId);
-        if (!comentarioPadre) {
-            return res.status(404).json({ message: 'Comentario padre no encontrado' });
-        }
-
-        const respuestaPadre = comentarioPadre.respuestas.find(
-            (respuesta) => respuesta._id.toString() === respuestaId
-        );
-        if (!respuestaPadre) {
-            return res.status(404).json({ message: 'Respuesta no encontrada' });
-        }
-
-        const reRespuesta = respuestaPadre.respuestas.find(
-            (rerespuesta) => rerespuesta._id.toString() === reRespuestaId
-        );
-        if (!reRespuesta) {
-            return res.status(404).json({ message: 'Re-respuesta no encontrada' });
-        }
-
-        if (reRespuesta.usuario.toString() !== usuario) {
-            return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
-        }
-
-        reRespuesta.comentario = comentario;
-        await comentarioPadre.save();
-
-        const reRespuestaActualizada = respuestaPadre.respuestas.find(
-            (rerespuesta) => rerespuesta._id.toString() === reRespuestaId
-        );
-
-        res.json({ reRespuestaActualizada });
+      const receta = await Receta.findById(id);
+      if (!receta) {
+        return res.status(404).json({ message: 'Receta no encontrada' });
+      }
+  
+      const comentarioPadre = await Comentario.findById(comentarioId);
+      if (!comentarioPadre) {
+        return res.status(404).json({ message: 'Comentario no encontrado' });
+      }
+  
+      const respuestaPadre = comentarioPadre.respuestas.find(
+        (respuesta) => respuesta._id.toString() === respuestaId
+      );
+  
+      if (!respuestaPadre) {
+        return res.status(404).json({ message: 'Respuesta no encontrada' });
+      }
+  
+      const rerespuestaExistente = respuestaPadre.respuestas.find(
+        (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
+      );
+  
+      if (!rerespuestaExistente) {
+        return res.status(404).json({ message: 'Re-respuesta no encontrada' });
+      }
+  
+      if (rerespuestaExistente.usuario.toString() !== usuario) {
+        return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
+      }
+  
+      rerespuestaExistente.comentario = comentario;
+      await comentarioPadre.save();
+  
+      res.json({ rerespuestaActualizada: rerespuestaExistente });
     } catch (error) {
-        console.error('Error al editar la re-respuesta:', error);
-        res.status(500).json({ message: 'Error al editar la re-respuesta' });
+      console.error('Error al editar la re-respuesta:', error);
+      res.status(500).json({ message: 'Error al editar la re-respuesta' });
     }
-});
+  });
 
+  
 
 export default router;
