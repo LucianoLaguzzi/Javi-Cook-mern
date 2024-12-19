@@ -40,16 +40,18 @@ const DetalleReceta = () => {
   const [respuesta, setRespuesta] = useState('');
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
   const [respuestaTexto, setRespuestaTexto] = useState("");
-
-  
   // Estados para la edición
   const [comentarioEditado, setComentarioEditado] = useState(null);
   const [nuevoComentarioEditado, setNuevoComentarioEditado] = useState('');
-
-
-
   const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
-const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
+  const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
+
+
+
+  const [esReRespuesta, setEsReRespuesta] = useState(false); // Indica si se está editando una re-respuesta
+  const [respuestaPadreId, setRespuestaPadreId] = useState(null); // ID de la respuesta padre
+
+
 
 
   const botonRef = useRef(null);
@@ -373,16 +375,21 @@ const guardarEdicion = async () => {
   if (!nuevoComentarioEditado.trim()) return;
 
   try {
-    // Llamada al servidor para editar comentario o respuesta
-    const response = await axios.put(
-      esRespuesta
-        ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`
-        : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
-      {
-        comentario: nuevoComentarioEditado,
-        usuario: usuarioEnSesion._id,
-      }
-    );
+    let url = `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`;
+
+    // Definir la URL para respuestas y re-respuestas
+    if (esRespuesta) {
+      url = `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`;
+    }
+    if (esReRespuesta) {
+      url = `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${respuestaPadreId}/rerespuestas/${comentarioEditado}`;
+    }
+
+    // Llamada al servidor
+    const response = await axios.put(url, {
+      comentario: nuevoComentarioEditado,
+      usuario: usuarioEnSesion._id,
+    });
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
@@ -390,34 +397,49 @@ const guardarEdicion = async () => {
     setComentarios((prevComentarios) => {
       const actualizarComentarios = (comentarios) =>
         comentarios.map((comentario) => {
-          // Si estamos editando un comentario principal
-          if (!esRespuesta && comentario._id === comentarioEditado) {
+          // Actualizar comentarios principales
+          if (!esRespuesta && !esReRespuesta && comentario._id === comentarioEditado) {
             return { ...comentario, comentario: comentarioActualizado.comentario };
           }
-    
-          // Si estamos editando una respuesta
+
+          // Actualizar respuestas y sus re-respuestas
           if (comentario.respuestas) {
             return {
               ...comentario,
-              respuestas: comentario.respuestas.map((respuesta) =>
-                respuesta._id === comentarioEditado
-                  ? { ...respuesta, comentario: comentarioActualizado.comentario }
-                  : { ...respuesta, respuestas: actualizarComentarios(respuesta.respuestas || []) } // Recurre si hay respuestas anidadas
-              ),
+              respuestas: comentario.respuestas.map((respuesta) => {
+                if (esRespuesta && respuesta._id === comentarioEditado) {
+                  return { ...respuesta, comentario: comentarioActualizado.comentario };
+                }
+
+                if (respuesta.respuestas) {
+                  return {
+                    ...respuesta,
+                    respuestas: respuesta.respuestas.map((rerespuesta) =>
+                      esReRespuesta && rerespuesta._id === comentarioEditado
+                        ? { ...rerespuesta, comentario: comentarioActualizado.comentario }
+                        : rerespuesta
+                    ),
+                  };
+                }
+
+                return respuesta;
+              }),
             };
           }
-    
-          return comentario; // Sin cambios
+
+          return comentario;
         });
-    
+
       return actualizarComentarios(prevComentarios);
     });
 
-    // Limpiar los estados de edición
+    // Limpiar estados
     setComentarioEditado(null);
     setNuevoComentarioEditado("");
     setEsRespuesta(false);
+    setEsReRespuesta(false);
     setComentarioPadreId(null);
+    setRespuestaPadreId(null);
   } catch (error) {
     console.error("Error al guardar la edición:", error);
   }
@@ -989,8 +1011,13 @@ const guardarEdicion = async () => {
                                 {/* Re-Respuestas */}
                                 {respuesta.respuestas && respuesta.respuestas.length > 0 && (
                                   <div className="toggle-respuestas reresp">
-                                    <button className='link-ocultar-respuestas' onClick={() => toggleRespuestas(respuesta._id)}>
-                                      {respuestasVisibles[respuesta._id] ? `Ocultar conversación` : `Ver conversación (${respuesta.respuestas.length})`}
+                                    <button
+                                      className="link-ocultar-respuestas"
+                                      onClick={() => toggleRespuestas(respuesta._id)}
+                                    >
+                                      {respuestasVisibles[respuesta._id]
+                                        ? `Ocultar conversación`
+                                        : `Ver conversación (${respuesta.respuestas.length})`}
                                     </button>
                                     {respuestasVisibles[respuesta._id] && (
                                       <div className="respuestas reresp-comentarios">
@@ -1009,9 +1036,49 @@ const guardarEdicion = async () => {
                                             <span className="comentario-fecha">
                                               {new Date(rerespuesta.fecha).toLocaleDateString()}
                                             </span>
-                                            <p className="texto-respuesta">
-                                              <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
-                                            </p>
+
+                                            {/* Modo de edición para re-respuestas */}
+                                            {comentarioEditado === rerespuesta._id ? (
+                                              <div className="modo-edicion-rerespuesta">
+                                                <input
+                                                  className="input-rerespuesta-edicion"
+                                                  type="text"
+                                                  value={nuevoComentarioEditado}
+                                                  onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                                                />
+                                                <div className="modo-edicion">
+                                                  <a
+                                                    className="btn-guardar-edicion"
+                                                    onClick={() => guardarEdicion(rerespuesta._id, true, respuesta._id)}
+                                                    title="Guardar"
+                                                  >
+                                                    <i className="fas fa-check-circle"></i>
+                                                  </a>
+                                                  <a
+                                                    className="btn-cancelar-edicion"
+                                                    onClick={cancelarEdicion}
+                                                    title="Cancelar"
+                                                  >
+                                                    <i className="fas fa-times-circle"></i>
+                                                  </a>
+                                                </div>
+                                              </div>
+                                            ) : (
+                                              <p className="texto-respuesta">{rerespuesta.comentario}</p>
+                                            )}
+
+                                            {/* Botón de edición para re-respuestas (solo si el usuario es el autor) */}
+                                            {usuarioEnSesion._id === rerespuesta.usuario._id &&
+                                              comentarioEditado !== rerespuesta._id && (
+                                                <a
+                                                  className="btn-editar-pasos"
+                                                  onClick={() =>
+                                                    editarComentario(rerespuesta._id, rerespuesta.comentario, true, respuesta._id)
+                                                  }
+                                                >
+                                                  <i className="fas fa-pencil-alt" title="Editar re-respuesta"></i>
+                                                </a>
+                                              )}
                                           </div>
                                         ))}
                                       </div>
