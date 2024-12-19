@@ -349,9 +349,11 @@ const DetalleReceta = () => {
   
 
 // Función para manejar la edición
-const editarComentario = (comentarioId, textoActual) => {
+const editarComentario = (comentarioId, textoActual, esRespuesta = false, comentarioPadreId = null) => {
   setComentarioEditado(comentarioId);
   setNuevoComentarioEditado(textoActual);
+  setEsRespuesta(esRespuesta); // Indicamos si es respuesta o re-respuesta
+  setComentarioPadreId(comentarioPadreId);
 };
 
 const cancelarEdicion = () => {
@@ -363,47 +365,56 @@ const cancelarEdicion = () => {
 
 
 // Función para guardar la edición
-const guardarEdicion = async () => {
+const guardarEdicion = async (comentarioId, esRespuesta = false, comentarioPadreId = null) => {
   if (!nuevoComentarioEditado.trim()) return;
 
   try {
-    // Llamada al servidor para editar comentario o respuesta
-    const response = await axios.put(
-      esRespuesta
-        ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`
-        : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
-      {
-        comentario: nuevoComentarioEditado,
-        usuario: usuarioEnSesion._id,
-      }
-    );
+    let url = '';
+    // Definir la URL según el tipo de comentario, respuesta o re-respuesta
+    if (esRespuesta) {
+      url = `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioId}`;
+    } else if (comentarioPadreId) {
+      url = `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}`;
+    } else {
+      // Si estamos editando una re-respuesta
+      url = `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioId}/rerespuestas/${comentarioId}`;
+    }
+
+    // Llamada al servidor para editar el comentario, respuesta o re-respuesta
+    const response = await axios.put(url, {
+      comentario: nuevoComentarioEditado,
+      usuario: usuarioEnSesion._id,
+    });
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    // Actualizar estado local de los comentarios
+    // Actualizar estado local de los comentarios, respuestas y re-respuestas
     setComentarios((prevComentarios) => {
       const actualizarComentarios = (comentarios) =>
         comentarios.map((comentario) => {
           // Si estamos editando un comentario principal
-          if (!esRespuesta && comentario._id === comentarioEditado) {
+          if (!esRespuesta && !comentarioPadreId && comentario._id === comentarioId) {
             return { ...comentario, comentario: comentarioActualizado.comentario };
           }
-    
+
           // Si estamos editando una respuesta
           if (comentario.respuestas) {
             return {
               ...comentario,
               respuestas: comentario.respuestas.map((respuesta) =>
-                respuesta._id === comentarioEditado
+                respuesta._id === comentarioId
                   ? { ...respuesta, comentario: comentarioActualizado.comentario }
-                  : { ...respuesta, respuestas: actualizarComentarios(respuesta.respuestas || []) } // Recurre si hay respuestas anidadas
+                  : {
+                      ...respuesta,
+                      respuestas: actualizarComentarios(respuesta.respuestas || []), // Recurre si hay re-respuestas
+                    }
               ),
             };
           }
-    
+
           return comentario; // Sin cambios
         });
-    
+
       return actualizarComentarios(prevComentarios);
     });
 
@@ -981,37 +992,68 @@ const guardarEdicion = async () => {
                                 </button>
 
                                 {/* Re-Respuestas */}
-                                {respuesta.respuestas && respuesta.respuestas.length > 0 && (
-                                  <div className="toggle-respuestas reresp">
-                                    <button className='link-ocultar-respuestas' onClick={() => toggleRespuestas(respuesta._id)}>
-                                      {respuestasVisibles[respuesta._id] ? `Ocultar conversación` : `Ver conversación (${respuesta.respuestas.length})`}
-                                    </button>
-                                    {respuestasVisibles[respuesta._id] && (
-                                      <div className="respuestas reresp-comentarios">
-                                        {respuesta.respuestas.map((rerespuesta) => (
-                                          <div key={rerespuesta._id} className="reresp-comentario">
-                                            <div className="imagen-nombre">
-                                              <img
-                                                className="imagen-perfil-comentario"
-                                                src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                                alt={rerespuesta.usuario.nombre}
-                                              />
-                                              <span className="usuario-comentario">
-                                                {rerespuesta.usuario.nombre || "Usuario desconocido"}
-                                              </span>
-                                            </div>
-                                            <span className="comentario-fecha">
-                                              {new Date(rerespuesta.fecha).toLocaleDateString()}
-                                            </span>
-                                            <p className="texto-respuesta">
-                                              <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
-                                            </p>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+{respuesta.respuestas && respuesta.respuestas.length > 0 && (
+  <div className="toggle-respuestas reresp">
+    <button className='link-ocultar-respuestas' onClick={() => toggleRespuestas(respuesta._id)}>
+      {respuestasVisibles[respuesta._id] ? `Ocultar conversación` : `Ver conversación (${respuesta.respuestas.length})`}
+    </button>
+    {respuestasVisibles[respuesta._id] && (
+      <div className="respuestas reresp-comentarios">
+        {respuesta.respuestas.map((rerespuesta) => (
+          <div key={rerespuesta._id} className="reresp-comentario">
+            <div className="imagen-nombre">
+              <img
+                className="imagen-perfil-comentario"
+                src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                alt={rerespuesta.usuario.nombre}
+              />
+              <span className="usuario-comentario">
+                {rerespuesta.usuario.nombre || "Usuario desconocido"}
+              </span>
+            </div>
+            <span className="comentario-fecha">
+              {new Date(rerespuesta.fecha).toLocaleDateString()}
+            </span>
+
+            {/* Modo de edición para re-respuestas */}
+            {comentarioEditado === rerespuesta._id ? (
+              <div className="modo-edicion-respuesta">
+                <input
+                  className='input-respuesta-edicion'
+                  type="text"
+                  value={nuevoComentarioEditado}
+                  onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                />
+                <div className="modo-edicion">
+                  <a className="btn-guardar-edicion" onClick={() => guardarEdicion(rerespuesta._id, true, respuesta._id)} title='Guardar'>
+                    <i className="fas fa-check-circle"></i> 
+                  </a>
+                  <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
+                    <i className="fas fa-times-circle"></i>
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <p className="texto-respuesta">
+                <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
+              </p>
+            )}
+
+            {/* Botón de edición para re-respuestas (solo si el usuario es el autor) */}
+            {usuarioEnSesion._id === rerespuesta.usuario._id && comentarioEditado !== rerespuesta._id && (
+              <a
+                className='btn-editar-pasos'
+                onClick={() => editarComentario(rerespuesta._id, rerespuesta.comentario, true, respuesta._id)}
+              >
+                <i className="fas fa-pencil-alt" title="Editar re-respuesta"></i>
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
                                 {/* Input para re-responder */}
                                 {comentarioAResponder === respuesta._id && (
