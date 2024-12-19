@@ -166,9 +166,9 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 });
 
 
-// Ruta para editar una re-respuesta
-router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/:rerespuestaId', async (req, res) => {
-    const { id, comentarioId, respuestaId, rerespuestaId } = req.params;
+// Ruta para editar una re-respuesta específica
+router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/:reRespuestaId', async (req, res) => {
+    const { id, comentarioId, respuestaId, reRespuestaId } = req.params;
     const { comentario, usuario } = req.body;
 
     try {
@@ -189,21 +189,25 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/
             return res.status(404).json({ message: 'Respuesta no encontrada' });
         }
 
-        const rerespuestaExistente = respuestaPadre.respuestas.find(
-            (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
+        const reRespuesta = respuestaPadre.respuestas.find(
+            (rerespuesta) => rerespuesta._id.toString() === reRespuestaId
         );
-        if (!rerespuestaExistente) {
+        if (!reRespuesta) {
             return res.status(404).json({ message: 'Re-respuesta no encontrada' });
         }
 
-        if (rerespuestaExistente.usuario.toString() !== usuario) {
+        if (reRespuesta.usuario.toString() !== usuario) {
             return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
         }
 
-        rerespuestaExistente.comentario = comentario;
+        reRespuesta.comentario = comentario;
         await comentarioPadre.save();
 
-        res.json({ comentarioActualizado: rerespuestaExistente });
+        const reRespuestaActualizada = respuestaPadre.respuestas.find(
+            (rerespuesta) => rerespuesta._id.toString() === reRespuestaId
+        );
+
+        res.json({ reRespuestaActualizada });
     } catch (error) {
         console.error('Error al editar la re-respuesta:', error);
         res.status(500).json({ message: 'Error al editar la re-respuesta' });
