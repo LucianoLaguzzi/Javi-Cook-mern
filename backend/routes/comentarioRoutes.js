@@ -168,8 +168,8 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 
 // Ruta para editar una re-respuesta específica
 router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/:reRespuestaId', async (req, res) => {
-    const { id, comentarioId, respuestaId, reRespuestaId } = req.params; // IDs de la receta, comentario, respuesta y re-respuesta
-    const { comentario, usuario } = req.body; // Comentario editado y usuario en sesión
+    const { id, comentarioId, respuestaId, reRespuestaId } = req.params;
+    const { comentario, usuario } = req.body;
 
     try {
         // Buscar la receta por su ID
@@ -192,7 +192,7 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/
             return res.status(404).json({ message: 'Respuesta padre no encontrada' });
         }
 
-        // Verificar que la re-respuesta existe dentro de las respuestas de la respuesta padre
+        // Buscar la re-respuesta dentro de las respuestas de la respuesta padre
         const reRespuestaExistente = respuestaPadre.respuestas.find(
             (reRespuesta) => reRespuesta._id.toString() === reRespuestaId
         );
