@@ -1099,7 +1099,7 @@ const guardarEdicionReRespuesta = async (comentarioId, respuestaId) => {
                                           </p>
                                           )}
 
-                                          // Botón de edición para la re-respuesta
+                                          {/* Botón de edición para la re-respuesta*/}
                                           {usuarioEnSesion._id === rerespuesta.usuario._id && (
                                             <a
                                               className="btn-editar-pasos"
