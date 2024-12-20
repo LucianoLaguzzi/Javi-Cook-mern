@@ -45,6 +45,8 @@ const DetalleReceta = () => {
   const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
 
+  const [reRespuestaEditada, setReRespuestaEditada] = useState(null); // ID de la re-respuesta en edición
+const [nuevoReRespuestaEditado, setNuevoReRespuestaEditado] = useState(""); // Texto de la re-respuesta editada
 
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -414,6 +416,65 @@ const guardarEdicion = async () => {
     setComentarioPadreId(null);
   } catch (error) {
     console.error("Error al guardar la edición:", error);
+  }
+};
+
+
+
+const editarReRespuesta = (rerespuestaId, textoActual) => {
+  setReRespuestaEditada(rerespuestaId);
+  setNuevoReRespuestaEditado(textoActual);
+};
+
+const cancelarEdicionReRespuesta = () => {
+  setReRespuestaEditada(null);
+  setNuevoReRespuestaEditado("");
+};
+
+
+const guardarEdicionReRespuesta = async (comentarioId, respuestaId) => {
+  if (!nuevoReRespuestaEditado.trim()) return;
+
+  try {
+    const response = await axios.put(
+      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioId}/respuestas/${respuestaId}/rerespuestas/${reRespuestaEditada}`,
+      {
+        comentario: nuevoReRespuestaEditado,
+        usuario: usuarioEnSesion._id,
+      }
+    );
+
+    const rerespuestaActualizada = response.data.rerespuestaActualizada;
+
+    // Actualizar el estado local de comentarios
+    setComentarios((prevComentarios) =>
+      prevComentarios.map((comentario) => {
+        if (comentario._id === comentarioId) {
+          return {
+            ...comentario,
+            respuestas: comentario.respuestas.map((respuesta) => {
+              if (respuesta._id === respuestaId) {
+                return {
+                  ...respuesta,
+                  respuestas: respuesta.respuestas.map((rerespuesta) =>
+                    rerespuesta._id === reRespuestaEditada
+                      ? { ...rerespuesta, comentario: rerespuestaActualizada.comentario }
+                      : rerespuesta
+                  ),
+                };
+              }
+              return respuesta;
+            }),
+          };
+        }
+        return comentario;
+      })
+    );
+
+    // Limpiar el estado
+    cancelarEdicionReRespuesta();
+  } catch (error) {
+    console.error("Error al guardar la edición de la re-respuesta:", error);
   }
 };
 
@@ -1003,9 +1064,64 @@ const guardarEdicion = async () => {
                                             <span className="comentario-fecha">
                                               {new Date(rerespuesta.fecha).toLocaleDateString()}
                                             </span>
+
+
+
+
+                                            {reRespuestaEditada === rerespuesta._id ? (
+                                            <div className="modo-edicion-rerespuesta">
+                                              <input
+                                                className="input-respuesta-edicion"
+                                                type="text"
+                                                value={nuevoReRespuestaEditado}
+                                                onChange={(e) => setNuevoReRespuestaEditado(e.target.value)}
+                                              />
+                                              <div className="modo-edicion">
+                                                <a
+                                                  className="btn-guardar-edicion"
+                                                  onClick={() => guardarEdicionReRespuesta(comentario._id, respuesta._id)}
+                                                  title="Guardar"
+                                                >
+                                                  <i className="fas fa-check-circle"></i>
+                                                </a>
+                                                <a
+                                                  className="btn-cancelar-edicion"
+                                                  onClick={cancelarEdicionReRespuesta}
+                                                  title="Cancelar"
+                                                >
+                                                  <i className="fas fa-times-circle"></i>
+                                                </a>
+                                              </div>
+                                            </div>
+                                          ) : (
                                             <p className="texto-respuesta">
-                                              <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
-                                            </p>
+                                            <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
+                                          </p>
+                                          )}
+
+                                          // Botón de edición para la re-respuesta
+                                          {usuarioEnSesion._id === rerespuesta.usuario._id && (
+                                            <a
+                                              className="btn-editar-pasos"
+                                              onClick={() => editarReRespuesta(rerespuesta._id, rerespuesta.comentario)}
+                                            >
+                                              <i className="fas fa-pencil-alt" title="Editar re-respuesta"></i>
+                                            </a>
+                                          )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            
                                           </div>
                                         ))}
                                       </div>
