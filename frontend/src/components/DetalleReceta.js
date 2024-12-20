@@ -418,68 +418,6 @@ const guardarEdicion = async () => {
 };
 
 
-// Método para editar una re-respuesta
-const editarReRespuesta = (rerespuestaId, textoActual) => {
-  setComentarioEditado(rerespuestaId); // Establece el ID de la re-respuesta que se está editando
-  setNuevoComentarioEditado(textoActual); // Establece el texto actual para mostrarlo en el input de edición
-  setEsRespuesta(true); // Marca que estamos editando una respuesta, para saber que se está editando una re-respuesta
-};
-
-// Método para guardar la edición de una re-respuesta
-const guardarEdicionReRespuesta = async () => {
-  if (!nuevoComentarioEditado.trim()) return; // Si no hay texto, no se guarda
-
-  try {
-    // Llamada al backend para editar la re-respuesta
-    const response = await axios.put(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}/respuestas/${comentarioEditado}`,
-      {
-        comentario: nuevoComentarioEditado, // El texto editado de la re-respuesta
-        usuario: usuarioEnSesion._id, // El ID del usuario que realiza la edición
-      }
-    );
-
-    const rerespuestaActualizada = response.data.comentarioActualizado; // Re-respuesta actualizada desde el backend
-
-    // Actualiza el estado local de los comentarios, buscando la re-respuesta y actualizándola
-    setComentarios((prevComentarios) => {
-      const actualizarComentarios = (comentarios) =>
-        comentarios.map((comentario) => {
-          if (comentario._id === comentarioPadreId) {
-            return {
-              ...comentario,
-              respuestas: comentario.respuestas.map((respuesta) => {
-                if (respuesta._id === comentarioEditado) {
-                  return {
-                    ...respuesta,
-                    respuestas: respuesta.respuestas.map((rerespuesta) => 
-                      rerespuesta._id === comentarioEditado
-                        ? { ...rerespuesta, comentario: rerespuestaActualizada.comentario }
-                        : rerespuesta
-                    ),
-                  };
-                }
-                return respuesta;
-              }),
-            };
-          }
-          return comentario;
-        });
-
-      return actualizarComentarios(prevComentarios);
-    });
-
-    // Limpiar los estados de edición
-    setComentarioEditado(null);
-    setNuevoComentarioEditado("");
-    setEsRespuesta(false);
-    setComentarioPadreId(null);
-
-  } catch (error) {
-    console.error("Error al guardar la edición de la re-respuesta:", error);
-  }
-};
-
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -1065,48 +1003,9 @@ const guardarEdicionReRespuesta = async () => {
                                             <span className="comentario-fecha">
                                               {new Date(rerespuesta.fecha).toLocaleDateString()}
                                             </span>
-
-
-
-                                            {comentarioEditado === rerespuesta._id ? (
-  <div className="modo-edicion-rerespuesta">
-    <input
-      className='input-respuesta-edicion'
-      type="text"
-      value={nuevoComentarioEditado}
-      onChange={(e) => setNuevoComentarioEditado(e.target.value)}
-      placeholder={`Editar respuesta a @${respuesta.usuario.nombre || 'usuario'}`}
-    />
-    <div className="modo-edicion">
-      <a className="btn-guardar-edicion" onClick={guardarEdicionReRespuesta} title='Guardar'>
-        <i className="fas fa-check-circle"></i> 
-      </a>
-      <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
-        <i className="fas fa-times-circle"></i>
-      </a>
-    </div>
-  </div>
-) : (
-  <p className="texto-respuesta">
-    <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
-  </p>
-)}
-
-
-{usuarioEnSesion._id === rerespuesta.usuario._id && comentarioEditado !== rerespuesta._id && (
-  <a
-    className='btn-editar-pasos'
-    onClick={() => editarReRespuesta(rerespuesta._id, rerespuesta.comentario)}
-  >
-    <i className="fas fa-pencil-alt" title="Editar re-respuesta"></i>
-  </a>
-)}
-
-
-
-
-
-                                            
+                                            <p className="texto-respuesta">
+                                              <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
+                                            </p>
                                           </div>
                                         ))}
                                       </div>
