@@ -46,9 +46,6 @@ const DetalleReceta = () => {
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
 
 
-  const [rerespuestaEditada, setRerespuestaEditada] = useState(null);
-const [nuevoRerespuestaEditada, setNuevoRerespuestaEditada] = useState("");
-
   const botonRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -417,58 +414,6 @@ const guardarEdicion = async () => {
     setComentarioPadreId(null);
   } catch (error) {
     console.error("Error al guardar la edición:", error);
-  }
-};
-
-
-// Función para editar una re-respuesta
-const editarReRespuesta = (rerespuestaId, textoActual) => {
-  setRerespuestaEditada(rerespuestaId);
-  setNuevoRerespuestaEditada(textoActual);
-};
-
-// Función para guardar la edición de una re-respuesta
-const guardarEdicionReRespuesta = async (rerespuestaId, respuestaId) => {
-  if (!nuevoRerespuestaEditada.trim()) return;
-
-  try {
-    const response = await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${respuestaId}/respuestas/${rerespuestaId}/reresp`, {
-      comentario: nuevoRerespuestaEditada,
-      usuario: usuarioEnSesion._id,
-    });
-
-    const rerespuestaActualizada = response.data.comentarioActualizado;
-
-    // Actualizar el estado de las re-respuestas
-    setComentarios((prevComentarios) => {
-      return prevComentarios.map((comentario) => {
-        if (comentario.respuestas) {
-          return {
-            ...comentario,
-            respuestas: comentario.respuestas.map((respuesta) => {
-              if (respuesta._id === respuestaId) {
-                return {
-                  ...respuesta,
-                  respuestas: respuesta.respuestas.map((rerespuesta) =>
-                    rerespuesta._id === rerespuestaId
-                      ? { ...rerespuesta, comentario: rerespuestaActualizada.comentario }
-                      : rerespuesta
-                  ),
-                };
-              }
-              return respuesta;
-            }),
-          };
-        }
-        return comentario;
-      });
-    });
-
-    // Resetear el estado de edición
-    setRerespuestaEditada(null);
-    setNuevoRerespuestaEditada("");
-  } catch (error) {
-    console.error("Error al guardar la edición de la re-respuesta:", error);
   }
 };
 
@@ -1043,57 +988,26 @@ const guardarEdicionReRespuesta = async (rerespuestaId, respuestaId) => {
                                     </button>
                                     {respuestasVisibles[respuesta._id] && (
                                       <div className="respuestas reresp-comentarios">
-                                       {respuesta.respuestas.map((rerespuesta) => (
-  <div key={rerespuesta._id} className="reresp-comentario">
-    <div className="imagen-nombre">
-      <img
-        className="imagen-perfil-comentario"
-        src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-        alt={rerespuesta.usuario.nombre}
-      />
-      <span className="usuario-comentario">
-        {rerespuesta.usuario.nombre || "Usuario desconocido"}
-      </span>
-    </div>
-    <span className="comentario-fecha">
-      {new Date(rerespuesta.fecha).toLocaleDateString()}
-    </span>
-
-    {/* Modo de edición para re-respuestas */}
-    {rerespuestaEditada === rerespuesta._id ? (
-      <div className="modo-edicion-respuesta">
-        <input
-          className='input-respuesta-edicion'
-          type="text"
-          value={nuevoRerespuestaEditada}
-          onChange={(e) => setNuevoRerespuestaEditada(e.target.value)}
-        />
-        <div className="modo-edicion">
-          <a className="btn-guardar-edicion" onClick={() => guardarEdicionReRespuesta(rerespuesta._id, respuesta._id)} title='Guardar'>
-            <i className="fas fa-check-circle"></i>
-          </a>
-          <a className="btn-cancelar-edicion" onClick={() => setRerespuestaEditada(null)} title='Cancelar'>
-            <i className="fas fa-times-circle"></i>
-          </a>
-        </div>
-      </div>
-    ) : (
-      <p className="texto-respuesta">
-        <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
-      </p>
-    )}
-
-    {/* Botón de edición para re-respuestas (solo si el usuario es el autor) */}
-    {usuarioEnSesion._id === rerespuesta.usuario._id && rerespuestaEditada !== rerespuesta._id && (
-      <a
-        className='btn-editar-pasos'
-        onClick={() => editarReRespuesta(rerespuesta._id, rerespuesta.comentario)}
-      >
-        <i className="fas fa-pencil-alt" title="Editar re-respuesta"></i>
-      </a>
-    )}
-  </div>
-))}
+                                        {respuesta.respuestas.map((rerespuesta) => (
+                                          <div key={rerespuesta._id} className="reresp-comentario">
+                                            <div className="imagen-nombre">
+                                              <img
+                                                className="imagen-perfil-comentario"
+                                                src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                                alt={rerespuesta.usuario.nombre}
+                                              />
+                                              <span className="usuario-comentario">
+                                                {rerespuesta.usuario.nombre || "Usuario desconocido"}
+                                              </span>
+                                            </div>
+                                            <span className="comentario-fecha">
+                                              {new Date(rerespuesta.fecha).toLocaleDateString()}
+                                            </span>
+                                            <p className="texto-respuesta">
+                                              <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {rerespuesta.comentario}
+                                            </p>
+                                          </div>
+                                        ))}
                                       </div>
                                     )}
                                   </div>
