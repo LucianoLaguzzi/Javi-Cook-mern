@@ -166,7 +166,7 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 });
 
 
-// Ruta para editar una re-respuesta específica
+// Ruta para editar una re-respuesta
 router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:rerespuestaId', async (req, res) => {
     const { id, comentarioId, respuestaId, rerespuestaId } = req.params; // ID de la receta, comentario, respuesta y re-respuesta
     const { comentario, usuario } = req.body; // Comentario editado y usuario en sesión
@@ -184,7 +184,7 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:r
             return res.status(404).json({ message: 'Comentario padre no encontrado' });
         }
 
-        // Buscar la respuesta correspondiente dentro del comentario
+        // Buscar la respuesta dentro del comentario
         const respuestaExistente = comentarioPadre.respuestas.find(
             (respuesta) => respuesta._id.toString() === respuestaId
         );
@@ -192,7 +192,7 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:r
             return res.status(404).json({ message: 'Respuesta no encontrada' });
         }
 
-        // Buscar la re-respuesta correspondiente dentro de las respuestas
+        // Buscar la re-respuesta dentro de las respuestas de la respuesta
         const rerespuestaExistente = respuestaExistente.respuestas.find(
             (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
         );
@@ -207,9 +207,9 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:r
 
         // Actualizar la re-respuesta
         rerespuestaExistente.comentario = comentario;
-        await comentarioPadre.save(); // Guardar el comentario padre con la re-respuesta actualizada
+        await comentarioPadre.save(); // Guardar los cambios en el comentario padre
 
-        // Poblar el usuario de la re-respuesta actualizada para devolverlo
+        // Poblar el usuario de la re-respuesta actualizada y devolverlo
         const rerespuestaActualizada = respuestaExistente.respuestas
             .find((rerespuesta) => rerespuesta._id.toString() === rerespuestaId);
 
