@@ -431,7 +431,7 @@ const guardarEdicionReRespuesta = async (rerespuestaId) => {
 
   try {
     const response = await axios.put(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioPadreId}/respuestas/${rerespuestaId}`, // Corregido
+      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}/respuestas/${rerespuestaId}`,
       {
         comentario: nuevoComentarioEditado,
         usuario: usuarioEnSesion._id,
