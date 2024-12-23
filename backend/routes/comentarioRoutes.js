@@ -165,6 +165,8 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
     }
 });
 
+
+
 // Ruta para editar una re-respuesta específica
 router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:rerespuestaId', async (req, res) => {
     const { id, comentarioId, respuestaId, rerespuestaId } = req.params; // ID de la receta, comentario, respuesta y re-respuesta
@@ -183,7 +185,7 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:r
             return res.status(404).json({ message: 'Comentario padre no encontrado' });
         }
 
-        // Verificar que la respuesta existe dentro de las respuestas del comentario
+        // Buscar la respuesta dentro del comentario
         const respuestaExistente = comentarioPadre.respuestas.find(
             (respuesta) => respuesta._id.toString() === respuestaId
         );
@@ -191,7 +193,7 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:r
             return res.status(404).json({ message: 'Respuesta no encontrada' });
         }
 
-        // Verificar que la re-respuesta existe dentro de las respuestas de la respuesta
+        // Buscar la re-respuesta dentro de la respuesta
         const rerespuestaExistente = respuestaExistente.respuestas.find(
             (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
         );
@@ -212,12 +214,11 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/respuestas/:r
         const rerespuestaActualizada = respuestaExistente.respuestas
             .find((rerespuesta) => rerespuesta._id.toString() === rerespuestaId);
 
-        res.json({ rerespuestaActualizada });
+        res.json({ comentarioActualizado: rerespuestaActualizada });
     } catch (error) {
         console.error('Error al editar la re-respuesta:', error);
         res.status(500).json({ message: 'Error al editar la re-respuesta' });
     }
 });
-
 
 export default router;
