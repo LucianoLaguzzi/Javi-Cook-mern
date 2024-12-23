@@ -1037,17 +1037,27 @@ const guardarEdicionReRespuesta = async (reRespuestaId, respuestaId, comentarioI
 {respuesta.respuestas.map((reRespuesta) => (
   <div key={reRespuesta._id} className="re-respuesta">
     <div className="re-respuesta-header">
-      <img src={reRespuesta.usuario.imagenPerfil} alt="Perfil" />
-      <span>@{reRespuesta.usuario.nombre}</span>
+      <img
+        className="imagen-perfil-comentario" 
+        src={reRespuesta.usuario.imagenPerfil} alt="Perfil" />
+        <span className="usuario-comentario">{reRespuesta.usuario.nombre || "Usuario desconocido"}</span>
+        <span className="comentario-fecha">
+          {new Date(respuesta.fecha).toLocaleDateString()}
+        </span>
+
+       {/* Modo de edición para re-respuestas */}
       {reRespuestaEditandoId === reRespuesta._id ? (
+        
         <input
+          className='input-respuesta-edicion'
           type="text"
           value={reRespuestaEditada}
           onChange={(e) => setReRespuestaEditada(e.target.value)}
-          className="input-editar"
         />
       ) : (
-        <p>{reRespuesta.comentario}</p>
+        <p className="texto-respuesta">
+        <span className="mencion">@{respuesta.usuario.nombre || "usuario"}</span> {reRespuesta.comentario}
+      </p>
       )}
     </div>
 

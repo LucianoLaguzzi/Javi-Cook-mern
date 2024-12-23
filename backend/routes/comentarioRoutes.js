@@ -166,4 +166,60 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 });
 
 
+// Ruta para editar una re-respuesta específica
+router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/re-respuestas/:reRespuestaId', async (req, res) => {
+    const { id, comentarioId, respuestaId, reRespuestaId } = req.params; // ID de la receta, comentario, respuesta y re-respuesta
+    const { comentario, usuario } = req.body; // Re-respuesta editada y usuario en sesión
+
+    try {
+        // Buscar la receta por su ID
+        const receta = await Receta.findById(id);
+        if (!receta) {
+            return res.status(404).json({ message: 'Receta no encontrada' });
+        }
+
+        // Buscar el comentario padre
+        const comentarioPadre = await Comentario.findById(comentarioId);
+        if (!comentarioPadre) {
+            return res.status(404).json({ message: 'Comentario padre no encontrado' });
+        }
+
+        // Buscar la respuesta padre
+        const respuestaPadre = comentarioPadre.respuestas.find(
+            (respuesta) => respuesta._id.toString() === respuestaId
+        );
+        if (!respuestaPadre) {
+            return res.status(404).json({ message: 'Respuesta padre no encontrada' });
+        }
+
+        // Verificar que la re-respuesta existe dentro de las re-respuestas de la respuesta
+        const reRespuestaExistente = respuestaPadre.respuestas.find(
+            (reRespuesta) => reRespuesta._id.toString() === reRespuestaId
+        );
+        if (!reRespuestaExistente) {
+            return res.status(404).json({ message: 'Re-respuesta no encontrada' });
+        }
+
+        // Verificar que el usuario sea el autor de la re-respuesta
+        if (reRespuestaExistente.usuario.toString() !== usuario) {
+            return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
+        }
+
+        // Actualizar la re-respuesta
+        reRespuestaExistente.comentario = comentario;
+        await comentarioPadre.save();
+
+        // Poblar el usuario de la re-respuesta actualizada para devolverla
+        const reRespuestaActualizada = respuestaPadre.respuestas.find(
+            (reRespuesta) => reRespuesta._id.toString() === reRespuestaId
+        );
+
+        res.json({ reRespuestaActualizada });
+    } catch (error) {
+        console.error('Error al editar la re-respuesta:', error);
+        res.status(500).json({ message: 'Error al editar la re-respuesta' });
+    }
+});
+
+
 export default router;
