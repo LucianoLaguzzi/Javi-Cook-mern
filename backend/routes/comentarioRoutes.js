@@ -188,23 +188,26 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:rerespuestaId', async (re
         for (let i = 0; i < comentarioPadre.respuestas.length; i++) {
             const respuesta = comentarioPadre.respuestas[i];
 
-            // Buscar la re-respuesta en cada respuesta
-            const rerespuestaExistente = respuesta.respuestas.find(
-                (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
-            );
+            // Asegurarse de que la propiedad 'respuestas' esté definida en cada respuesta
+            if (respuesta.respuestas && Array.isArray(respuesta.respuestas)) {
+                // Buscar la re-respuesta en cada respuesta
+                const rerespuestaExistente = respuesta.respuestas.find(
+                    (rerespuesta) => rerespuesta._id.toString() === rerespuestaId
+                );
 
-            if (rerespuestaExistente) {
-                // Verificar que el usuario es el autor de la re-respuesta
-                if (rerespuestaExistente.usuario.toString() !== usuario) {
-                    return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
+                if (rerespuestaExistente) {
+                    // Verificar que el usuario es el autor de la re-respuesta
+                    if (rerespuestaExistente.usuario.toString() !== usuario) {
+                        return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
+                    }
+
+                    // Actualizar la re-respuesta
+                    rerespuestaExistente.comentario = comentario;
+                    await comentarioPadre.save();
+
+                    // Devolver la re-respuesta actualizada
+                    return res.json({ comentarioActualizado: rerespuestaExistente });
                 }
-
-                // Actualizar la re-respuesta
-                rerespuestaExistente.comentario = comentario;
-                await comentarioPadre.save();
-
-                // Devolver la re-respuesta actualizada
-                return res.json({ comentarioActualizado: rerespuestaExistente });
             }
         }
 

@@ -426,13 +426,12 @@ const editarReRespuesta = (rerespuestaId, textoActual, respuestaPadreId) => {
   setComentarioPadreId(respuestaPadreId); // Guardamos el id de la respuesta padre
 };
 
-// Función para guardar la edición de la re-respuesta
 const guardarEdicionReRespuesta = async (rerespuestaId) => {
   if (!nuevoComentarioEditado.trim()) return;
 
   try {
     const response = await axios.put(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${rerespuestaId}`, // sin respuestaId
+      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}/respuestas/${rerespuestaId}`, // Ruta corregida para las re-respuestas
       {
         comentario: nuevoComentarioEditado,
         usuario: usuarioEnSesion._id,
