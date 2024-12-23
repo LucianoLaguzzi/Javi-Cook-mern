@@ -472,6 +472,15 @@ const guardarEdicionReRespuesta = async (rerespuestaId) => {
 };
 
 
+// Función para cancelar la edición de una re-respuesta
+const cancelarEdicionReRespuesta = () => {
+  setComentarioEditado(null); // Sale del modo edición
+  setNuevoComentarioEditado(''); // Limpia el texto del input
+  setEsRespuesta(false);
+  setComentarioPadreId(null);
+};
+
+
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -1062,7 +1071,7 @@ const guardarEdicionReRespuesta = async (rerespuestaId) => {
               <a className="btn-guardar-edicion" onClick={() => guardarEdicionReRespuesta(rerespuesta._id)} title="Guardar">
                 <i className="fas fa-check-circle"></i>
               </a>
-              <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title="Cancelar">
+              <a className="btn-cancelar-edicion" onClick={cancelarEdicionReRespuesta} title="Cancelar">
                 <i className="fas fa-times-circle"></i>
               </a>
             </div>
