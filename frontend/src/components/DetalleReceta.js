@@ -431,13 +431,13 @@ const guardarEdicionReRespuesta = async (rerespuestaId) => {
 
   try {
     const response = await axios.put(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${rerespuestaId}`, // Ruta corregida para las re-respuestas
+      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioPadreId}/respuestas/${rerespuestaId}`, // Corregido
       {
         comentario: nuevoComentarioEditado,
         usuario: usuarioEnSesion._id,
       }
     );
-
+    
     const rerespuestaActualizada = response.data.comentarioActualizado;
 
     // Actualizar estado local de las re-respuestas
