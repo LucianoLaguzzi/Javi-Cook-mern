@@ -435,12 +435,12 @@ const cancelarEdicionReRespuesta = () => {
 };
 
 // Guardar edición de re-respuesta
-const guardarEdicionReRespuesta = async (comentarioId, respuestaPadreId) => {
+const guardarEdicionReRespuesta = async (comentarioId) => {
   if (!nuevoComentarioEditado.trim()) return;
 
   try {
     const response = await axios.put(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${respuestaPadreId}/respuestas/${comentarioId}`,
+      `https://javicook-mern.onrender.com/api/recetas/${id}/rerespuesta/${comentarioId}`,
       {
         comentario: nuevoComentarioEditado,
         usuario: usuarioEnSesion._id,
@@ -449,14 +449,14 @@ const guardarEdicionReRespuesta = async (comentarioId, respuestaPadreId) => {
 
     const comentarioActualizado = response.data.comentarioActualizado;
 
-    // Actualizar estado local de los comentarios
+    // Actualizar el estado local de los comentarios
     setComentarios((prevComentarios) =>
       prevComentarios.map((comentario) => {
         if (comentario.respuestas) {
           return {
             ...comentario,
             respuestas: comentario.respuestas.map((respuesta) => {
-              if (respuesta._id === respuestaPadreId) {
+              if (respuesta.respuestas) {
                 return {
                   ...respuesta,
                   respuestas: respuesta.respuestas.map((rerespuesta) =>

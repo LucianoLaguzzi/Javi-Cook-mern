@@ -166,53 +166,41 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 });
 
 
-// Ruta para editar una re-respuesta específica
-router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId/rerespuestas/:rerespuestaId', async (req, res) => {
-    const { id, comentarioId, respuestaId, rerespuestaId } = req.params; // IDs necesarios
-    const { comentario, usuario } = req.body; // Nuevo texto de la re-respuesta y usuario en sesión
+// Ruta para editar cualquier comentario, respuesta o re-respuesta
+router.put('/:id/rerespuesta/:comentarioId', async (req, res) => {
+    const { id, comentarioId } = req.params; // IDs de la receta y el comentario a editar
+    const { comentario, usuario } = req.body; // Texto del comentario y usuario autenticado
 
     try {
-        // Buscar la receta para validar existencia
+        // Validar existencia de la receta
         const receta = await Receta.findById(id);
         if (!receta) {
             return res.status(404).json({ message: 'Receta no encontrada' });
         }
 
-        // Buscar el comentario padre (nivel superior)
-        const comentarioPadre = await Comentario.findById(comentarioId);
-        if (!comentarioPadre) {
-            return res.status(404).json({ message: 'Comentario padre no encontrado' });
+        // Buscar el comentario a editar
+        const comentarioAEditar = await Comentario.findById(comentarioId);
+        if (!comentarioAEditar) {
+            return res.status(404).json({ message: 'Comentario no encontrado' });
         }
 
-        // Buscar la respuesta dentro de las respuestas del comentario
-        const respuestaPadre = await Comentario.findById(respuestaId);
-        if (!respuestaPadre) {
-            return res.status(404).json({ message: 'Respuesta padre no encontrada' });
+        // Validar que el usuario sea el autor del comentario
+        if (comentarioAEditar.usuario.toString() !== usuario) {
+            return res.status(403).json({ message: 'No tienes permiso para editar este comentario' });
         }
 
-        // Buscar la re-respuesta dentro de las respuestas del comentario padre
-        const rerespuesta = await Comentario.findById(rerespuestaId);
-        if (!rerespuesta) {
-            return res.status(404).json({ message: 'Re-respuesta no encontrada' });
-        }
+        // Actualizar el comentario
+        comentarioAEditar.comentario = comentario;
+        const comentarioActualizado = await comentarioAEditar.save();
 
-        // Verificar que el usuario es el autor de la re-respuesta
-        if (rerespuesta.usuario.toString() !== usuario) {
-            return res.status(403).json({ message: 'No tienes permiso para editar esta re-respuesta' });
-        }
-
-        // Actualizar la re-respuesta
-        rerespuesta.comentario = comentario;
-        const rerespuestaActualizada = await rerespuesta.save();
-
-        // Poblar datos del usuario en la respuesta actualizada
-        const rerespuestaPoblada = await Comentario.findById(rerespuestaActualizada._id)
+        // Poblar datos del usuario en el comentario actualizado
+        const comentarioPoblado = await Comentario.findById(comentarioActualizado._id)
             .populate('usuario', 'nombre imagenPerfil');
 
-        res.json({ comentarioActualizado: rerespuestaPoblada });
+        res.json({ comentarioActualizado: comentarioPoblado });
     } catch (error) {
-        console.error('Error al editar la re-respuesta:', error);
-        res.status(500).json({ message: 'Error al editar la re-respuesta', error });
+        console.error('Error al editar el comentario:', error);
+        res.status(500).json({ message: 'Error al editar el comentario', error });
     }
 });
 
