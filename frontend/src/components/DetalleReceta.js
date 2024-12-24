@@ -1044,6 +1044,18 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
                                 {/* Re-Respuestas */}
 {respuesta.respuestas && respuesta.respuestas.length > 0 && (
   <div className="toggle-respuestas reresp">
+      {/* Botón para ocultar/mostrar re-respuestas */}
+      <button
+      className="link-ocultar-respuestas"
+      onClick={() => toggleRespuestas(respuesta._id)}
+    >
+      {respuestasVisibles[respuesta._id]
+        ? `Ocultar conversación`
+        : `Ver conversación (${respuesta.respuestas.length})`}
+    </button>
+     {/* Mostrar las re-respuestas si están visibles */}
+     {respuestasVisibles[respuesta._id] && (
+      <div className="respuestas reresp-comentarios">
     {respuesta.respuestas.map((rerespuesta) => (
       <div key={rerespuesta._id} className="reresp-comentario">
         <div className="imagen-nombre">
@@ -1105,9 +1117,13 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
           </a>
         )}
       </div>
-    ))}
-  </div>
+     ))}
+     </div>
+   )}
+ </div>
 )}
+
+{/*HASTA ACA ANDA LA RESPUESTA A RE-RESPUESTA*/}
 
                                 {/* Input para re-responder */}
                                 {comentarioAResponder === respuesta._id && (
