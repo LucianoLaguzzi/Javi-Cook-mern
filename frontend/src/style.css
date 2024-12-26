@@ -534,7 +534,7 @@ font-weight: bold;
 
 @media (max-width: 700px) {
     .barra-secundaria  {
-        font-size: 12px;
+        font-size: 11px;
     }
 }
 
@@ -1115,6 +1115,13 @@ img.img-cerrar-sesion:hover {
         grid-template-columns: repeat(auto-fit, minmax(370px, 30%));
     }
 }
+
+@media (max-width: 400px) {
+    .panel-recetas {
+        grid-template-columns: repeat(auto-fit, minmax(310px, 30%));
+    }
+}
+
 .imagen-contenedor {
     position: relative; /* Establece la posición relativa para el contenedor de la imagen */
 }
@@ -1171,6 +1178,12 @@ img.img-cerrar-sesion:hover {
     display: flex; /* Para que los elementos dentro del <p> estén en línea */
     align-items: center; /* Para alinear verticalmente los elementos */
     font-family: 'Montserrat';
+}
+
+@media (max-width: 400px) {
+    .tarjeta-receta p {
+        font-size: 13px;
+    }
 }
 
 .tarjeta-receta .tiempo {
@@ -2370,18 +2383,39 @@ img.img-cerrar-sesion:hover {
     margin-right: 5px;
     font-size: 20px;
 }
+
+@media (max-width: 400px) {
+    .tarjeta-receta .dificultad-fácil {
+        font-size: 16px;
+    }
+}
+
 .tarjeta-receta .dificultad-intermedio {
     color: #ffff00;
     margin-left: auto;
     margin-right: 5px;
     font-size: 20px;
 }
+
+@media (max-width: 400px) {
+    .tarjeta-receta .dificultad-intermedio {
+        font-size: 16px;
+    }
+}
+
 .tarjeta-receta .dificultad-difícil {
     color: #eb0000;
     margin-left: auto;
     margin-right: 5px;
     font-size: 20px;
 }
+
+@media (max-width: 400px) {
+    .tarjeta-receta .dificultad-difícil {
+        font-size: 16px;
+    }
+}
+
 
 
 .info-imagen {
@@ -3850,6 +3884,12 @@ i.fas.fa-undo {
 @media (max-width: 700px) {
     .footer {
         font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .footer {
+        font-size: 11px;
     }
 }
 
