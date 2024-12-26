@@ -1140,6 +1140,12 @@ img.img-cerrar-sesion:hover {
     background-image: linear-gradient(to top, #2a3941, #3b4b56, #4d5d6c, #617082, #778399);
 }
 
+@media (max-width: 400px) {
+    .tarjeta-receta {
+        height: 500px;
+    }
+}
+
 .tarjeta-receta:hover {
     transform: scale(1.06);
 }
@@ -1161,13 +1167,14 @@ img.img-cerrar-sesion:hover {
 
 .tarjeta-receta h2 {
     font-size: 25px;
-    margin-bottom: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     padding-top: 5px;
     color: #FFFFFF;
     font-family: 'Montserrat';
+    margin-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 .tarjeta-receta p {
