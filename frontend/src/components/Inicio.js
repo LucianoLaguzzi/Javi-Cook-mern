@@ -137,6 +137,14 @@ const Inicio = () => {
         setCategoria('');
         setTiempoPreparacion('');
         setIngredientes('');
+        setErrorTitulo("");
+        setErrorIngredientesCantidades(""); 
+        setErrorPasos(""); 
+        setErrorImagen("");
+        setErrorDificultad("");
+        setErrorCategoria("");
+        setErrorTiempo("");
+        setErrorIngredientes("");
     };
 
     // Función para manejar el cambio en el textarea de ingredientes y cantidades
