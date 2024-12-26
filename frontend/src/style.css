@@ -699,17 +699,27 @@ img.img-cerrar-sesion:hover {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 700px) {
-    .modal-content > h2 {
-        font-size: 16px;
-    }
-}
-
 @media (max-width: 1000px) {
     .modal-content > h2 {
         font-size: 18px;
     }
 }
+
+@media (max-width: 700px) {
+    .modal-content > h2 {
+        font-size: 16px !important;
+    }
+}
+
+
+@media (max-width: 400px) {
+    .modal-content > h2 {
+        font-size: 15px !important;
+    }
+}
+
+
+
 
 .filtro h2{
     color: #FFFFFF;
@@ -745,18 +755,16 @@ img.img-cerrar-sesion:hover {
     background: #dadada;
 }
 
-
-@media (max-width: 1000px) {
-    .text-filtro  {
-        width: 70%;
-        font-size: 14px;
-    }
-}
-
 @media (max-width: 1000px) {
     .text-filtro  {
         width: 75%;
         font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .text-filtro  {
+        font-size: 11px;
     }
 }
 
@@ -1355,6 +1363,12 @@ img.img-cerrar-sesion:hover {
     }
 }
 
+@media (max-width: 400px) {
+    .label-titulo-receta {
+        font-size: 11px;
+    }
+}
+
 .receta-titulo{
     width: 75%;
     height: 45px;
@@ -1391,6 +1405,14 @@ img.img-cerrar-sesion:hover {
         font-size: 12px;
     }
 }
+
+
+@media (max-width: 400px) {
+    .receta-titulo {
+        font-size: 11px;
+    }
+}
+
 
 
 .receta-titulo::placeholder{
@@ -1518,6 +1540,13 @@ img.img-cerrar-sesion:hover {
     }
 }
 
+@media (max-width: 400px) {
+    .label-pasos {
+        font-size: 11px;
+        width: 32%;
+    }
+}
+
 
 .text-area-pasos{
     padding: 10px;
@@ -1561,6 +1590,14 @@ img.img-cerrar-sesion:hover {
         padding: 6px;
     }
 }
+
+@media (max-width: 400px) {
+    .text-area-pasos {
+        font-size: 11px;
+    }
+}
+
+
 
 .btn-agregar-paso{
     background-color: #28a745;
@@ -1858,6 +1895,15 @@ img.img-cerrar-sesion:hover {
     }
 }
 
+@media (max-width: 550px) {
+    .menu-dificultad {
+        width: 42%;
+        font-size: 11px;
+    }
+}
+
+
+
 .modal-error-dificultad {
     color: red;
     font-size: 14px;
@@ -1968,6 +2014,14 @@ img.img-cerrar-sesion:hover {
 @media (max-width: 550px) {
     .menu-categoria {
         width: 38%;
+        font-size: 11px;
+    }
+}
+
+
+@media (max-width: 400px) {
+    .menu-categoria {
+        width: 42%;
     }
 }
 
@@ -2200,6 +2254,13 @@ img.img-cerrar-sesion:hover {
     }
 }
 
+@media (max-width: 400px) {
+    .label-ingredientes {
+        font-size: 11px;
+        width: 32%;
+    }
+}
+
 .input-ingredientes{
     padding: 10px;
     width: 65%;
@@ -2237,6 +2298,12 @@ img.img-cerrar-sesion:hover {
     .input-ingredientes {
         font-size: 12px;
         padding: 6px;
+    }
+}
+
+@media (max-width: 400px) {
+    .input-ingredientes {
+        font-size: 11px;
     }
 }
 
