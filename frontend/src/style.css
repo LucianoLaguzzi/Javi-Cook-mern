@@ -479,11 +479,21 @@ font-weight: bold;
     padding: 7px;
     border-radius:20px;
     position: absolute;
-    top: 250px;
     display: flex;
     align-items: center; /* Alinea verticalmente el icono y el texto */
     gap:6px;
+    top: 200px;
+    z-index: 10;
 }
+
+@media (max-width: 400px) {
+    #exito-container  {
+        top: 165px;
+    }
+}
+
+
+
 
 #exito-container > p{
     font-weight: bold;
@@ -4085,6 +4095,14 @@ i.fas.fa-undo {
         margin-top: 16%;
     }
 }
+
+@media (max-width: 400px) {
+    .recuperar-section  {
+        width: 95%;
+    }
+}
+
+
 
 .recuperar-form{
     width: 100%;

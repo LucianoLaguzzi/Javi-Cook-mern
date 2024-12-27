@@ -45,6 +45,8 @@ const Inicio = () => {
     const [menuVisible, setMenuVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // Estado de carga al seleccionar aleatoriamente
 
+    const [cargandoNuevaReceta, setCargandoNuevaReceta] = useState(false);
+
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
 
 
@@ -501,6 +503,7 @@ const Inicio = () => {
             usuario: usuario._id,
         };
         
+        setCargandoNuevaReceta(true); // Activa el estado de carga
 
         try {
             // Subir la imagen a Cloudinary
@@ -542,11 +545,21 @@ const Inicio = () => {
             setRecetas(prevRecetas => [resultado.data, ...prevRecetas]);
             setRecetasFiltradas(prevRecetas => [resultado.data, ...prevRecetas]);
 
+            Swal.fire({
+                icon: 'success',
+                title: '¡Receta creada!',
+                text: 'Tu receta ha sido creada exitosamente.',
+                confirmButtonText: 'OK',
+            });
+
+
             cerrarModal();
             resetFormulario();
         } catch (error) {
             console.error("Error al guardar la receta", error.response ? error.response.data : error);
             alert("Hubo un error al guardar la receta. Por favor, intenta de nuevo.");
+        } finally {
+            setCargandoNuevaReceta(false); // Desactiva el estado de carga
         }
         
     };
@@ -1090,6 +1103,16 @@ const Inicio = () => {
                                             <div className="modal-error-ingredientes" style={{height:'20px'}}>
                                                 {errorIngredientes && <div id="modalErrorIngredientes" >{errorIngredientes} </div>}
                                             </div>
+
+
+
+                                            {cargandoNuevaReceta && (
+                                                <div className="loading-container">
+                                                    <div className="spinner"></div>
+                                                    <p className="loading-message">Creando receta...</p>
+                                                </div>
+                                            )}
+
 
                                             {/* Botón para guardar receta */}
                                             <button type="submit" id="boton-enviar" className="btn-guardar-receta">
