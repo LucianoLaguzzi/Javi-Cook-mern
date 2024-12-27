@@ -479,6 +479,20 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
     console.error('Error al guardar la edición de la re-respuesta:', error);
   }
 };
+
+
+const manejarEliminarValoracion = async () => {
+  try {
+    await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/eliminar/${usuarioEnSesion._id}`);
+
+    // Reiniciar estados en el frontend
+    setValoracionUsuario(0); // O eliminar este estado si "0" indica sin valorar
+    setYaValorado(false); // Permitir que el usuario pueda valorar de nuevo
+    setEdicionActiva(false); // Cerrar el modo de edición
+  } catch (error) {
+    console.log('Error al eliminar la valoración:', error);
+  }
+};
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -875,10 +889,15 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
                 </a>
               )}
 
-              {/* Mostrar mensaje de edición */}
-              {edicionActiva && (
+            {/* Mostrar mensaje de edición */}
+            {edicionActiva && (
+              <div className="opciones-edicion">
                 <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-              )}
+                <a onClick={manejarEliminarValoracion} className="opcion-eliminar">
+                  Eliminar mi valoración
+                </a>
+              </div>
+            )}
 
             {esPropietario && (
               <hr className='divider'></hr>
