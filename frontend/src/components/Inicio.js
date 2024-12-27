@@ -1104,26 +1104,24 @@ const Inicio = () => {
                                                 {errorIngredientes && <div id="modalErrorIngredientes" >{errorIngredientes} </div>}
                                             </div>
 
-
-
-                                            {!cargandoNuevaReceta && (
-                                                <div className="loading-container">
-                                                    <div className="spinner"></div>
-                                                    <p className="loading-message">Creando receta...</p>
-                                                </div>
-                                            )}
-
-
                                             {/* Botón para guardar receta */}
                                             <button type="submit" id="boton-enviar" className="btn-guardar-receta">
                                                 Guardar receta
                                             </button>
                                         </div>
                                     </form>
-
                                 </div>
                             </div>
-                            )}                    
+                            )}
+
+                            {!cargandoNuevaReceta && (
+                                <div className="loading-container" style={{width:'100%'}}>
+                                    <div className="spinner"></div>
+                                    <p className="loading-message">Creando receta...</p>
+                                </div>
+                            )}
+
+
                         </section>
 
 
