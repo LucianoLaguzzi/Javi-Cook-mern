@@ -1106,7 +1106,7 @@ const Inicio = () => {
 
 
 
-                                            {cargandoNuevaReceta && (
+                                            {!cargandoNuevaReceta && (
                                                 <div className="loading-container">
                                                     <div className="spinner"></div>
                                                     <p className="loading-message">Creando receta...</p>
