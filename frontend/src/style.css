@@ -1229,7 +1229,10 @@ img.img-cerrar-sesion:hover {
     text-decoration: underline;
     width: fit-content;
     align-self: center;
+    margin-bottom: 10px;
 }
+
+
 
 .tarjeta-receta a:hover{
     color: #ca8345;
