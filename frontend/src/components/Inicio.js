@@ -545,14 +545,6 @@ const Inicio = () => {
             setRecetas(prevRecetas => [resultado.data, ...prevRecetas]);
             setRecetasFiltradas(prevRecetas => [resultado.data, ...prevRecetas]);
 
-            Swal.fire({
-                icon: 'success',
-                title: '¡Receta creada!',
-                text: 'Tu receta ha sido creada exitosamente.',
-                confirmButtonText: 'OK',
-            });
-
-
             cerrarModal();
             resetFormulario();
         } catch (error) {
@@ -1113,9 +1105,9 @@ const Inicio = () => {
                                 </div>
                             </div>
                             )}
-
-                            {!cargandoNuevaReceta && (
-                                <div className="loading-container" style={{width:'100%'}}>
+                            {/* Cargando mientras se guardar una nueva receta */}
+                            {cargandoNuevaReceta && (
+                                <div className="loading-new-recipe">
                                     <div className="spinner"></div>
                                     <p className="loading-message">Creando receta...</p>
                                 </div>

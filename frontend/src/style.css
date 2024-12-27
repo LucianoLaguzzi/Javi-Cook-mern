@@ -1492,6 +1492,23 @@ img.img-cerrar-sesion:hover {
 }
 
 
+.loading-new-recipe{
+    position: fixed;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    color: white;
+    font-size: 1.5rem;
+}
+
+
 .modal-error-ingredientes-cantidades{
     color: red;
     font-size: 14px;
