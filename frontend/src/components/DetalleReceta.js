@@ -44,7 +44,7 @@ const DetalleReceta = () => {
   const [nuevoComentarioEditado, setNuevoComentarioEditado] = useState('');
   const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
-  const [valoracionOriginal, setValoracionOriginal] = useState(null); // Para guardar la valoración original
+
 
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -504,29 +504,12 @@ const eliminarValoracion = async () => {
   }
 };
 
-const salirModoEdicion = () => {
-  if (valoracionUsuario === 0 && valoracionOriginal !== null) {
-    setValoracionUsuario(valoracionOriginal); // Restaura la valoración original
-  }
-  setEdicionActiva(false); // Sale del modo edición
+
+const cancelarEdicionValoracion = async (valor) => {
+  setValoracionUsuario(valor);
+  setYaValorado(true);
+
 };
-
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (edicionActiva && estrellasRef.current && !estrellasRef.current.contains(event.target)) {
-      salirModoEdicion(); // Salir del modo edición si se hace clic fuera
-    }
-  };
-
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [edicionActiva, valoracionOriginal]);
-
-
-
-
 
   // useEffect para cargar los pasos al activar el modo edición
   useEffect(() => {
@@ -913,15 +896,15 @@ useEffect(() => {
 {yaValorado && !edicionActiva && (
   <a
     onClick={() => {
-      setEdicionActiva(true);             // Activa la edición
-      setValoracionOriginal(valoracionUsuario); // Guarda la valoración original
-      setValoracionUsuario(0);           // Reinicia la valoración
-      setValoracionHover(0);             // Reinicia el hover
+      setEdicionActiva(true);  // Activa la edición
+      setValoracionUsuario(0); // Reinicia la valoración
+      setValoracionHover(0);   // Reinicia las estrellas a 0
     }}
     className="boton-editar"
   >
     Editar valoración
   </a>
+
 )}
 
 {/* Botón para eliminar valoración */}
@@ -936,7 +919,17 @@ useEffect(() => {
 
              {/* Mostrar mensaje de edición */}
 {edicionActiva && (
-  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+  <div>
+    <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+
+    <a
+      onClick={cancelarEdicionValoracion(valoracionUsuario)}
+      className="boton-eliminar"
+    >
+      Cancelar edición
+    </a>
+  </div>
+
 )}
 
             {esPropietario && (
