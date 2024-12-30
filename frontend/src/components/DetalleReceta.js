@@ -490,13 +490,9 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
     try {
       await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
       
-      // Reinicia los estados de valoración
-      setValoracionUsuario(0);
+      setValoracionUsuario(0); // Restablecer a valor por defecto
       setYaValorado(false);
-      setEdicionActiva(false);
-  
-      // Podrías también actualizar el promedio dinámicamente si tienes un método para obtenerlo
-      console.log('Valoración eliminada con éxito.');
+      setEdicionActiva(false); // Salir del modo de edición
     } catch (error) {
       console.error('Error al eliminar la valoración:', error);
     }
@@ -532,27 +528,24 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
 
  //Valoracion receta:
-  const manejarValoracion = async (valor) => {
-    try {
-      // Si está en modo de edición o es una nueva valoración
-      await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
-        recetaId: id,
-        usuarioId: usuarioEnSesion._id,
-        valor,
-      });
+ const manejarValoracion = async (valor) => {
+  try {
+    // Si está en modo de edición o es una nueva valoración
+    await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
+      recetaId: id,
+      usuarioId: usuarioEnSesion._id,
+      valor,
+    });
 
-      setValoracionUsuario(valor);
-      setYaValorado(true);
+    setValoracionUsuario(valor);
+    setYaValorado(true);
 
-
-      
-      // Desactivar el modo de edición
-      setEdicionActiva(false);
-
-    } catch (error) {
-      console.log('Error al valorar la receta:', error);
-    }
-  };
+    // Desactivar el modo de edición
+    setEdicionActiva(false);
+  } catch (error) {
+    console.log('Error al valorar la receta:', error);
+  }
+};
 
 
 
@@ -869,37 +862,41 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
 
 
-            {/*Aca va la valoracion*/}
+            {/*Valoracion*/}
             <span className='titulo-valoracion'>Tu valoración para esta receta</span>
-              <div className="detalles-valoracion" ref={estrellasRef}>
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <i
-                    key={i}
-                    className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
-                    style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-                    onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-                    onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-                    onMouseLeave={() => setValoracionHover(0)}
-                  />
-                ))}
-              </div>
+<div className="detalles-valoracion" ref={estrellasRef}>
+  {[1, 2, 3, 4, 5].map((i) => (
+    <i
+      key={i}
+      className={`fa ${i <= (valoracionHover || (edicionActiva ? 0 : valoracionUsuario)) ? 'fas fa-star' : 'far fa-star'}`}
+      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)}
+      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+      onMouseLeave={() => setValoracionHover(0)}
+    />
+  ))}
+</div>
 
-              {/* Botón para activar la edición */}
-              {yaValorado && !edicionActiva && (
-                <a onClick={() => setEdicionActiva(true)} className="boton-editar">
-                  Editar valoración
-                </a>
-              )}
+{/* Botón para activar la edición */}
+{yaValorado && !edicionActiva && (
+  <a onClick={() => setEdicionActiva(true)} className="boton-editar">
+    Editar valoración
+  </a>
+)}
 
-              {/* Mensaje y opciones en modo edición */}
-              {edicionActiva && (
-                <div className="opciones-edicion">
-                  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-                  <a onClick={eliminarValoracion} className="boton-eliminar">
-                    Eliminar mi valoración
-                  </a>
-                </div>
-              )}
+{/* Mostrar mensaje de edición y botón de eliminar */}
+{edicionActiva && (
+  <>
+    <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+    <a
+      onClick={eliminarValoracion}
+      className="boton-eliminar"
+      style={{ color: 'red', cursor: 'pointer', marginTop: '10px', display: 'block' }}
+    >
+      Eliminar mi valoración
+    </a>
+  </>
+)}
 
             {esPropietario && (
               <hr className='divider'></hr>
