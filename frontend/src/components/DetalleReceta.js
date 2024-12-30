@@ -488,19 +488,24 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
   const eliminarValoracion = async () => {
     try {
-      await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
-      
-      // Reiniciar la UI
-      setValoracionUsuario(0);
-      setYaValorado(false);
-      setValoracionHover(0);
+      await axios.delete('https://javicook-mern.onrender.com/api/valoraciones/eliminar', {
+        data: {
+          recetaId: id,
+          usuarioId: usuarioEnSesion._id,
+        },
+      });
   
-      // Opcional: Recalcular el promedio de la receta en la UI, aunque ya lo haga el backend
-      // setPromedioReceta(nuevoPromedio);
+      // Reseteamos el estado de la valoración
+      setValoracionUsuario(0);  // Resetea el valor de la valoración
+      setYaValorado(false);     // Marca que el usuario ya no ha valorado
+      setValoracionHover(0);    // Resetea el hover de las estrellas
+      setEdicionActiva(false);  // Desactiva el modo de edición
+  
     } catch (error) {
       console.log('Error al eliminar la valoración:', error);
     }
   };
+
 
 
   // useEffect para cargar los pasos al activar el modo edición
@@ -534,7 +539,6 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
  //Valoracion receta:
   const manejarValoracion = async (valor) => {
     try {
-      setValoracionHover(0); // Reiniciar visualmente las estrellas a 0
       // Si está en modo de edición o es una nueva valoración
       await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
         recetaId: id,
@@ -870,7 +874,7 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
 
 
-            {/*Valoracion*/}
+            {/*Aca va la valoracion*/}
             <span className='titulo-valoracion'>Tu valoración para esta receta</span>
               <div className="detalles-valoracion" ref={estrellasRef}>
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -887,18 +891,19 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
               {/* Botón para activar la edición */}
               {yaValorado && !edicionActiva && (
-                <a onClick={() => setEdicionActiva(true)} className="boton-editar">
-                  Editar valoración
-                </a>
-              )}
+  <a onClick={() => {
+    setEdicionActiva(true);
+    setValoracionHover(0);  // Reseteamos las estrellas al editar
+  }} className="boton-editar">
+    Editar valoración
+  </a>
+)}
 
               {/* Mostrar mensaje de edición */}
               {edicionActiva && (
   <>
     <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-    <a onClick={eliminarValoracion} className="eliminar-valoracion">
-      Eliminar mi valoración
-    </a>
+    <button onClick={eliminarValoracion}>Eliminar mi valoración</button>
   </>
 )}
 
