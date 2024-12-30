@@ -886,7 +886,7 @@ const eliminarValoracion = async () => {
   ))}
 </div>
 
-{/* Botón para activar la edición */}
+{/* Botón para activar la edición de valoracion */}
 {yaValorado && !edicionActiva && (
   <a
     onClick={() => {
@@ -897,22 +897,24 @@ const eliminarValoracion = async () => {
   >
     Editar valoración
   </a>
-
 )}
 
-{/* Botón para eliminar valoración */}
-{yaValorado && !edicionActiva && (
-  <a
-    onClick={eliminarValoracion}
-    className="boton-eliminar"
-  >
-    Eliminar mi valoración
-  </a>
-)}
 
-             {/* Mostrar mensaje de edición */}
+             {/* Mostrar mensaje de edición y botón de eliminar */}
 {edicionActiva && (
-  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+  <div>
+    <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+
+    {/* Botón para eliminar valoración */}
+    {yaValorado && (
+      <a
+        onClick={eliminarValoracion}
+        className="boton-eliminar"
+      >
+        Eliminar mi valoración
+      </a>
+    )}
+  </div>
 )}
 
             {esPropietario && (
