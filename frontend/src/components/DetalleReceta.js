@@ -505,12 +505,6 @@ const eliminarValoracion = async () => {
 };
 
 
-const cancelarEdicionValoracion = async (valor) => {
-  setValoracionUsuario(valor);
-  setYaValorado(true);
-
-};
-
   // useEffect para cargar los pasos al activar el modo edición
   useEffect(() => {
     if (pasosEditable) {
@@ -919,17 +913,7 @@ const cancelarEdicionValoracion = async (valor) => {
 
              {/* Mostrar mensaje de edición */}
 {edicionActiva && (
-  <div>
-    <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-
-    <a
-      onClick={cancelarEdicionValoracion(valoracionUsuario)}
-      className="boton-eliminar"
-    >
-      Cancelar edición
-    </a>
-  </div>
-
+  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
 )}
 
             {esPropietario && (
