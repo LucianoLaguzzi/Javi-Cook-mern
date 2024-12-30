@@ -3353,7 +3353,7 @@ i.fas.fa-undo {
 .boton-eliminar {
     margin-left: 5px;
     text-align: center;
-    color: #ab3030;
+    color: #f31717;
     cursor: pointer;
     width: fit-content;
     align-self: center;
@@ -3361,7 +3361,7 @@ i.fas.fa-undo {
 }
 
 .boton-eliminar:hover {
-    color: #871207;
+    color: #c92e2e;
 }
   
   .mensaje-edicion {
