@@ -67,10 +67,11 @@ router.get('/:recetaId/usuario/:usuarioId', async (req, res) => {
 //Eliminar una valoracion
 router.delete('/:recetaId/valoracion/:usuarioId', async (req, res) => {
   const { recetaId, usuarioId } = req.params;
+  console.log('Eliminando valoración:', { recetaId, usuarioId });
 
   try {
     // Eliminar la valoración específica
-    const resultado = await Valoracion.deleteOne({ receta: recetaId, usuario: usuarioId });
+    const resultado = await Valoracion.findOneAndDelete({ receta: recetaId, usuario: usuarioId });
 
     if (resultado.deletedCount === 0) {
       return res.status(404).json({ mensaje: 'Valoración no encontrada.' });
