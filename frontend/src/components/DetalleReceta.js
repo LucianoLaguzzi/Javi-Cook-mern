@@ -488,13 +488,18 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
   const eliminarValoracion = async () => {
     try {
+      // Enviar solicitud DELETE al backend
       const response = await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/valoracion/${usuarioEnSesion._id}`);
       console.log('Respuesta de eliminación:', response.data);
   
-      // Actualizar los estados después de eliminar la valoración
-      setValoracionUsuario(0); // Restablecer la valoración a 0
-      setYaValorado(false); // Marcar como no valorado
-      setEdicionActiva(false); // Salir del modo edición
+      // Si la eliminación fue exitosa, actualizar los estados
+      if (response.status === 200) {
+        setValoracionUsuario(0); // Restablecer la valoración a 0
+        setYaValorado(false); // Marcar como no valorado
+        setEdicionActiva(false); // Salir del modo edición
+      } else {
+        console.error('Error en la eliminación de valoración');
+      }
     } catch (error) {
       console.error('Error al eliminar la valoración:', error.response || error);
     }

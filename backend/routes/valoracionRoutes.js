@@ -73,11 +73,9 @@ router.delete('/:recetaId/valoracion/:usuarioId', async (req, res) => {
     // Eliminar la valoración específica
     const resultado = await Valoracion.findOneAndDelete({ receta: recetaId, usuario: usuarioId });
     console.log('Resultado de eliminación:', resultado);
-    if (!resultado) {
-      return res.status(404).json({ mensaje: 'Valoración no encontrada.' });
-    }
 
-    if (resultado.deletedCount === 0) {
+    // Verificar si el resultado es null (valoración no encontrada)
+    if (!resultado) {
       return res.status(404).json({ mensaje: 'Valoración no encontrada.' });
     }
 
@@ -93,6 +91,8 @@ router.delete('/:recetaId/valoracion/:usuarioId', async (req, res) => {
       { valoracion: promedio },
       { new: true } // Retorna la receta actualizada
     );
+
+    console.log('Nuevo promedio de receta:', promedio); // Verificar el promedio recalculado
 
     res.status(200).json({ mensaje: 'Valoración eliminada correctamente', valoracion: receta.valoracion });
   } catch (error) {
