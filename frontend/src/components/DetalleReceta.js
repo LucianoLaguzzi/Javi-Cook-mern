@@ -485,26 +485,19 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
     return texto.charAt(0).toUpperCase() + texto.slice(1);
   };
 
+  // Función para eliminar la valoración
+const eliminarValoracion = async () => {
+  try {
+    await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+    setValoracionUsuario(0);  // Restablecer la valoración del usuario a 0
+    setYaValorado(false);      // Marcar que el usuario no ha valorado la receta
+    setEdicionActiva(false);   // Salir del modo de edición
 
-  const eliminarValoracion = async () => {
-    try {
-      await axios.delete('https://javicook-mern.onrender.com/api/valoraciones/eliminar', {
-        data: {
-          recetaId: id,
-          usuarioId: usuarioEnSesion._id,
-        },
-      });
-  
-      // Reseteamos el estado de la valoración
-      setValoracionUsuario(0);  // Resetea el valor de la valoración
-      setYaValorado(false);     // Marca que el usuario ya no ha valorado
-      setValoracionHover(0);    // Resetea el hover de las estrellas
-      setEdicionActiva(false);  // Desactiva el modo de edición
-  
-    } catch (error) {
-      console.log('Error al eliminar la valoración:', error);
-    }
-  };
+    // Aquí podrías actualizar el estado de la valoración promedio si lo deseas
+  } catch (error) {
+    console.log('Error al eliminar la valoración:', error);
+  }
+};
 
 
 
@@ -874,37 +867,37 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
 
 
-            {/*Aca va la valoracion*/}
-            <span className='titulo-valoracion'>Tu valoración para esta receta</span>
-              <div className="detalles-valoracion" ref={estrellasRef}>
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <i
-                    key={i}
-                    className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
-                    style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-                    onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-                    onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-                    onMouseLeave={() => setValoracionHover(0)}
-                  />
-                ))}
-              </div>
+           {/*Valoracion*/}
+<span className='titulo-valoracion'>Tu valoración para esta receta</span>
+<div className="detalles-valoracion" ref={estrellasRef}>
+  {[1, 2, 3, 4, 5].map((i) => (
+    <i
+      key={i}
+      className={`fa ${i <= (valoracionHover || valoracionUsuario || 0) ? 'fas fa-star' : 'far fa-star'}`}  // Reinicia a 0 cuando esté en modo de edición
+      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
+      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+      onMouseLeave={() => setValoracionHover(0)}
+    />
+  ))}
+</div>
 
-              {/* Botón para activar la edición */}
-              {yaValorado && !edicionActiva && (
-  <a onClick={() => {
-    setEdicionActiva(true);
-    setValoracionHover(0);  // Reseteamos las estrellas al editar
-  }} className="boton-editar">
+{/* Botón para activar la edición */}
+{yaValorado && !edicionActiva && (
+  <a onClick={() => setEdicionActiva(true)} className="boton-editar">
     Editar valoración
   </a>
 )}
 
-              {/* Mostrar mensaje de edición */}
-              {edicionActiva && (
-  <>
+{/* Mostrar mensaje de edición */}
+{edicionActiva && (
+  <div>
     <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-    <button onClick={eliminarValoracion}>Eliminar mi valoración</button>
-  </>
+    {/* Agregar el botón para eliminar la valoración */}
+    <a onClick={eliminarValoracion} className="boton-eliminar">
+      Eliminar mi valoración
+    </a>
+  </div>
 )}
 
             {esPropietario && (
