@@ -3184,7 +3184,7 @@ i.fas.fa-undo {
     color: grey;
   }
 
-  .link-eliminar-receta {
+.link-eliminar-receta {
     background: none;
     outline: none;
     border: none;
@@ -3344,11 +3344,25 @@ i.fas.fa-undo {
     width: fit-content;
     align-self: center;
     margin-top: 20px;
-  }
+}
   
-  .boton-editar:hover {
+.boton-editar:hover {
     color: #bb843c;
-  }
+}
+
+.boton-eliminar {
+    margin-left: 5px;
+    text-align: center;
+    color: #ab3030;
+    cursor: pointer;
+    width: fit-content;
+    align-self: center;
+    margin-top: 20px;
+}
+
+.boton-eliminar:hover {
+    color: #871207;
+}
   
   .mensaje-edicion {
     color: #28a745;
