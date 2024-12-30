@@ -486,23 +486,19 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
   };
 
 
-  // Función para eliminar la valoración
+  {/* Función para eliminar la valoración */}
 const eliminarValoracion = async () => {
   try {
-    await axios.delete('https://javicook-mern.onrender.com/api/valoraciones', {
-      data: {
-        recetaId: id,
-        usuarioId: usuarioEnSesion._id,
-      },
-    });
+    // Llamada al backend para eliminar la valoración
+    await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
 
-    // Resetear la valoración del usuario y el promedio en la interfaz
-    setValoracionUsuario(0);
-    setYaValorado(false);
-    setEdicionActiva(false);
+    // Actualiza el estado de la valoración
+    setValoracionUsuario(0);  // La valoración pasa a ser 0
+    setYaValorado(false);  // El usuario ya no ha valorado la receta
 
-    // Opcional: Mostrar un mensaje de éxito
-    alert('Valoración eliminada correctamente');
+    // Opcional: Actualizar el promedio de valoraciones aquí, si es necesario
+    // Puede ser útil refrescar los datos de la receta o recalcular el promedio global
+
   } catch (error) {
     console.log('Error al eliminar la valoración:', error);
   }
@@ -875,40 +871,48 @@ const eliminarValoracion = async () => {
 
 
 
-            {/*Aca va la valoracion*/}
-            <span className='titulo-valoracion'>Tu valoración para esta receta</span>
-              <div className="detalles-valoracion" ref={estrellasRef}>
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <i
-                    key={i}
-                    className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
-                    style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-                    onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-                    onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-                    onMouseLeave={() => setValoracionHover(0)}
-                  />
-                ))}
-              </div>
+           {/* Valoración */}
+<span className='titulo-valoracion'>Tu valoración para esta receta</span>
+<div className="detalles-valoracion" ref={estrellasRef}>
+  {[1, 2, 3, 4, 5].map((i) => (
+    <i
+      key={i}
+      className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
+      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
+      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+      onMouseLeave={() => setValoracionHover(0)}
+    />
+  ))}
+</div>
 
-              {/* Botón para activar la edición */}
-              {yaValorado && !edicionActiva && (
-  <a onClick={() => {
-    setEdicionActiva(true);
-    setValoracionUsuario(0); // Reiniciar la valoración visual a 0
-  }} className="boton-editar">
+{/* Botón para activar la edición */}
+{yaValorado && !edicionActiva && (
+  <a
+    onClick={() => {
+      setEdicionActiva(true);  // Activa la edición
+      setValoracionHover(0);   // Reinicia las estrellas a 0
+    }}
+    className="boton-editar"
+  >
     Editar valoración
+  </a>
+
+)}
+
+{/* Botón para eliminar valoración */}
+{yaValorado && !edicionActiva && (
+  <a
+    onClick={eliminarValoracion}
+    className="boton-eliminar"
+  >
+    Eliminar mi valoración
   </a>
 )}
 
-              {/* Mostrar mensaje de edición */}
-              {edicionActiva && (
-  <div>
-    <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-    {/* Botón para eliminar la valoración */}
-    <button onClick={eliminarValoracion} className="boton-eliminar">
-      Eliminar mi valoración
-    </button>
-  </div>
+             {/* Mostrar mensaje de edición */}
+{edicionActiva && (
+  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
 )}
 
             {esPropietario && (

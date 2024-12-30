@@ -63,21 +63,23 @@ router.get('/:recetaId/usuario/:usuarioId', async (req, res) => {
 });
 
 
-// Ruta para eliminar una valoración
-router.delete('/', async (req, res) => {
-  const { recetaId, usuarioId } = req.body;
+// Ruta para eliminar la valoración de un usuario
+router.delete('/:recetaId/usuario/:usuarioId', async (req, res) => {
+  const { recetaId, usuarioId } = req.params;
 
   try {
-    // Eliminar la valoración de la receta
-    const valoracionExistente = await Valoracion.findOneAndDelete({ receta: recetaId, usuario: usuarioId });
+    // Eliminar la valoración
+    const valoracionEliminada = await Valoracion.findOneAndDelete({ receta: recetaId, usuario: usuarioId });
 
-    if (!valoracionExistente) {
+    if (!valoracionEliminada) {
       return res.status(404).json({ mensaje: 'Valoración no encontrada' });
     }
 
     // Recalcular el promedio de la receta
     const valoraciones = await Valoracion.find({ receta: recetaId });
-    const promedio = valoraciones.length > 0 ? Math.round(valoraciones.reduce((acumulado, val) => acumulado + val.valor, 0) / valoraciones.length) : 0;
+    const promedio = valoraciones.length > 0
+      ? Math.round(valoraciones.reduce((acumulado, val) => acumulado + val.valor, 0) / valoraciones.length)
+      : 0; // Si no hay valoraciones, el promedio es 0
 
     // Actualizar el promedio en la receta
     const receta = await Receta.findById(recetaId);
@@ -85,8 +87,10 @@ router.delete('/', async (req, res) => {
     await receta.save();
 
     res.status(200).json({ mensaje: 'Valoración eliminada correctamente', valoracion: promedio });
+
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al eliminar la valoración', error });
+    console.error('Error al eliminar la valoración:', error);
+    return res.status(500).json({ mensaje: 'Error al eliminar la valoración', error });
   }
 });
 
