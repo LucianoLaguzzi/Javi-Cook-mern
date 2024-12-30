@@ -488,16 +488,14 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
 
   const eliminarValoracion = async () => {
     try {
-      await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
-      
-      setValoracionUsuario(0); // Restablecer a valor por defecto
-      setYaValorado(false);
-      setEdicionActiva(false); // Salir del modo de edición
+      await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/valoracion/${usuarioEnSesion._id}`);
+      setValoracionUsuario(0); // Restablecer la valoración a 0
+      setYaValorado(false); // Marcar como no valorado
+      setEdicionActiva(false); // Salir del modo edición
     } catch (error) {
-      console.error('Error al eliminar la valoración:', error);
+      console.error('Error al eliminar la valoración:', error.response || error);
     }
   };
-
 
   // useEffect para cargar los pasos al activar el modo edición
   useEffect(() => {
