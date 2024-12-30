@@ -486,6 +486,22 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
   };
 
 
+  const eliminarValoracion = async () => {
+    try {
+      await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+      
+      // Reinicia los estados de valoración
+      setValoracionUsuario(0);
+      setYaValorado(false);
+      setEdicionActiva(false);
+  
+      // Podrías también actualizar el promedio dinámicamente si tienes un método para obtenerlo
+      console.log('Valoración eliminada con éxito.');
+    } catch (error) {
+      console.error('Error al eliminar la valoración:', error);
+    }
+  };
+
 
   // useEffect para cargar los pasos al activar el modo edición
   useEffect(() => {
@@ -875,9 +891,14 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
                 </a>
               )}
 
-              {/* Mostrar mensaje de edición */}
+              {/* Mensaje y opciones en modo edición */}
               {edicionActiva && (
-                <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+                <div className="opciones-edicion">
+                  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+                  <a onClick={eliminarValoracion} className="boton-eliminar">
+                    Eliminar mi valoración
+                  </a>
+                </div>
               )}
 
             {esPropietario && (

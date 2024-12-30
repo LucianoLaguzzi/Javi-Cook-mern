@@ -63,4 +63,36 @@ router.get('/:recetaId/usuario/:usuarioId', async (req, res) => {
 });
 
 
+// Ruta para eliminar una valoración
+router.delete('/:recetaId/usuario/:usuarioId', async (req, res) => {
+  const { recetaId, usuarioId } = req.params;
+
+  try {
+    // Busca y elimina la valoración
+    const valoracion = await Valoracion.findOneAndDelete({ receta: recetaId, usuario: usuarioId });
+
+    if (!valoracion) {
+      return res.status(404).json({ mensaje: 'Valoración no encontrada.' });
+    }
+
+    // Recalcula el promedio de valoraciones
+    const valoracionesRestantes = await Valoracion.find({ receta: recetaId });
+    const nuevoPromedio = valoracionesRestantes.length
+      ? (valoracionesRestantes.reduce((sum, val) => sum + val.valor, 0) / valoracionesRestantes.length).toFixed(1)
+      : 0;
+
+    // Actualiza el promedio en la receta
+    const receta = await Receta.findById(recetaId);
+    receta.valoracion = nuevoPromedio;
+    await receta.save();
+
+    res.status(200).json({ mensaje: 'Valoración eliminada correctamente.', nuevoPromedio });
+  } catch (error) {
+    console.error('Error al eliminar la valoración:', error);
+    res.status(500).json({ mensaje: 'Hubo un problema al eliminar la valoración.', error });
+  }
+});
+
+
+
 export default router;
