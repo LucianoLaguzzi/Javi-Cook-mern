@@ -485,20 +485,28 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
     return texto.charAt(0).toUpperCase() + texto.slice(1);
   };
 
+
   // Función para eliminar la valoración
 const eliminarValoracion = async () => {
   try {
-    await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
-    setValoracionUsuario(0);  // Restablecer la valoración del usuario a 0
-    setYaValorado(false);      // Marcar que el usuario no ha valorado la receta
-    setEdicionActiva(false);   // Salir del modo de edición
+    await axios.delete('https://javicook-mern.onrender.com/api/valoraciones', {
+      data: {
+        recetaId: id,
+        usuarioId: usuarioEnSesion._id,
+      },
+    });
 
-    // Aquí podrías actualizar el estado de la valoración promedio si lo deseas
+    // Resetear la valoración del usuario y el promedio en la interfaz
+    setValoracionUsuario(0);
+    setYaValorado(false);
+    setEdicionActiva(false);
+
+    // Opcional: Mostrar un mensaje de éxito
+    alert('Valoración eliminada correctamente');
   } catch (error) {
     console.log('Error al eliminar la valoración:', error);
   }
 };
-
 
 
   // useEffect para cargar los pasos al activar el modo edición
@@ -867,36 +875,39 @@ const eliminarValoracion = async () => {
 
 
 
-           {/*Valoracion*/}
-<span className='titulo-valoracion'>Tu valoración para esta receta</span>
-<div className="detalles-valoracion" ref={estrellasRef}>
-  {[1, 2, 3, 4, 5].map((i) => (
-    <i
-      key={i}
-      className={`fa ${i <= (valoracionHover || valoracionUsuario || 0) ? 'fas fa-star' : 'far fa-star'}`}  // Reinicia a 0 cuando esté en modo de edición
-      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-      onMouseLeave={() => setValoracionHover(0)}
-    />
-  ))}
-</div>
+            {/*Aca va la valoracion*/}
+            <span className='titulo-valoracion'>Tu valoración para esta receta</span>
+              <div className="detalles-valoracion" ref={estrellasRef}>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <i
+                    key={i}
+                    className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
+                    style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+                    onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
+                    onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+                    onMouseLeave={() => setValoracionHover(0)}
+                  />
+                ))}
+              </div>
 
-{/* Botón para activar la edición */}
-{yaValorado && !edicionActiva && (
-  <a onClick={() => setEdicionActiva(true)} className="boton-editar">
+              {/* Botón para activar la edición */}
+              {yaValorado && !edicionActiva && (
+  <a onClick={() => {
+    setEdicionActiva(true);
+    setValoracionUsuario(0); // Reiniciar la valoración visual a 0
+  }} className="boton-editar">
     Editar valoración
   </a>
 )}
 
-{/* Mostrar mensaje de edición */}
-{edicionActiva && (
+              {/* Mostrar mensaje de edición */}
+              {edicionActiva && (
   <div>
     <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-    {/* Agregar el botón para eliminar la valoración */}
-    <a onClick={eliminarValoracion} className="boton-eliminar">
+    {/* Botón para eliminar la valoración */}
+    <button onClick={eliminarValoracion} className="boton-eliminar">
       Eliminar mi valoración
-    </a>
+    </button>
   </div>
 )}
 
