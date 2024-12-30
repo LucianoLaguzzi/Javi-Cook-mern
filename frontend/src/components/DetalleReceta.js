@@ -505,10 +505,10 @@ const eliminarValoracion = async () => {
 };
 
 const salirModoEdicion = () => {
-  if (valoracionUsuario === 0) { // Si no se ha hecho ningún cambio
+  if (valoracionUsuario === 0 && valoracionOriginal !== null) {
     setValoracionUsuario(valoracionOriginal); // Restaura la valoración original
   }
-  setEdicionActiva(false); // Sale del modo de edición
+  setEdicionActiva(false); // Sale del modo edición
 };
 
 useEffect(() => {
@@ -523,6 +523,10 @@ useEffect(() => {
     document.removeEventListener("mousedown", handleClickOutside);
   };
 }, [edicionActiva, valoracionOriginal]);
+
+
+
+
 
   // useEffect para cargar los pasos al activar el modo edición
   useEffect(() => {
@@ -909,10 +913,10 @@ useEffect(() => {
 {yaValorado && !edicionActiva && (
   <a
     onClick={() => {
-      setEdicionActiva(true);            // Activa la edición
+      setEdicionActiva(true);             // Activa la edición
       setValoracionOriginal(valoracionUsuario); // Guarda la valoración original
-      setValoracionUsuario(0);          // Reinicia la valoración
-      setValoracionHover(0);            // Reinicia las estrellas visuales
+      setValoracionUsuario(0);           // Reinicia la valoración
+      setValoracionHover(0);             // Reinicia el hover
     }}
     className="boton-editar"
   >
