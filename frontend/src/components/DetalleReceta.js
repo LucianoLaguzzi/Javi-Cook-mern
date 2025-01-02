@@ -563,8 +563,8 @@ const DetalleReceta = () => {
 
   const confirmarEliminar = () => {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: '¡No podrás revertir esto!',
+      title: 'Eliminar receta',
+      text: '¿Estás seguro? ¡No podrás revertir esto!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#4caf50',  // Verde del botón aceptar
@@ -923,15 +923,6 @@ const DetalleReceta = () => {
                   </a>
                 )}
 
-                {/* Botón para eliminar valoración 
-                {yaValorado && !edicionActiva && (
-                  <a
-                    onClick={eliminarValoracion}
-                    className="boton-eliminar"
-                  >
-                    Eliminar mi valoración
-                  </a>
-                )}*/}
 
                 {/* Mostrar mensaje de edición */}
                 {edicionActiva && (

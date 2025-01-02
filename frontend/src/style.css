@@ -3285,15 +3285,19 @@ i.fas.fa-undo {
     display: flex;
     position: relative;
     width: 100%;
+    padding-right: 40px;
+}
+
+@media (max-width: 400px) {
+    .contenedor-valoracion  {
+        padding-right: 25px;
+    }
 }
 
 .contenedor-valoracion:hover .boton-eliminar-valoracion {
     opacity: 1;
 }
 
-.contenedor-valoracion {
-    padding-right: 40px; /* Espacio reservado para el ícono */
-}
   
 .detalles-valoracion{
     display: flex;
@@ -3302,6 +3306,13 @@ i.fas.fa-undo {
     gap: 20px;
     width: 100%;
     justify-content: center;
+}
+
+
+@media (max-width: 400px) {
+    .detalles-valoracion {
+        font-size: 25px;
+    }
 }
 
 
@@ -3339,6 +3350,13 @@ i.fas.fa-undo {
     right: 0; /* Aparece al extremo derecho */
     font-size: 24px; /* Tamaño del ícono */
 }
+
+@media (max-width: 400px) {
+    .boton-eliminar-valoracion {
+        font-size: 13px;
+    }
+}
+
 
 .valoracion p{
     font-size: 16px !important;
@@ -3396,23 +3414,29 @@ i.fas.fa-undo {
     animation: parpadeo 1s infinite;
   }
 
-  @media (max-width: 700px) {
+@media (max-width: 700px) {
     .mensaje-edicion {
         font-size: 16px;
     }
 }
+
+@media (max-width: 400px) {
+    .mensaje-edicion {
+        font-size: 13px;
+    }
+}
   
-  @keyframes parpadeo {
-    0% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
+@keyframes parpadeo {
+0% {
+    opacity: 1;
+}
+50% {
+    opacity: 0.5;
+}
+100% {
+    opacity: 1;
+}
+}
   
 /*Pantalla bloqueante para que se inicie sesion*/
 
