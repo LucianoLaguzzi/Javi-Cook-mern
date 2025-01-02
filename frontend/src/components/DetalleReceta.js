@@ -892,14 +892,13 @@ const DetalleReceta = () => {
 
               
 
-
-                {/* Botón de eliminar, visible solo al pasar el mouse */}
-                {yaValorado && mostrarEliminar && !edicionActiva && (
+              {/* Espacio reservado para el ícono */}
+              {yaValorado && (
                   <i
                     className="fa fa-trash boton-eliminar-valoracion"
                     onClick={eliminarValoracion}
                     title="Eliminar mi valoración"
-                    style={{ cursor: "pointer", marginLeft: "10px", color: "red" }}
+                    style={{ cursor: "pointer", color: "red" }}
                   />
                 )}
 
