@@ -45,6 +45,10 @@ const DetalleReceta = () => {
   const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
 
+ 
+const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoración original antes de editar
+
+
 
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -486,7 +490,7 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
   };
 
 
-  {/* Función para eliminar la valoración */}
+{/* Función para eliminar la valoración */}
 const eliminarValoracion = async () => {
   try {
     // Llamada al backend para eliminar la valoración
@@ -505,56 +509,56 @@ const eliminarValoracion = async () => {
 };
 
 
-  // useEffect para cargar los pasos al activar el modo edición
-  useEffect(() => {
-    if (pasosEditable) {
-        setPasosEditados(pasos.split('\r\n')); // Cargar los pasos actuales al estado de edición
-    }
-  }, [pasosEditable]);
+// useEffect para cargar los pasos al activar el modo edición
+useEffect(() => {
+  if (pasosEditable) {
+      setPasosEditados(pasos.split('\r\n')); // Cargar los pasos actuales al estado de edición
+  }
+}, [pasosEditable]);
 
-  // Función para manejar cambios en un paso específico
-  const manejarCambioPaso = (index, nuevoValor) => {
-    const nuevosPasos = [...pasosEditados];
-    nuevosPasos[index] = nuevoValor;
-    setPasosEditados(nuevosPasos);
-  };
+// Función para manejar cambios en un paso específico
+const manejarCambioPaso = (index, nuevoValor) => {
+  const nuevosPasos = [...pasosEditados];
+  nuevosPasos[index] = nuevoValor;
+  setPasosEditados(nuevosPasos);
+};
 
-  // Función para agregar un nuevo paso
-  const agregarPaso = () => {
-    setPasosEditados([...pasosEditados, '']); // Añadir un nuevo paso vacío
-  };
+// Función para agregar un nuevo paso
+const agregarPaso = () => {
+  setPasosEditados([...pasosEditados, '']); // Añadir un nuevo paso vacío
+};
 
-  // Función para quitar el último paso
-  const quitarPaso = () => {
-    if (pasosEditados.length > 1) {
-        setPasosEditados(pasosEditados.slice(0, -1)); // Quitar el último paso
-    }
-  };
-
-
-
- //Valoracion receta:
-  const manejarValoracion = async (valor) => {
-    try {
-      // Si está en modo de edición o es una nueva valoración
-      await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
-        recetaId: id,
-        usuarioId: usuarioEnSesion._id,
-        valor,
-      });
-
-      setValoracionUsuario(valor);
-      setYaValorado(true);
+// Función para quitar el último paso
+const quitarPaso = () => {
+  if (pasosEditados.length > 1) {
+      setPasosEditados(pasosEditados.slice(0, -1)); // Quitar el último paso
+  }
+};
 
 
-      
-      // Desactivar el modo de edición
-      setEdicionActiva(false);
 
-    } catch (error) {
-      console.log('Error al valorar la receta:', error);
-    }
-  };
+//Valoracion receta:
+const manejarValoracion = async (valor) => {
+try {
+  // Si está en modo de edición o es una nueva valoración
+  await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
+    recetaId: id,
+    usuarioId: usuarioEnSesion._id,
+    valor,
+  });
+
+  setValoracionUsuario(valor);
+  setYaValorado(true);
+
+
+    
+  // Desactivar el modo de edición
+  setEdicionActiva(false);
+
+  } catch (error) {
+    console.log('Error al valorar la receta:', error);
+  }
+};
 
 
 
@@ -632,23 +636,24 @@ const eliminarValoracion = async () => {
   // Aquí defines el useRef
   const estrellasRef = useRef(null);
 
-  useEffect(() => {
-    const manejarClickFuera = (event) => {
-      // Si haces clic fuera del contenedor de estrellas, desactiva la edición
-      if (estrellasRef.current && !estrellasRef.current.contains(event.target)) {
-        setEdicionActiva(false);
-      }
-    };
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (edicionActiva && estrellasRef.current && !estrellasRef.current.contains(event.target)) {
+      salirModoEdicion(); // Restaurar al valor original si se hace clic fuera
+    }
+  };
 
-    // Añadir el evento al hacer clic en cualquier parte del documento
-    document.addEventListener('mousedown', manejarClickFuera);
+  document.addEventListener("mousedown", handleClickOutside);
 
-    // Limpiar el evento al desmontar el componente
-    return () => {
-      document.removeEventListener('mousedown', manejarClickFuera);
-    };
-  }, []);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [edicionActiva, valoracionOriginal]);
 
+const salirModoEdicion = () => {
+  setValoracionUsuario(valoracionOriginal || valoracionUsuario); // Restaura el valor original
+  setEdicionActiva(false); // Salir del modo edición
+};
 
 
   //Mensaje bloqueante
@@ -696,13 +701,13 @@ const eliminarValoracion = async () => {
           <section className="tarjeta-grande">
             <div className="panel-detalles">
 
-            {/* Mostrar un cartel de carga hasta q se traigan los datos */}
-            {isLoading && (
-                  <div className="loading-container-eliminar">
-                  <div className="spinner-eliminar"></div>
-                  <p className="loading-message-eliminar">Creando receta...</p>
-                </div>
-              )}
+              {/* Mostrar un cartel de carga hasta q se traigan los datos */}
+              {isLoading && (
+                    <div className="loading-container-eliminar">
+                    <div className="spinner-eliminar"></div>
+                    <p className="loading-message-eliminar">Creando receta...</p>
+                  </div>
+                )}
 
               <div className="div-detalles-titulo">
                 {!tituloEditable ? (
@@ -866,346 +871,339 @@ const eliminarValoracion = async () => {
                     )}
               </div>
 
-
               <hr className='divider'></hr>
 
 
-
-           {/* Valoración */}
-<span className='titulo-valoracion'>Tu valoración para esta receta</span>
-<div className="detalles-valoracion" ref={estrellasRef}>
-  {[1, 2, 3, 4, 5].map((i) => (
-    <i
-      key={i}
-      className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
-      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-      onMouseLeave={() => setValoracionHover(0)}
-    />
-  ))}
-</div>
-
-{/* Botón para activar la edición */}
-{yaValorado && !edicionActiva && (
-  <a
-    onClick={() => {
-      setEdicionActiva(true);  // Activa la edición
-      setValoracionUsuario(0); // Reinicia la valoración
-      setValoracionHover(0);   // Reinicia las estrellas a 0
-    }}
-    className="boton-editar"
-  >
-    Editar valoración
-  </a>
-
-)}
-
-{/* Botón para eliminar valoración */}
-{yaValorado && !edicionActiva && (
-  <a
-    onClick={eliminarValoracion}
-    className="boton-eliminar"
-  >
-    Eliminar mi valoración
-  </a>
-)}
-
-             {/* Mostrar mensaje de edición */}
-{edicionActiva && (
-  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-)}
-
-            {esPropietario && (
-              <hr className='divider'></hr>
-            )}
-
-            {/* Eliminar receta */}
-            {esPropietario && (
-              <button className="link-eliminar-receta" onClick={confirmarEliminar}>
-                <i className="fas fa-trash-alt" title="Eliminar receta"></i>
-              </button>
-            )}
-
-            {/* Mostrar un cartel de carga si está eliminando */}
-            {loading && (
-                <div className="loading-container-eliminar">
-                <div className="spinner-eliminar"></div>
-                <p className="loading-message-eliminar">Eliminando receta...</p>
+              {/* Valoración */}
+              <span className='titulo-valoracion'>Tu valoración para esta receta</span>
+              <div className="detalles-valoracion" ref={estrellasRef}>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <i
+                    key={i}
+                    className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
+                    style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+                    onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
+                    onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+                    onMouseLeave={() => setValoracionHover(0)}
+                  />
+                ))}
               </div>
-            )}
 
-            
-            {/* Comentarios */}
-            <div className="detalles-comentarios">
-              <i class="far fa-comment-alt"></i>
-              <h3>Comentarios</h3>
-            </div>
-
-            <div className="input-comentarios">
-              <input
-                className="input-comentario"
-                value={nuevoComentario}
-                onChange={(e) => setNuevoComentario(e.target.value)}
-                placeholder="Agregar comentario..."
-              />
-              <button className='boton-comentario' onClick={agregarComentario}>Enviar</button>
-            </div>
-            
-            <div className="comentarios-usuarios">
-              {comentarios && comentarios.length > 0 ? (
-                comentarios.map((comentario) => (
-                  <div key={comentario._id} className="contenedores-spam">
-
-                    {/* Comentario principal */}
-                    <div className="comentario-principal">
-                      <div className="imagen-nombre">
-                        <img
-                          className="imagen-perfil-comentario"
-                          src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                          alt={comentario.usuario.nombre}
-                        />
-                        <span className="usuario-comentario">{comentario.usuario.nombre || "Usuario desconocido"}</span>
-                      </div>
-                      <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
-
-
-                      {/* Modo de edición de comentario */}
-                      {comentarioEditado === comentario._id ? (
-                        <div>
-                          <input
-                            className='input-respuesta-edicion'
-                            type="text"
-                            value={nuevoComentarioEditado}
-                            onChange={(e) => setNuevoComentarioEditado(e.target.value)}
-                          />
-
-
-
-
-                          <div className="modo-edicion">
-                            <a className="btn-guardar-edicion" onClick={guardarEdicion} title='Guardar'>
-                             <i className="fas fa-check-circle"></i> 
-                            </a>
-                          
-                            <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
-                              <i className="fas fa-times-circle"></i>
-                            </a>
-                            
-
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="texto-comentario">{comentario.comentario}</p>
-                      )}
-
-                      {/* Botón de edición (solo si el usuario es el autor del comentario) */}
-                      {usuarioEnSesion._id === comentario.usuario._id && !comentarioEditado && (
-                        <a className='btn-editar-pasos' onClick={() => editarComentario(comentario._id, comentario.comentario)}>
-                          <i class="fas fa-pencil-alt" title="Editar comentario"></i>
-                        </a>
-                      )}
-
-                      <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
-                        Responder
-                      </button>
-                    </div>
-
-                    {/* Respuestas */}
-                    {comentario.respuestas && comentario.respuestas.length > 0 && (
-                      <div className="toggle-respuestas">
-                        <button className='ocultar-mostrar-respuestas' onClick={() => toggleRespuestas(comentario._id)}>
-                          {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : ` ${comentario.respuestas.length} respuesta(s)`}
-                        </button>
-                        {respuestasVisibles[comentario._id] && (
-                          <div className="respuestas">
-                            {comentario.respuestas.map((respuesta) => (
-                              <div key={respuesta._id} className="respuesta-comentario">
-                                <div className="imagen-nombre">
-                                  <img
-                                    className="imagen-perfil-comentario"
-                                    src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                    alt={respuesta.usuario.nombre}
-                                  />
-                                  <span className="usuario-comentario">{respuesta.usuario.nombre || "Usuario desconocido"}</span>
-                                </div>
-                                <span className="comentario-fecha">
-                                  {new Date(respuesta.fecha).toLocaleDateString()}
-                                </span>
-
-
-
-
-
-                                {/* Modo de edición para respuestas */}
-                                {comentarioEditado === respuesta._id ? (
-                                  <div className="modo-edicion-respuesta">
-                                    <input
-                                      className='input-respuesta-edicion'
-                                      type="text"
-                                      value={nuevoComentarioEditado}
-                                      onChange={(e) => setNuevoComentarioEditado(e.target.value)}
-                                    />
-                                    <div className="modo-edicion">
-                                      <a className="btn-guardar-edicion" onClick={() => guardarEdicion(respuesta._id)} title='Guardar'>
-                                        <i className="fas fa-check-circle"></i> 
-                                      </a>
-                                      <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
-                                        <i className="fas fa-times-circle"></i>
-                                      </a>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <p className="texto-respuesta">{respuesta.comentario}</p>
-                                )}
-
-                              {/* Botón de edición para respuestas (solo si el usuario es el autor) */}
-                              {usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && (
-                                <a
-                                  className='btn-editar-pasos'
-                                  onClick={() => editarComentario(respuesta._id, respuesta.comentario, true, comentario._id)}
-                                >
-                                  <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
-                                </a>
-                              )}
-
-
-                                <button
-                                  className="boton-responder"
-                                  onClick={() => responderComentario(respuesta._id)}
-                                >
-                                  Responder
-                                </button>
-
-                                {/* Re-Respuestas */}
-                                {respuesta.respuestas && respuesta.respuestas.length > 0 && (
-                                  <div className="toggle-respuestas reresp">
-                                      {/* Botón para ocultar/mostrar re-respuestas */}
-                                      <button
-                                        className="link-ocultar-respuestas"
-                                        onClick={() => toggleRespuestas(respuesta._id)}
-                                      >
-                                        {respuestasVisibles[respuesta._id]
-                                          ? `Ocultar conversación`
-                                          : `Ver conversación (${respuesta.respuestas.length})`}
-                                      </button>
-                                    {/* Mostrar las re-respuestas si están visibles */}
-                                    {respuestasVisibles[respuesta._id] && (
-                                      <div className="respuestas reresp-comentarios">
-                                        {respuesta.respuestas.map((rerespuesta) => (
-                                          <div key={rerespuesta._id} className="reresp-comentario">
-                                            <div className="imagen-nombre">
-                                              <img
-                                                className="imagen-perfil-comentario"
-                                                src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
-                                                alt={rerespuesta.usuario.nombre}
-                                              />
-                                              <span className="usuario-comentario">
-                                                {rerespuesta.usuario.nombre || "Usuario desconocido"}
-                                              </span>
-                                            </div>
-                                            <span className="comentario-fecha">
-                                              {new Date(rerespuesta.fecha).toLocaleDateString()}
-                                            </span>
-
-                                            {/* Modo de edición para re-respuestas */}
-                                            {comentarioEditado === rerespuesta._id ? (
-                                              <div className="modo-edicion-re-respuesta">
-                                                <input
-                                                  className="input-respuesta-edicion"
-                                                  type="text"
-                                                  value={nuevoComentarioEditado}
-                                                  onChange={(e) => setNuevoComentarioEditado(e.target.value)}
-                                                />
-                                                <div className="modo-edicion">
-                                                  <a
-                                                    className="btn-guardar-edicion"
-                                                    onClick={() => guardarEdicionReRespuesta(rerespuesta._id, respuesta._id)}
-                                                    title="Guardar"
-                                                  >
-                                                    <i className="fas fa-check-circle"></i>
-                                                  </a>
-                                                  <a
-                                                    className="btn-cancelar-edicion"
-                                                    onClick={cancelarEdicionReRespuesta}
-                                                    title="Cancelar"
-                                                  >
-                                                    <i className="fas fa-times-circle"></i>
-                                                  </a>
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <p className="texto-respuesta">
-                                                <span className="mencion">@{respuesta.usuario.nombre}</span>{" "}
-                                                {rerespuesta.comentario}
-                                              </p>
-                                            )}
-
-                                            {/* Botón de edición para re-respuestas */}
-                                            {usuarioEnSesion._id === rerespuesta.usuario._id && comentarioEditado !== rerespuesta._id && (
-                                              <a
-                                                className="btn-editar-pasos"
-                                                onClick={() =>
-                                                  editarReRespuesta(rerespuesta._id, rerespuesta.comentario, respuesta._id)
-                                                }
-                                              >
-                                                <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
-                                              </a>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* Input para re-responder */}
-                                {comentarioAResponder === respuesta._id && (
-                                  <div className="input-respuesta reresp-input">
-                                    <input
-                                      ref={inputRef}
-                                      type="text"
-                                      value={respuestaTexto}
-                                      onChange={(e) => setRespuestaTexto(e.target.value)}
-                                      placeholder={`Responder a @${respuesta.usuario.nombre || 'usuario'}`}
-                                    />
-                                    <button className='boton-enviar-re-respuesta' onClick={agregarRespuesta}>Enviar</button>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )} {/*Cierre respuestas*/}
-
-                    {/* Input para responder un comentario */}
-                    {comentarioAResponder === comentario._id && (
-                      <div className="input-respuesta">
-                        <input
-                          ref={inputRef} // Asigna la referencia aquí
-                          type="text"
-                          value={respuestaTexto}
-                          onChange={(e) => setRespuestaTexto(e.target.value)}
-                          placeholder="Escribe tu respuesta..."
-                        />
-                        <button onClick={agregarRespuesta}>Enviar</button>
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p>No hay comentarios aún.</p>
+              {/* Botón para activar la edición */}
+              {yaValorado && !edicionActiva && (
+                <a
+                  onClick={() => {
+                    setValoracionOriginal(valoracionUsuario); // Guarda la valoración actual
+                    setEdicionActiva(true);  // Activa la edición
+                    setValoracionUsuario(0); // Reinicia la valoración
+                    setValoracionHover(0);   // Reinicia las estrellas a 0
+                  }}
+                  className="boton-editar"
+                >
+                  Editar valoración
+                </a>
               )}
+
+              {/* Botón para eliminar valoración */}
+              {yaValorado && !edicionActiva && (
+                <a
+                  onClick={eliminarValoracion}
+                  className="boton-eliminar"
+                >
+                  Eliminar mi valoración
+                </a>
+              )}
+
+              {/* Mostrar mensaje de edición */}
+              {edicionActiva && (
+                <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+              )}
+
+              {esPropietario && (
+                <hr className='divider'></hr>
+              )}
+
+              {/* Eliminar receta */}
+              {esPropietario && (
+                <button className="link-eliminar-receta" onClick={confirmarEliminar}>
+                  <i className="fas fa-trash-alt" title="Eliminar receta"></i>
+                </button>
+              )}
+
+              {/* Mostrar un cartel de carga si está eliminando */}
+              {loading && (
+                  <div className="loading-container-eliminar">
+                  <div className="spinner-eliminar"></div>
+                  <p className="loading-message-eliminar">Eliminando receta...</p>
+                </div>
+              )}
+
+            
+              {/* Comentarios */}
+              <div className="detalles-comentarios">
+                <i class="far fa-comment-alt"></i>
+                <h3>Comentarios</h3>
+              </div>
+
+              <div className="input-comentarios">
+                <input
+                  className="input-comentario"
+                  value={nuevoComentario}
+                  onChange={(e) => setNuevoComentario(e.target.value)}
+                  placeholder="Agregar comentario..."
+                />
+                <button className='boton-comentario' onClick={agregarComentario}>Enviar</button>
+              </div>
+            
+              <div className="comentarios-usuarios">
+                {comentarios && comentarios.length > 0 ? (
+                  comentarios.map((comentario) => (
+                    <div key={comentario._id} className="contenedores-spam">
+
+                      {/* Comentario principal */}
+                      <div className="comentario-principal">
+                        <div className="imagen-nombre">
+                          <img
+                            className="imagen-perfil-comentario"
+                            src={comentario.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                            alt={comentario.usuario.nombre}
+                          />
+                          <span className="usuario-comentario">{comentario.usuario.nombre || "Usuario desconocido"}</span>
+                        </div>
+                        <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
+
+
+                        {/* Modo de edición de comentario */}
+                        {comentarioEditado === comentario._id ? (
+                          <div>
+                            <input
+                              className='input-respuesta-edicion'
+                              type="text"
+                              value={nuevoComentarioEditado}
+                              onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                            />
+
+
+
+                            <div className="modo-edicion">
+                              <a className="btn-guardar-edicion" onClick={guardarEdicion} title='Guardar'>
+                              <i className="fas fa-check-circle"></i> 
+                              </a>
+                            
+                              <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
+                                <i className="fas fa-times-circle"></i>
+                              </a>
+                              
+
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="texto-comentario">{comentario.comentario}</p>
+                        )}
+
+                        {/* Botón de edición (solo si el usuario es el autor del comentario) */}
+                        {usuarioEnSesion._id === comentario.usuario._id && !comentarioEditado && (
+                          <a className='btn-editar-pasos' onClick={() => editarComentario(comentario._id, comentario.comentario)}>
+                            <i class="fas fa-pencil-alt" title="Editar comentario"></i>
+                          </a>
+                        )}
+
+                        <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
+                          Responder
+                        </button>
+                      </div>
+
+                      {/* Respuestas */}
+                      {comentario.respuestas && comentario.respuestas.length > 0 && (
+                        <div className="toggle-respuestas">
+                          <button className='ocultar-mostrar-respuestas' onClick={() => toggleRespuestas(comentario._id)}>
+                            {respuestasVisibles[comentario._id] ? `Ocultar respuestas` : ` ${comentario.respuestas.length} respuesta(s)`}
+                          </button>
+                          {respuestasVisibles[comentario._id] && (
+                            <div className="respuestas">
+                              {comentario.respuestas.map((respuesta) => (
+                                <div key={respuesta._id} className="respuesta-comentario">
+                                  <div className="imagen-nombre">
+                                    <img
+                                      className="imagen-perfil-comentario"
+                                      src={respuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                      alt={respuesta.usuario.nombre}
+                                    />
+                                    <span className="usuario-comentario">{respuesta.usuario.nombre || "Usuario desconocido"}</span>
+                                  </div>
+                                  <span className="comentario-fecha">
+                                    {new Date(respuesta.fecha).toLocaleDateString()}
+                                  </span>
+
+                                  {/* Modo de edición para respuestas */}
+                                  {comentarioEditado === respuesta._id ? (
+                                    <div className="modo-edicion-respuesta">
+                                      <input
+                                        className='input-respuesta-edicion'
+                                        type="text"
+                                        value={nuevoComentarioEditado}
+                                        onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                                      />
+                                      <div className="modo-edicion">
+                                        <a className="btn-guardar-edicion" onClick={() => guardarEdicion(respuesta._id)} title='Guardar'>
+                                          <i className="fas fa-check-circle"></i> 
+                                        </a>
+                                        <a className="btn-cancelar-edicion" onClick={cancelarEdicion} title='Cancelar'>
+                                          <i className="fas fa-times-circle"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <p className="texto-respuesta">{respuesta.comentario}</p>
+                                  )}
+
+                                {/* Botón de edición para respuestas (solo si el usuario es el autor) */}
+                                {usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && (
+                                  <a
+                                    className='btn-editar-pasos'
+                                    onClick={() => editarComentario(respuesta._id, respuesta.comentario, true, comentario._id)}
+                                  >
+                                    <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
+                                  </a>
+                                )}
+
+
+                                  <button
+                                    className="boton-responder"
+                                    onClick={() => responderComentario(respuesta._id)}
+                                  >
+                                    Responder
+                                  </button>
+
+                                  {/* Re-Respuestas */}
+                                  {respuesta.respuestas && respuesta.respuestas.length > 0 && (
+                                    <div className="toggle-respuestas reresp">
+                                        {/* Botón para ocultar/mostrar re-respuestas */}
+                                        <button
+                                          className="link-ocultar-respuestas"
+                                          onClick={() => toggleRespuestas(respuesta._id)}
+                                        >
+                                          {respuestasVisibles[respuesta._id]
+                                            ? `Ocultar conversación`
+                                            : `Ver conversación (${respuesta.respuestas.length})`}
+                                        </button>
+                                      {/* Mostrar las re-respuestas si están visibles */}
+                                      {respuestasVisibles[respuesta._id] && (
+                                        <div className="respuestas reresp-comentarios">
+                                          {respuesta.respuestas.map((rerespuesta) => (
+                                            <div key={rerespuesta._id} className="reresp-comentario">
+                                              <div className="imagen-nombre">
+                                                <img
+                                                  className="imagen-perfil-comentario"
+                                                  src={rerespuesta.usuario.imagenPerfil || "../images/default-imagen-perfil"}
+                                                  alt={rerespuesta.usuario.nombre}
+                                                />
+                                                <span className="usuario-comentario">
+                                                  {rerespuesta.usuario.nombre || "Usuario desconocido"}
+                                                </span>
+                                              </div>
+                                              <span className="comentario-fecha">
+                                                {new Date(rerespuesta.fecha).toLocaleDateString()}
+                                              </span>
+
+                                              {/* Modo de edición para re-respuestas */}
+                                              {comentarioEditado === rerespuesta._id ? (
+                                                <div className="modo-edicion-re-respuesta">
+                                                  <input
+                                                    className="input-respuesta-edicion"
+                                                    type="text"
+                                                    value={nuevoComentarioEditado}
+                                                    onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                                                  />
+                                                  <div className="modo-edicion">
+                                                    <a
+                                                      className="btn-guardar-edicion"
+                                                      onClick={() => guardarEdicionReRespuesta(rerespuesta._id, respuesta._id)}
+                                                      title="Guardar"
+                                                    >
+                                                      <i className="fas fa-check-circle"></i>
+                                                    </a>
+                                                    <a
+                                                      className="btn-cancelar-edicion"
+                                                      onClick={cancelarEdicionReRespuesta}
+                                                      title="Cancelar"
+                                                    >
+                                                      <i className="fas fa-times-circle"></i>
+                                                    </a>
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <p className="texto-respuesta">
+                                                  <span className="mencion">@{respuesta.usuario.nombre}</span>{" "}
+                                                  {rerespuesta.comentario}
+                                                </p>
+                                              )}
+
+                                              {/* Botón de edición para re-respuestas */}
+                                              {usuarioEnSesion._id === rerespuesta.usuario._id && comentarioEditado !== rerespuesta._id && (
+                                                <a
+                                                  className="btn-editar-pasos"
+                                                  onClick={() =>
+                                                    editarReRespuesta(rerespuesta._id, rerespuesta.comentario, respuesta._id)
+                                                  }
+                                                >
+                                                  <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
+                                                </a>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Input para re-responder */}
+                                  {comentarioAResponder === respuesta._id && (
+                                    <div className="input-respuesta reresp-input">
+                                      <input
+                                        ref={inputRef}
+                                        type="text"
+                                        value={respuestaTexto}
+                                        onChange={(e) => setRespuestaTexto(e.target.value)}
+                                        placeholder={`Responder a @${respuesta.usuario.nombre || 'usuario'}`}
+                                      />
+                                      <button className='boton-enviar-re-respuesta' onClick={agregarRespuesta}>Enviar</button>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )} {/*Cierre respuestas*/}
+
+                      {/* Input para responder un comentario */}
+                      {comentarioAResponder === comentario._id && (
+                        <div className="input-respuesta">
+                          <input
+                            ref={inputRef} // Asigna la referencia aquí
+                            type="text"
+                            value={respuestaTexto}
+                            onChange={(e) => setRespuestaTexto(e.target.value)}
+                            placeholder="Escribe tu respuesta..."
+                          />
+                          <button onClick={agregarRespuesta}>Enviar</button>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p>No hay comentarios aún.</p>
+                )}
+              </div>
+
+              <hr className='divider'></hr>
+
+              <a className="link"  onClick={() => {navigate('/inicio');}} >Ver otras recetas
+                <i class="fas fa-undo"></i>
+              </a>
+
             </div>
-
-            <hr className='divider'></hr>
-
-            <a className="link"  onClick={() => {navigate('/inicio');}} >Ver otras recetas
-              <i class="fas fa-undo"></i>
-            </a>
-
-          </div>
           </section>
         </main>
       </div>
