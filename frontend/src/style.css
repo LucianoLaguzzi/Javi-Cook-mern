@@ -3288,7 +3288,7 @@ i.fas.fa-undo {
     padding-right: 40px;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 700px) {
     .contenedor-valoracion  {
         padding-right: 25px;
     }
@@ -3349,6 +3349,12 @@ i.fas.fa-undo {
     position: absolute; /* Posición fija respecto al contenedor */
     right: 0; /* Aparece al extremo derecho */
     font-size: 24px; /* Tamaño del ícono */
+}
+
+@media (max-width: 700px) {
+    .boton-eliminar-valoracion {
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 400px) {
