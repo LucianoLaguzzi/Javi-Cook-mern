@@ -5110,3 +5110,19 @@ i.fas.fa-undo {
         gap:35px
     }
 }
+
+
+.contenedor-valoracion {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .boton-eliminar-valoracion {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .contenedor-valoracion:hover .boton-eliminar-valoracion {
+    opacity: 1; /* Muestra el ícono al hacer hover */
+  }

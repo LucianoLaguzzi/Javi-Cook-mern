@@ -44,11 +44,9 @@ const DetalleReceta = () => {
   const [nuevoComentarioEditado, setNuevoComentarioEditado] = useState('');
   const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
+  const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoración original antes de editar
 
- 
-const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoración original antes de editar
-
-
+  const [mostrarEliminar, setMostrarEliminar] = useState(false); // Controla la visibilidad del ícono de eliminar
 
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -352,137 +350,137 @@ const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoraci�
   };
   
 
-// Función para manejar la edición
-const editarComentario = (comentarioId, textoActual) => {
-  setComentarioEditado(comentarioId);
-  setNuevoComentarioEditado(textoActual);
-};
+  // Función para manejar la edición
+  const editarComentario = (comentarioId, textoActual) => {
+    setComentarioEditado(comentarioId);
+    setNuevoComentarioEditado(textoActual);
+  };
 
-const cancelarEdicion = () => {
-  setComentarioEditado(null); // Sale del modo edición
-  setNuevoComentarioEditado(''); // Limpia el texto del input
-  setEsRespuesta(false);
-  setComentarioPadreId(null);
-};
+  const cancelarEdicion = () => {
+    setComentarioEditado(null); // Sale del modo edición
+    setNuevoComentarioEditado(''); // Limpia el texto del input
+    setEsRespuesta(false);
+    setComentarioPadreId(null);
+  };
 
 
-// Función para guardar la edición
-const guardarEdicion = async () => {
-  if (!nuevoComentarioEditado.trim()) return;
+  // Función para guardar la edición
+  const guardarEdicion = async () => {
+    if (!nuevoComentarioEditado.trim()) return;
 
-  try {
-    // Llamada al servidor para editar comentario o respuesta
-    const response = await axios.put(
-      esRespuesta
-        ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`
-        : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
-      {
-        comentario: nuevoComentarioEditado,
-        usuario: usuarioEnSesion._id,
-      }
-    );
+    try {
+      // Llamada al servidor para editar comentario o respuesta
+      const response = await axios.put(
+        esRespuesta
+          ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`
+          : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
+        {
+          comentario: nuevoComentarioEditado,
+          usuario: usuarioEnSesion._id,
+        }
+      );
 
-    const comentarioActualizado = response.data.comentarioActualizado;
+      const comentarioActualizado = response.data.comentarioActualizado;
 
-    // Actualizar estado local de los comentarios
-    setComentarios((prevComentarios) => {
-      const actualizarComentarios = (comentarios) =>
-        comentarios.map((comentario) => {
-          // Si estamos editando un comentario principal
-          if (!esRespuesta && comentario._id === comentarioEditado) {
-            return { ...comentario, comentario: comentarioActualizado.comentario };
-          }
-    
-          // Si estamos editando una respuesta
+      // Actualizar estado local de los comentarios
+      setComentarios((prevComentarios) => {
+        const actualizarComentarios = (comentarios) =>
+          comentarios.map((comentario) => {
+            // Si estamos editando un comentario principal
+            if (!esRespuesta && comentario._id === comentarioEditado) {
+              return { ...comentario, comentario: comentarioActualizado.comentario };
+            }
+      
+            // Si estamos editando una respuesta
+            if (comentario.respuestas) {
+              return {
+                ...comentario,
+                respuestas: comentario.respuestas.map((respuesta) =>
+                  respuesta._id === comentarioEditado
+                    ? { ...respuesta, comentario: comentarioActualizado.comentario }
+                    : { ...respuesta, respuestas: actualizarComentarios(respuesta.respuestas || []) } // Recurre si hay respuestas anidadas
+                ),
+              };
+            }
+      
+            return comentario; // Sin cambios
+          });
+      
+        return actualizarComentarios(prevComentarios);
+      });
+
+      // Limpiar los estados de edición
+      setComentarioEditado(null);
+      setNuevoComentarioEditado("");
+      setEsRespuesta(false);
+      setComentarioPadreId(null);
+    } catch (error) {
+      console.error("Error al guardar la edición:", error);
+    }
+  };
+
+
+  // Función para manejar la edición de re-respuestas
+  const editarReRespuesta = (comentarioId, textoActual, respuestaPadreId) => {
+    setComentarioEditado(comentarioId);
+    setNuevoComentarioEditado(textoActual);
+    setEsRespuesta(true);
+    setComentarioPadreId(respuestaPadreId); // ID de la respuesta padre
+  };
+
+  // Cancelar edición de re-respuesta
+  const cancelarEdicionReRespuesta = () => {
+    setComentarioEditado(null);
+    setNuevoComentarioEditado('');
+    setEsRespuesta(false);
+    setComentarioPadreId(null);
+  };
+
+  // Guardar edición de re-respuesta
+  const guardarEdicionReRespuesta = async (comentarioId) => {
+    if (!nuevoComentarioEditado.trim()) return;
+
+    try {
+      const response = await axios.put(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/rerespuesta/${comentarioId}`,
+        {
+          comentario: nuevoComentarioEditado,
+          usuario: usuarioEnSesion._id,
+        }
+      );
+
+      const comentarioActualizado = response.data.comentarioActualizado;
+
+      // Actualizar el estado local de los comentarios
+      setComentarios((prevComentarios) =>
+        prevComentarios.map((comentario) => {
           if (comentario.respuestas) {
             return {
               ...comentario,
-              respuestas: comentario.respuestas.map((respuesta) =>
-                respuesta._id === comentarioEditado
-                  ? { ...respuesta, comentario: comentarioActualizado.comentario }
-                  : { ...respuesta, respuestas: actualizarComentarios(respuesta.respuestas || []) } // Recurre si hay respuestas anidadas
-              ),
+              respuestas: comentario.respuestas.map((respuesta) => {
+                if (respuesta.respuestas) {
+                  return {
+                    ...respuesta,
+                    respuestas: respuesta.respuestas.map((rerespuesta) =>
+                      rerespuesta._id === comentarioId
+                        ? { ...rerespuesta, comentario: comentarioActualizado.comentario }
+                        : rerespuesta
+                    ),
+                  };
+                }
+                return respuesta;
+              }),
             };
           }
-    
-          return comentario; // Sin cambios
-        });
-    
-      return actualizarComentarios(prevComentarios);
-    });
+          return comentario;
+        })
+      );
 
-    // Limpiar los estados de edición
-    setComentarioEditado(null);
-    setNuevoComentarioEditado("");
-    setEsRespuesta(false);
-    setComentarioPadreId(null);
-  } catch (error) {
-    console.error("Error al guardar la edición:", error);
-  }
-};
-
-
-// Función para manejar la edición de re-respuestas
-const editarReRespuesta = (comentarioId, textoActual, respuestaPadreId) => {
-  setComentarioEditado(comentarioId);
-  setNuevoComentarioEditado(textoActual);
-  setEsRespuesta(true);
-  setComentarioPadreId(respuestaPadreId); // ID de la respuesta padre
-};
-
-// Cancelar edición de re-respuesta
-const cancelarEdicionReRespuesta = () => {
-  setComentarioEditado(null);
-  setNuevoComentarioEditado('');
-  setEsRespuesta(false);
-  setComentarioPadreId(null);
-};
-
-// Guardar edición de re-respuesta
-const guardarEdicionReRespuesta = async (comentarioId) => {
-  if (!nuevoComentarioEditado.trim()) return;
-
-  try {
-    const response = await axios.put(
-      `https://javicook-mern.onrender.com/api/recetas/${id}/rerespuesta/${comentarioId}`,
-      {
-        comentario: nuevoComentarioEditado,
-        usuario: usuarioEnSesion._id,
-      }
-    );
-
-    const comentarioActualizado = response.data.comentarioActualizado;
-
-    // Actualizar el estado local de los comentarios
-    setComentarios((prevComentarios) =>
-      prevComentarios.map((comentario) => {
-        if (comentario.respuestas) {
-          return {
-            ...comentario,
-            respuestas: comentario.respuestas.map((respuesta) => {
-              if (respuesta.respuestas) {
-                return {
-                  ...respuesta,
-                  respuestas: respuesta.respuestas.map((rerespuesta) =>
-                    rerespuesta._id === comentarioId
-                      ? { ...rerespuesta, comentario: comentarioActualizado.comentario }
-                      : rerespuesta
-                  ),
-                };
-              }
-              return respuesta;
-            }),
-          };
-        }
-        return comentario;
-      })
-    );
-
-    cancelarEdicionReRespuesta();
-  } catch (error) {
-    console.error('Error al guardar la edición de la re-respuesta:', error);
-  }
-};
+      cancelarEdicionReRespuesta();
+    } catch (error) {
+      console.error('Error al guardar la edición de la re-respuesta:', error);
+    }
+  };
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -490,75 +488,72 @@ const guardarEdicionReRespuesta = async (comentarioId) => {
   };
 
 
-{/* Función para eliminar la valoración */}
-const eliminarValoracion = async () => {
+  {/* Función para eliminar la valoración */}
+  const eliminarValoracion = async () => {
+    try {
+      // Llamada al backend para eliminar la valoración
+      await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+
+      // Actualiza el estado de la valoración
+      setValoracionUsuario(0);  // La valoración pasa a ser 0
+      setYaValorado(false);  // El usuario ya no ha valorado la receta
+
+      // Opcional: Actualizar el promedio de valoraciones aquí, si es necesario
+      // Puede ser útil refrescar los datos de la receta o recalcular el promedio global
+
+    } catch (error) {
+      console.log('Error al eliminar la valoración:', error);
+    }
+  };
+
+
+  // useEffect para cargar los pasos al activar el modo edición
+  useEffect(() => {
+    if (pasosEditable) {
+        setPasosEditados(pasos.split('\r\n')); // Cargar los pasos actuales al estado de edición
+    }
+  }, [pasosEditable]);
+
+  // Función para manejar cambios en un paso específico
+  const manejarCambioPaso = (index, nuevoValor) => {
+    const nuevosPasos = [...pasosEditados];
+    nuevosPasos[index] = nuevoValor;
+    setPasosEditados(nuevosPasos);
+  };
+
+  // Función para agregar un nuevo paso
+  const agregarPaso = () => {
+    setPasosEditados([...pasosEditados, '']); // Añadir un nuevo paso vacío
+  };
+
+  // Función para quitar el último paso
+  const quitarPaso = () => {
+    if (pasosEditados.length > 1) {
+        setPasosEditados(pasosEditados.slice(0, -1)); // Quitar el último paso
+    }
+  };
+
+
+
+  //Valoracion de receta
+  const manejarValoracion = async (valor) => {
   try {
-    // Llamada al backend para eliminar la valoración
-    await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+    // Si está en modo de edición o es una nueva valoración
+    await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
+      recetaId: id,
+      usuarioId: usuarioEnSesion._id,
+      valor,
+    });
 
-    // Actualiza el estado de la valoración
-    setValoracionUsuario(0);  // La valoración pasa a ser 0
-    setYaValorado(false);  // El usuario ya no ha valorado la receta
+    setValoracionUsuario(valor);
+    setYaValorado(true);
+    // Desactivar el modo de edición
+    setEdicionActiva(false);
 
-    // Opcional: Actualizar el promedio de valoraciones aquí, si es necesario
-    // Puede ser útil refrescar los datos de la receta o recalcular el promedio global
-
-  } catch (error) {
-    console.log('Error al eliminar la valoración:', error);
-  }
-};
-
-
-// useEffect para cargar los pasos al activar el modo edición
-useEffect(() => {
-  if (pasosEditable) {
-      setPasosEditados(pasos.split('\r\n')); // Cargar los pasos actuales al estado de edición
-  }
-}, [pasosEditable]);
-
-// Función para manejar cambios en un paso específico
-const manejarCambioPaso = (index, nuevoValor) => {
-  const nuevosPasos = [...pasosEditados];
-  nuevosPasos[index] = nuevoValor;
-  setPasosEditados(nuevosPasos);
-};
-
-// Función para agregar un nuevo paso
-const agregarPaso = () => {
-  setPasosEditados([...pasosEditados, '']); // Añadir un nuevo paso vacío
-};
-
-// Función para quitar el último paso
-const quitarPaso = () => {
-  if (pasosEditados.length > 1) {
-      setPasosEditados(pasosEditados.slice(0, -1)); // Quitar el último paso
-  }
-};
-
-
-
-//Valoracion receta:
-const manejarValoracion = async (valor) => {
-try {
-  // Si está en modo de edición o es una nueva valoración
-  await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
-    recetaId: id,
-    usuarioId: usuarioEnSesion._id,
-    valor,
-  });
-
-  setValoracionUsuario(valor);
-  setYaValorado(true);
-
-
-    
-  // Desactivar el modo de edición
-  setEdicionActiva(false);
-
-  } catch (error) {
-    console.log('Error al valorar la receta:', error);
-  }
-};
+    } catch (error) {
+      console.log('Error al valorar la receta:', error);
+    }
+  };
 
 
 
@@ -636,25 +631,25 @@ try {
   // Aquí defines el useRef
   const estrellasRef = useRef(null);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (edicionActiva && estrellasRef.current && !estrellasRef.current.contains(event.target)) {
-      salirModoEdicion(); // Restaurar al valor original si se hace clic fuera
-    }
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (edicionActiva && estrellasRef.current && !estrellasRef.current.contains(event.target)) {
+        salirModoEdicion(); // Restaurar al valor original si se hace clic fuera
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [edicionActiva, valoracionOriginal]);
+
+
+  const salirModoEdicion = () => {
+    setValoracionUsuario(valoracionOriginal || valoracionUsuario); // Restaura el valor original
+    setEdicionActiva(false); // Salir del modo edición
   };
-
-  document.addEventListener("mousedown", handleClickOutside);
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [edicionActiva, valoracionOriginal]);
-
-const salirModoEdicion = () => {
-  setValoracionUsuario(valoracionOriginal || valoracionUsuario); // Restaura el valor original
-  setEdicionActiva(false); // Salir del modo edición
-};
-
 
   //Mensaje bloqueante
   if (!usuarioEnSesion) {
@@ -669,9 +664,9 @@ const salirModoEdicion = () => {
   }
 
 
- // Crear la URL absoluta de la imagen
- //const imageUrl = `${window.location.origin}/${receta.imagen?.replace('\\', '/')}`;
- const imageUrl = receta.imagen;
+  // Crear la URL absoluta de la imagen
+  //const imageUrl = `${window.location.origin}/${receta.imagen?.replace('\\', '/')}`;
+  const imageUrl = receta.imagen;
 
   return (
     <div>
@@ -875,49 +870,74 @@ const salirModoEdicion = () => {
 
 
               {/* Valoración */}
-              <span className='titulo-valoracion'>Tu valoración para esta receta</span>
-              <div className="detalles-valoracion" ref={estrellasRef}>
-                {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                className="contenedor-valoracion"
+                onMouseEnter={() => setMostrarEliminar(true)} // Muestra el ícono al pasar el mouse
+                onMouseLeave={() => setMostrarEliminar(false)} // Oculta el ícono al salir
+              >
+                <span className='titulo-valoracion'>Tu valoración para esta receta</span>
+                <div className="detalles-valoracion" ref={estrellasRef}>
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <i
+                      key={i}
+                      className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
+                      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+                      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
+                      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+                      onMouseLeave={() => setValoracionHover(0)}
+                    />
+                  ))}
+                </div>
+
+
+
+
+                {/* Botón de eliminar, visible solo al pasar el mouse */}
+                {yaValorado && mostrarEliminar && !edicionActiva && (
                   <i
-                    key={i}
-                    className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
-                    style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-                    onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-                    onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-                    onMouseLeave={() => setValoracionHover(0)}
+                    className="fa fa-trash boton-eliminar-valoracion"
+                    onClick={eliminarValoracion}
+                    title="Eliminar mi valoración"
+                    style={{ cursor: "pointer", marginLeft: "10px", color: "red" }}
                   />
-                ))}
+                )}
+
+
+
+
+
+
+
+                {/* Botón para activar la edición */}
+                {yaValorado && !edicionActiva && (
+                  <a
+                    onClick={() => {
+                      setValoracionOriginal(valoracionUsuario); // Guarda la valoración actual
+                      setEdicionActiva(true);  // Activa la edición
+                      setValoracionUsuario(0); // Reinicia la valoración
+                      setValoracionHover(0);   // Reinicia las estrellas a 0
+                    }}
+                    className="boton-editar"
+                  >
+                    Editar valoración
+                  </a>
+                )}
+
+                {/* Botón para eliminar valoración */}
+                {yaValorado && !edicionActiva && (
+                  <a
+                    onClick={eliminarValoracion}
+                    className="boton-eliminar"
+                  >
+                    Eliminar mi valoración
+                  </a>
+                )}
+
+                {/* Mostrar mensaje de edición */}
+                {edicionActiva && (
+                  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+                )}
               </div>
-
-              {/* Botón para activar la edición */}
-              {yaValorado && !edicionActiva && (
-                <a
-                  onClick={() => {
-                    setValoracionOriginal(valoracionUsuario); // Guarda la valoración actual
-                    setEdicionActiva(true);  // Activa la edición
-                    setValoracionUsuario(0); // Reinicia la valoración
-                    setValoracionHover(0);   // Reinicia las estrellas a 0
-                  }}
-                  className="boton-editar"
-                >
-                  Editar valoración
-                </a>
-              )}
-
-              {/* Botón para eliminar valoración */}
-              {yaValorado && !edicionActiva && (
-                <a
-                  onClick={eliminarValoracion}
-                  className="boton-eliminar"
-                >
-                  Eliminar mi valoración
-                </a>
-              )}
-
-              {/* Mostrar mensaje de edición */}
-              {edicionActiva && (
-                <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-              )}
 
               {esPropietario && (
                 <hr className='divider'></hr>
