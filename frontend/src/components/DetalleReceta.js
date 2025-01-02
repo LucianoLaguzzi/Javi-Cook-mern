@@ -870,12 +870,13 @@ const DetalleReceta = () => {
 
 
               {/* Valoración */}
+               <span className='titulo-valoracion'>Tu valoración para esta receta</span>
               <div
                 className="contenedor-valoracion"
                 onMouseEnter={() => setMostrarEliminar(true)} // Muestra el ícono al pasar el mouse
                 onMouseLeave={() => setMostrarEliminar(false)} // Oculta el ícono al salir
               >
-                <span className='titulo-valoracion'>Tu valoración para esta receta</span>
+               
                 <div className="detalles-valoracion" ref={estrellasRef}>
                   {[1, 2, 3, 4, 5].map((i) => (
                     <i
@@ -889,7 +890,7 @@ const DetalleReceta = () => {
                   ))}
                 </div>
 
-
+              
 
 
                 {/* Botón de eliminar, visible solo al pasar el mouse */}
@@ -902,7 +903,7 @@ const DetalleReceta = () => {
                   />
                 )}
 
-
+              </div>
 
 
 
@@ -923,7 +924,7 @@ const DetalleReceta = () => {
                   </a>
                 )}
 
-                {/* Botón para eliminar valoración */}
+                {/* Botón para eliminar valoración 
                 {yaValorado && !edicionActiva && (
                   <a
                     onClick={eliminarValoracion}
@@ -931,13 +932,18 @@ const DetalleReceta = () => {
                   >
                     Eliminar mi valoración
                   </a>
-                )}
+                )}*/}
 
                 {/* Mostrar mensaje de edición */}
                 {edicionActiva && (
                   <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
                 )}
-              </div>
+
+
+
+
+
+
 
               {esPropietario && (
                 <hr className='divider'></hr>
