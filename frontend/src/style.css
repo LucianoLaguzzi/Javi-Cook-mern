@@ -3279,12 +3279,29 @@ i.fas.fa-undo {
     font-size: 20px;
     }
 }
+
+.contenedor-valoracion {
+    align-items: center;
+    display: flex;
+    position: relative;
+    width: 100%;
+}
+
+.contenedor-valoracion:hover .boton-eliminar-valoracion {
+    opacity: 1;
+}
+
+.contenedor-valoracion {
+    padding-right: 40px; /* Espacio reservado para el ícono */
+}
   
 .detalles-valoracion{
     display: flex;
     flex-direction: row;
-    gap: 20px;
     font-size: 30px;
+    gap: 20px;
+    width: 100%;
+    justify-content: center;
 }
 
 
@@ -3314,6 +3331,14 @@ i.fas.fa-undo {
     color: gold; /* Color dorado para las estrellas llenas */
   }
 
+
+.boton-eliminar-valoracion {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    position: absolute; /* Posición fija respecto al contenedor */
+    right: 0; /* Aparece al extremo derecho */
+    font-size: 24px; /* Tamaño del ícono */
+}
 
 .valoracion p{
     font-size: 16px !important;
