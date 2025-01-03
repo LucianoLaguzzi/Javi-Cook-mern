@@ -45,7 +45,6 @@ const DetalleReceta = () => {
   const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
   const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoración original antes de editar
-
   const [mostrarEliminar, setMostrarEliminar] = useState(false); // Controla la visibilidad del ícono de eliminar
 
   const botonRef = useRef(null);
@@ -890,10 +889,8 @@ const DetalleReceta = () => {
                   ))}
                 </div>
 
-              
-
-              {/* Espacio reservado para el ícono */}
-              {yaValorado && (
+                {/* Espacio reservado para el ícono de borrar valoracion */}
+                {yaValorado && (
                   <i
                     className="fa fa-trash boton-eliminar-valoracion"
                     onClick={eliminarValoracion}
@@ -901,37 +898,27 @@ const DetalleReceta = () => {
                     style={{ cursor: "pointer", color: "red" }}
                   />
                 )}
-
               </div>
 
+              {/* Botón para activar la edición */}
+              {yaValorado && !edicionActiva && (
+                <a
+                  onClick={() => {
+                    setValoracionOriginal(valoracionUsuario); // Guarda la valoración actual
+                    setEdicionActiva(true);  // Activa la edición
+                    setValoracionUsuario(0); // Reinicia la valoración
+                    setValoracionHover(0);   // Reinicia las estrellas a 0
+                  }}
+                  className="boton-editar"
+                >
+                  Editar valoración
+                </a>
+              )}
 
-
-
-
-                {/* Botón para activar la edición */}
-                {yaValorado && !edicionActiva && (
-                  <a
-                    onClick={() => {
-                      setValoracionOriginal(valoracionUsuario); // Guarda la valoración actual
-                      setEdicionActiva(true);  // Activa la edición
-                      setValoracionUsuario(0); // Reinicia la valoración
-                      setValoracionHover(0);   // Reinicia las estrellas a 0
-                    }}
-                    className="boton-editar"
-                  >
-                    Editar valoración
-                  </a>
-                )}
-
-
-                {/* Mostrar mensaje de edición */}
-                {edicionActiva && (
-                  <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-                )}
-
-
-
-
+              {/* Mostrar mensaje de edición */}
+              {edicionActiva && (
+                <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+              )}
 
 
 

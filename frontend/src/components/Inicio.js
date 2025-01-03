@@ -611,8 +611,20 @@ const Inicio = () => {
     let reconocedorActivo = false;
 
     const iniciarReconocimiento = () => {
+
+        //Verificar si es para un dispositivo iPhone, que usa safari - Quitar
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
         // Verificar si la API de reconocimiento de voz está disponible
         const Recognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+
+        //Esta disponible para iPhone? - Quitar
+        if (!Recognition || isSafari) {
+            alert("El reconocimiento de voz no es compatible con este navegador. Por favor, prueba con Chrome.");
+            return;
+        }
+
+        //Aca ya verifica si hay problemas en el resto de dispositivos
         if (!Recognition) {
             alert("La API de reconocimiento de voz no es compatible con este navegador.");
             return;
