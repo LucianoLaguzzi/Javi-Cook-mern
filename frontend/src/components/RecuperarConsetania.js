@@ -74,7 +74,7 @@ const RecuperarContrasenia = () => {
                     <form onSubmit={handleSubmit} className="recuperar-form">
                         <div className="entrada-recuperar">
                             <input 
-                                type="text" 
+                                type="text"
                                 value={usuario} 
                                 onChange={(e) => setUsuario(e.target.value)} 
                                 placeholder="Ingrese usuario o email..." 

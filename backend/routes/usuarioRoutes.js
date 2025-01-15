@@ -97,7 +97,7 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
 
 
 
-// Configurar multer para guardar la imagen temporalmente en el servidor
+// Configurar multer para guardar la imagen temporalmente en el servidor (esto ya no se deberia usar)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
       const uploadPath = 'uploads/perfil';
@@ -230,7 +230,7 @@ router.post('/recuperar', async (req, res) => {
       // Generar token de recuperación
       const token = new Token({
           userId: user._id,
-          token: randomBytes(32).toString('hex') // Cambiar a usar randomBytes
+          token: randomBytes(32).toString('hex')
       });
       await token.save();
 

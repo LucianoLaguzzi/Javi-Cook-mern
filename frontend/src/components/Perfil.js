@@ -8,22 +8,13 @@ import { Helmet } from 'react-helmet';
 const Perfil = () => {
     const [usuario, setUsuario] = useState(null);
     const [recetas, setRecetas] = useState([]);
-
     const [editandoNombre, setEditandoNombre] = useState(false);
     const [nuevoNombre, setNuevoNombre] = useState(usuario ? usuario.nombre : '');
-
     const [editandoEmail, setEditandoEmail] = useState(false);
     const [nuevoEmail, setNuevoEmail] = useState(usuario ? usuario.email : '');
-
-
     const [imagenPerfil, setImagenPerfil] = useState(null);
-
     const [mostrarRecetas, setMostrarRecetas] = useState(false);
     const [mostrandoBotonGuardar, setMostrandoBotonGuardar] = useState(false);
-
-    
-
-
 
     const navigate = useNavigate();
     
@@ -31,8 +22,6 @@ const Perfil = () => {
 
 
     useEffect(() => {
-        
-        
         if (usuarioEnSesion) {
             setUsuario(usuarioEnSesion);
             setNuevoNombre(usuarioEnSesion.nombre);

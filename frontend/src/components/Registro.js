@@ -10,9 +10,10 @@ const Registro = () => {
   const [mensajeError, setMensajeError] = useState('');
   const [mensajeExito, setMensajeExito] = useState('');
 
+
+
   const manejarRegistro = async (e) => {
     e.preventDefault(); // Evitar que el formulario se envíe de manera convencional
-
     try {
       const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/registrar', {
         nombre,

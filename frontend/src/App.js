@@ -2,13 +2,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, } from 'react-router-dom';
 import Login from './components/Login';
-import Inicio from './components/Inicio'; // o Recetas
-import Registro from './components/Registro'; // Asegúrate de que la ruta es correcta
+import Inicio from './components/Inicio';
+import Registro from './components/Registro';
 import DetalleReceta from './components/DetalleReceta';
 import Perfil from './components/Perfil';
 import RecuperarContrasenia from './components/RecuperarConsetania';
 import CambiarContrasenia from './components/CambiarContrasenia';
-import LoadingScreen from './components/LoadingScreen'; // Importa el componente de carga
+import LoadingScreen from './components/LoadingScreen';
 
 
 

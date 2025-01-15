@@ -9,16 +9,14 @@ function Login() {
     const [contrasenia, setContrasenia] = useState('');
     const [error, setError] = useState('');
     const [mostrarError, setMostrarError] = useState(false); // Estado para mostrar/ocultar el error
-    const navigate = useNavigate(); // Hook para redireccionar
-
     const [isLoading, setIsLoading] = useState(false);
 
+    const navigate = useNavigate(); // Hook para redireccionar
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         setMostrarError(false); // Ocultar el mensaje de error cuando se intenta nuevamente
-
         setIsLoading(true); // Activa el estado de carga
-
 
         try {
             const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/login', { //antes de /api va la url del backend
@@ -28,8 +26,7 @@ function Login() {
 
             // Guarda la información del usuario en localStorage
             localStorage.setItem('usuario', JSON.stringify(response.data.usuario)); // Asumiendo que el usuario viene en la respuesta
-
-            console.log('Login exitoso:', response.data);
+            
             navigate('/inicio');
 
         } catch (error) {

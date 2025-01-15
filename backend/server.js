@@ -10,8 +10,6 @@ import recetaRoutes from './routes/recetaRoutes.js';
 import detalleRoutes from './routes/detalleRoutes.js';
 import comentarioRoutes from './routes/comentarioRoutes.js';
 import valoracionRoutes from './routes/valoracionRoutes.js';
-//import fs from 'fs';
-//import https from 'https';
 
 // Importa e inicializa Cloudinary
 import cloudinary from 'cloudinary';
@@ -43,7 +41,6 @@ const startServer = async () => {
   try {
     await conectarDB();
 
-    // Cambia a servidor HTTP en lugar de HTTPS
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
       if (process.env.NODE_ENV !== 'production') {

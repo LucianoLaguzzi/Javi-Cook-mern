@@ -92,7 +92,7 @@ router.put('/:id/titulo', async (req, res) => {
         const recetaActualizada = await Receta.findByIdAndUpdate(
             id, 
             { titulo }, 
-            { new: true }
+            { new: true } //Devuelve el documento actualizado de la bd, sin esto seguro traeria el anterior, sin actualizar.
         );
 
         if (!recetaActualizada) {

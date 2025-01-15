@@ -16,7 +16,6 @@ const Inicio = () => {
     const [recetas, setRecetas] = useState([]);
     const [loading, setLoading] = useState(true); // Para manejar el estado de carga
     const [modalVisible, setModalVisible] = useState(false); // Estado para controlar el modal
-
     // Estados para el formulario de agregar receta
     const [titulo, setTitulo] = useState('');
     const [cantidadIngrediente, setCantidadIngrediente] = useState('');
@@ -44,7 +43,6 @@ const Inicio = () => {
     const [errorIngredientes, setErrorIngredientes] = useState("");
     const [menuVisible, setMenuVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // Estado de carga al seleccionar aleatoriamente
-
     const [cargandoNuevaReceta, setCargandoNuevaReceta] = useState(false);
 
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
@@ -54,11 +52,11 @@ const Inicio = () => {
     //Calculos para mostrar bien las cantidades de recetas en la paginacion
     const indexOfLastReceta = paginaActual * recetasPorPagina; // Última receta en la página actual
     const indexOfFirstReceta = indexOfLastReceta - recetasPorPagina; // Primera receta en la página actual
-    const recetasActuales = recetasFiltradas.slice(indexOfFirstReceta, indexOfLastReceta); // Recetas a mostrar
+    const recetasActuales = recetasFiltradas.slice(indexOfFirstReceta, indexOfLastReceta); // Recetas a mostrar 
 
     //Calculos para manejar la paginacion bien
     const totalRecetas = recetasFiltradas.length; // Total de recetas filtradas
-    const totalPaginas = Math.ceil(totalRecetas / recetasPorPagina); // Calcular el total de páginas
+    const totalPaginas = Math.max(1, Math.ceil(totalRecetas / recetasPorPagina)); // Asegurar que sea al menos 1 // Calcular el total de páginas
 
 
 
@@ -314,27 +312,27 @@ const Inicio = () => {
     // Función para manejar el filtrado por ingredientes y título
     const manejarFiltroIngredientes = (input) => {
         // Normalizamos la entrada de búsqueda para quitar los tildes
-        const palabrasClave = quitarTildes(input).toLowerCase().split(/[\s,]+/).filter(Boolean);
+        const palabrasClave = quitarTildes(input).toLowerCase().split(/[\s,]+/).filter(Boolean); //Lo que el usuario pone en el input
 
         if (palabrasClave.length === 0) {
             // Mostrar todas las recetas si no se ingresó ningún ingrediente o título
             setRecetasFiltradas(recetas);
         } else {
             const recetasFiltradas = recetas.filter((receta) => {
-                const ingredientesReceta = quitarTildes(receta.ingredientes[0]).toLowerCase().split(', ');
-                const tituloReceta = quitarTildes(receta.titulo).toLowerCase();
+                const ingredientesReceta = quitarTildes(receta.ingredientes[0]).toLowerCase().split(', '); //Obtenidos de la "original"
+                const tituloReceta = quitarTildes(receta.titulo).toLowerCase(); //Obtenidos de la "original"
 
-                // Verificar si todos los ingredientes buscados están en los ingredientes de la receta
+                // Boolean que verificar si todos los ingredientes buscados están en los ingredientes de la receta
                 const coincidenIngredientes = palabrasClave.every(ingrediente =>
                     ingredientesReceta.some(ingReceta => ingReceta.includes(ingrediente))
                 );
 
-                // Verificar si todos los términos buscados coinciden en el título de la receta
+                // Boolean que verificar si todos los términos buscados coinciden en el título de la receta
                 const coincideTitulo = palabrasClave.every(palabra =>
                     tituloReceta.includes(palabra)
                 );
 
-                // Retornar true solo si todos los ingredientes y/o el título coinciden
+                // Retornar true en el .filter solo si todos los ingredientes y/o el título coinciden, es decir si alguna de las variables dio true.
                 return coincideTitulo || coincidenIngredientes;
             });
 
@@ -352,8 +350,6 @@ const Inicio = () => {
             
             // Añadir la clase para el efecto de destello
             categoriaBoton.classList.add('shine-effect');
-            
-            // Esperar un momento para ver el efecto antes de realizar la acción
            
             const categoriaCodificada = encodeURIComponent(categoria);
             const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/random/${categoriaCodificada}`);
@@ -665,8 +661,8 @@ const Inicio = () => {
                 }
             }
 
-            inputRef.current.value = transcripcionFinal || transcripcionIntermedia;
-            manejarFiltroIngredientes(transcripcionFinal || transcripcionIntermedia);
+            inputRef.current.value = transcripcionFinal || transcripcionIntermedia;   //Lo transcribe en el input
+            manejarFiltroIngredientes(transcripcionFinal || transcripcionIntermedia); //Funcion para mostrar las tarjetas acordes
         };
 
         reconocimientoVoz.start();
@@ -738,18 +734,13 @@ const Inicio = () => {
                                 title="Cerrar Sesión" 
                                 onClick={() => {
                                     localStorage.removeItem('usuario');
-                                    console.log('Cerrar sesión');
+                                    console.log('Cerrando sesión');
                                     navigate('/login');
                                 }} 
                                 alt="Cerrar sesión"
                             />
                         </div>
                     </div>
-
-
-
-                    
-
 
                     <div className="barra-secundaria">
                         <a href="#recetas" className="link-secundario"  onMouseEnter={() => reproducirSonido("item")}  onMouseUp={() => reproducirSonido("popup")}>Recetas</a>
@@ -787,7 +778,7 @@ const Inicio = () => {
                         )}
 
 
-                       {/* Sección de filtro */}
+                        {/* Sección de filtro */}
                         <section className="filtro">
                             <h2>Buscá tus recetas por ingredientes</h2>
                             <div className="filtro-ing">
