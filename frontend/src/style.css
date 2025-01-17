@@ -1747,7 +1747,6 @@ img.img-cerrar-sesion:hover {
 .input-imagen{
     font-size: 18px;
     color: transparent;
-    width: 21vh;
 }
 
 @media (max-width: 1400px) {

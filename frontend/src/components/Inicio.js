@@ -880,233 +880,234 @@ const Inicio = () => {
 
                             
                             {modalVisible && (
-                            <div id="modalAgregarReceta" className="modal">
-                                <div className="modal-content">
-                                    <span className="close" title="Cerrar" onClick={cerrarModal}>
-                                        <i className="fas fa-times"></i>
-                                    </span>
+                                <div id="modalAgregarReceta" className="modal">
+                                    <div className="modal-content">
+                                        <span className="close" title="Cerrar" onClick={cerrarModal}>
+                                            <i className="fas fa-times"></i>
+                                        </span>
 
-                                    <h2 id="titulo-modal">Agregar nueva receta</h2>
+                                        <h2 id="titulo-modal">Agregar nueva receta</h2>
 
-                                    {/* Formulario para agregar receta */}
-                                    <form className="form-receta" id="form-receta" encType="multipart/form-data" onSubmit={handleSubmit}>
-                                        <div className="contenedor-receta">
+                                        {/* Formulario para agregar receta */}
+                                        <form className="form-receta" id="form-receta" encType="multipart/form-data" onSubmit={handleSubmit}>
+                                            <div className="contenedor-receta">
 
-                                            {/* Campos de título */}
-                                            <div className="div-titulo-receta">
-                                                <label htmlFor="titulo-r" className="label-titulo-receta">Nombre de la receta: </label>
-                                                <input 
-                                                    ref={tituloRef}
-                                                    type="text" 
-                                                    id="titulo-r" 
-                                                    placeholder="Inserte nombre de la receta" 
-                                                    className={`receta-titulo ${errorTitulo ? 'input-error' : ''}`} // Clase condicional para el borde rojo
-                                                    value={titulo} // Vinculamos el estado del título
-                                                    onChange={(e) => setTitulo(e.target.value)} // Actualizamos el estado
-                                                />
-                                            </div>
-                                            <div className="modal-error-titulo"  style={{height:'20px'}}>
-                                                {errorTitulo && <div id="modalErrorTitulo" > {errorTitulo} </div>}
-                                            </div>
-
-                                            {/* Campos de los ingredientes y sus cantidades */}
-                                            <div className="div-cantidad-ingredientes-receta">
-                                                <label htmlFor="cantidadIngrediente" className="label-cantidad-ingrediente">Ingredientes y cantidades:</label>
-                                                <textarea
-                                                    ref={cantidadIngredienteRef}
-                                                    id="cantidadIngrediente"
-                                                    className={`text-area-cantidad-ingrediente ${errorIngredientesCantidades ? 'input-error' : ''}`}
-                                                    placeholder="Ejemplo:&#10;Sal: 20gr &#10;Agua: 300cc"
-                                                    value={cantidadIngrediente} // Asignamos el estado como valor
-                                                    onChange={actualizarIngredientesCantidades} // Manejador de cambio
-                                                ></textarea>
-                                                <input type="hidden" className="inputOcultoIngredientesCantidades" name="ingredientesCantidades" />
-                                                <div className="p-aclaracion-cantidad-ingrediente">
-                                                    <p className="instruccion-ingrediente-cantidad">Separe el ingrediente de la cantidad con 2 puntos (:)</p>
+                                                {/* Campos de título */}
+                                                <div className="div-titulo-receta">
+                                                    <label htmlFor="titulo-r" className="label-titulo-receta">Nombre de la receta: </label>
+                                                    <input 
+                                                        ref={tituloRef}
+                                                        type="text" 
+                                                        id="titulo-r" 
+                                                        placeholder="Inserte nombre de la receta" 
+                                                        className={`receta-titulo ${errorTitulo ? 'input-error' : ''}`} // Clase condicional para el borde rojo
+                                                        value={titulo} // Vinculamos el estado del título
+                                                        onChange={(e) => setTitulo(e.target.value)} // Actualizamos el estado
+                                                    />
                                                 </div>
-                                            </div>
-                                            <div className="modal-error-ingredientes-cantidades"  style={{height:'20px'}}>
-                                                {errorIngredientesCantidades && <div id="modalErrorIngredientesCantidades" > {errorIngredientesCantidades} </div>}
-                                           </div>
+                                                <div className="modal-error-titulo"  style={{height:'20px'}}>
+                                                    {errorTitulo && <div id="modalErrorTitulo" > {errorTitulo} </div>}
+                                                </div>
 
-                                            {/* Campos de los pasos */}
-                                            <div className="div-pasos-receta">
-                                                <div id="pasosPanel" className="pasos-panel">
-                                                    {pasos.map((paso, index) => (
-                                                        <div key={index} className="paso">
-                                                            <label htmlFor={`paso${index + 1}`} className="label-pasos">Paso {index + 1}:</label>
-                                                            <textarea
-                                                                ref={pasosRef}
-                                                                id={`paso${index + 1}`}
-                                                                className={`text-area-pasos ${errorPasos ? 'input-error' : ''}`}
-                                                                placeholder="Agregar paso..."
-                                                                value={paso}
-                                                                onChange={(e) => handlePasoChange(index, e.target.value)}
-                                                                onInput={autoResize}
-                                                            />
-                                                        </div>
-                                                    ))}
+                                                {/* Campos de los ingredientes y sus cantidades */}
+                                                <div className="div-cantidad-ingredientes-receta">
+                                                    <label htmlFor="cantidadIngrediente" className="label-cantidad-ingrediente">Ingredientes y cantidades:</label>
+                                                    <textarea
+                                                        ref={cantidadIngredienteRef}
+                                                        id="cantidadIngrediente"
+                                                        className={`text-area-cantidad-ingrediente ${errorIngredientesCantidades ? 'input-error' : ''}`}
+                                                        placeholder="Ejemplo:&#10;Sal: 20gr &#10;Agua: 300cc"
+                                                        value={cantidadIngrediente} // Asignamos el estado como valor
+                                                        onChange={actualizarIngredientesCantidades} // Manejador de cambio
+                                                    ></textarea>
+                                                    <input type="hidden" className="inputOcultoIngredientesCantidades" name="ingredientesCantidades" />
+                                                    <div className="p-aclaracion-cantidad-ingrediente">
+                                                        <p className="instruccion-ingrediente-cantidad">Separe el ingrediente de la cantidad con 2 puntos (:)</p>
+                                                    </div>
                                                 </div>
-                                                <div className="modal-error-paso" style={{height:'20px'}}>
-                                                    {errorPasos && <div id="modalErrorPasos" > {errorPasos} </div>}
-                                                </div>
-                                                <input type="hidden" id="inputOculto" name="pasos" />
-
-                                                <div className="div-agregar-quitar-pasos">
-                                                    <button id="btnAgregarPaso" className="btn-agregar-paso" title="Agregar paso" onClick={agregarPaso}>
-                                                        <i className="fas fa-plus"></i>  Paso
-                                                    </button>
-
-                                                    <button id="btnQuitarPaso" className="btn-quitar-paso" title="Quitar paso" onClick={quitarPaso} style={{ display: pasos.length > 1 ? 'block' : 'none' }}>
-                                                        <i className="fas fa-minus"></i> Paso
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        
-
-                                            {/* Imagen */}
-                                            <div className="div-imagen">
-                                                <label htmlFor="imagen" className="label-imagen-receta">Imagen de la receta:</label>
-                                                <input 
-                                                ref={imagenRef}
-                                                type="file" 
-                                                id="imagen" 
-                                                name="file" 
-                                                accept="image/*" 
-                                                onChange={previewImage} 
-                                                className={`input-imagen ${errorImagen ? 'input-error' : ''}`}
-                                                />
-                                                <div  className="modal-error-imagen" style={{height:'20px'}}>
-                                                    {errorImagen && <div id="modalErrorImagen"> {errorImagen} </div>}
-                                                </div>
-                                                <div className={`imagen-preview ${imagen ? 'visible' : ''}`}>
-                                                    {imagen && (
-                                                        <Cropper
-                                                        image={imagen}
-                                                        crop={crop}
-                                                        zoom={zoom}
-                                                        aspect={4 / 3} // Cambia el aspecto según sea necesario
-                                                        onCropChange={setCrop}
-                                                        onZoomChange={setZoom}
-                                                        onCropComplete={handleCropComplete}
-                                                        style={{ 
-                                                            width: '100%', // Se asegura de que ocupe todo el espacio del contenedor
-                                                            height: '100%' // También asegura que ocupe toda la altura
-                                                        }}
-                                                        />
-                                                    )}
-                                                </div>
+                                                <div className="modal-error-ingredientes-cantidades"  style={{height:'20px'}}>
+                                                    {errorIngredientesCantidades && <div id="modalErrorIngredientesCantidades" > {errorIngredientesCantidades} </div>}
                                             </div>
 
+                                                {/* Campos de los pasos */}
+                                                <div className="div-pasos-receta">
+                                                    <div id="pasosPanel" className="pasos-panel">
+                                                        {pasos.map((paso, index) => (
+                                                            <div key={index} className="paso">
+                                                                <label htmlFor={`paso${index + 1}`} className="label-pasos">Paso {index + 1}:</label>
+                                                                <textarea
+                                                                    ref={pasosRef}
+                                                                    id={`paso${index + 1}`}
+                                                                    className={`text-area-pasos ${errorPasos ? 'input-error' : ''}`}
+                                                                    placeholder="Agregar paso..."
+                                                                    value={paso}
+                                                                    onChange={(e) => handlePasoChange(index, e.target.value)}
+                                                                    onInput={autoResize}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="modal-error-paso" style={{height:'20px'}}>
+                                                        {errorPasos && <div id="modalErrorPasos" > {errorPasos} </div>}
+                                                    </div>
+                                                    <input type="hidden" id="inputOculto" name="pasos" />
+
+                                                    <div className="div-agregar-quitar-pasos">
+                                                        <button id="btnAgregarPaso" className="btn-agregar-paso" title="Agregar paso" onClick={agregarPaso}>
+                                                            <i className="fas fa-plus"></i>  Paso
+                                                        </button>
+
+                                                        <button id="btnQuitarPaso" className="btn-quitar-paso" title="Quitar paso" onClick={quitarPaso} style={{ display: pasos.length > 1 ? 'block' : 'none' }}>
+                                                            <i className="fas fa-minus"></i> Paso
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             
-                                            {/* Dificultad */}
-                                            <div className="div-dificultad">
-                                                <label htmlFor="dificultad" className="label-dificultad">Seleccione la dificultad de la receta: </label>
-                                                <select 
-                                                ref={dificultadRef}
-                                                id="dificultad" 
-                                                className={`menu-dificultad ${errorDificultad ? 'input-error' : ''}`} 
-                                                value={dificultad} 
-                                                onChange={(e) => setDificultad(e.target.value)} 
-                                                >
-                                                    <option value="">Seleccione...</option>
-                                                    <option value="Fácil">Fácil</option>
-                                                    <option value="Intermedio">Intermedio</option>
-                                                    <option value="Difícil">Difícil</option>
-                                                </select>
-                                            </div>
-                                            <div className="modal-error-dificultad" style={{height:'20px'}}>
-                                                {errorDificultad && <div id="modalErrorDificultad"> {errorDificultad} </div>}
-                                            </div>
 
-                                            {/* Categoría */}
-                                            <div className="div-categoria">
-                                                <label htmlFor="categoria" className="label-categoria">Seleccione la categoría de la receta: </label>
-                                                <select 
-                                                ref={categoriaRef}
-                                                id="categoria" 
-                                                className= {`menu-categoria ${errorCategoria ? 'input-error' : ''}`}  
-                                                value={categoria} 
-                                                onChange={(e) => setCategoria(e.target.value)} 
-                                                >
-                                                    {/* Si agrego cateogoria nueva aca tengo que agregarla al random seleccionable tambien*/}
-                                                    <option value="">Seleccione...</option>
-                                                    <option value="Desayuno/Merienda">Desayuno/Merienda</option>
-                                                    <option value="Almuerzo/Cena">Almuerzo/Cena</option>
-                                                    <option value="Brunch">Brunch</option>
-                                                    <option value="Bebida/trago">Bebida/Trago</option>
-                                                    <option value="Veggie">Veggie</option>
-                                                    <option value="Guarnición">Guarnición</option>
-                                                    <option value="Postre">Postre</option>
-                                                </select>
-                                            </div>
-                                            <div className="modal-error-categoria" style={{height:'20px'}}>
-                                                {errorCategoria && <div id="modalErrorCategoria" > {errorCategoria} </div>}
-                                            </div>  
+                                                {/* Imagen */}
+                                                <div className="div-imagen">
+                                                    <label htmlFor="imagen" className="label-imagen-receta">Imagen de la receta:</label>
+                                                    <input 
+                                                    ref={imagenRef}
+                                                    type="file" 
+                                                    id="imagen" 
+                                                    name="file" 
+                                                    accept="image/*" 
+                                                    onChange={previewImage} 
+                                                    className={`input-imagen ${errorImagen ? 'input-error' : ''}`}
+                                                    />
+                                                    <div  className="modal-error-imagen" style={{height:'20px'}}>
+                                                        {errorImagen && <div id="modalErrorImagen"> {errorImagen} </div>}
+                                                    </div>
+                                                    <div className={`imagen-preview ${imagen ? 'visible' : ''}`}>
+                                                        {imagen && (
+                                                            <Cropper
+                                                            image={imagen}
+                                                            crop={crop}
+                                                            zoom={zoom}
+                                                            aspect={4 / 3} // Cambia el aspecto según sea necesario
+                                                            onCropChange={setCrop}
+                                                            onZoomChange={setZoom}
+                                                            onCropComplete={handleCropComplete}
+                                                            style={{ 
+                                                                width: '100%', // Se asegura de que ocupe todo el espacio del contenedor
+                                                                height: '100%' // También asegura que ocupe toda la altura
+                                                            }}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </div>
 
-                                            {/* Tiempo de preparación */}
-                                            <div className="div-tiempo-preparacion">
-                                                <label htmlFor="tiempoPreparacion" className="label-tiempo-preparacion">Tiempo de preparación (minutos): </label>
                                                 
-                                                <button 
-                                                    id="btnQuitarTiempo" 
-                                                    className="btn-quitar-tiempo" 
-                                                    title="Quitar 1 minuto" 
-                                                    onClick={quitarMinuto}>
-                                                    <i className="fas fa-minus"></i>
-                                                </button>
-                                                
-                                                <input 
-                                                    ref={tiempoPreparacionRef}
+                                                {/* Dificultad */}
+                                                <div className="div-dificultad">
+                                                    <label htmlFor="dificultad" className="label-dificultad">Seleccione la dificultad de la receta: </label>
+                                                    <select 
+                                                    ref={dificultadRef}
+                                                    id="dificultad" 
+                                                    className={`menu-dificultad ${errorDificultad ? 'input-error' : ''}`} 
+                                                    value={dificultad} 
+                                                    onChange={(e) => setDificultad(e.target.value)} 
+                                                    >
+                                                        <option value="">Seleccione...</option>
+                                                        <option value="Fácil">Fácil</option>
+                                                        <option value="Intermedio">Intermedio</option>
+                                                        <option value="Difícil">Difícil</option>
+                                                    </select>
+                                                </div>
+                                                <div className="modal-error-dificultad" style={{height:'20px'}}>
+                                                    {errorDificultad && <div id="modalErrorDificultad"> {errorDificultad} </div>}
+                                                </div>
+
+                                                {/* Categoría */}
+                                                <div className="div-categoria">
+                                                    <label htmlFor="categoria" className="label-categoria">Seleccione la categoría de la receta: </label>
+                                                    <select 
+                                                    ref={categoriaRef}
+                                                    id="categoria" 
+                                                    className= {`menu-categoria ${errorCategoria ? 'input-error' : ''}`}  
+                                                    value={categoria} 
+                                                    onChange={(e) => setCategoria(e.target.value)} 
+                                                    >
+                                                        {/* Si agrego cateogoria nueva aca tengo que agregarla al random seleccionable tambien*/}
+                                                        <option value="">Seleccione...</option>
+                                                        <option value="Desayuno/Merienda">Desayuno/Merienda</option>
+                                                        <option value="Almuerzo/Cena">Almuerzo/Cena</option>
+                                                        <option value="Brunch">Brunch</option>
+                                                        <option value="Bebida/trago">Bebida/Trago</option>
+                                                        <option value="Veggie">Veggie</option>
+                                                        <option value="Guarnición">Guarnición</option>
+                                                        <option value="Postre">Postre</option>
+                                                    </select>
+                                                </div>
+                                                <div className="modal-error-categoria" style={{height:'20px'}}>
+                                                    {errorCategoria && <div id="modalErrorCategoria" > {errorCategoria} </div>}
+                                                </div>  
+
+                                                {/* Tiempo de preparación */}
+                                                <div className="div-tiempo-preparacion">
+                                                    <label htmlFor="tiempoPreparacion" className="label-tiempo-preparacion">Tiempo de preparación (minutos): </label>
+                                                    
+                                                    <button 
+                                                        id="btnQuitarTiempo" 
+                                                        className="btn-quitar-tiempo" 
+                                                        title="Quitar 1 minuto" 
+                                                        onClick={quitarMinuto}>
+                                                        <i className="fas fa-minus"></i>
+                                                    </button>
+                                                    
+                                                    <input 
+                                                        ref={tiempoPreparacionRef}
+                                                        type="text" 
+                                                        id="tiempoPreparacion" 
+                                                        className={`input-tiempo-preparacion ${errorTiempo ? 'input-error' : ''}`}   
+                                                        value={tiempoPreparacion} 
+                                                        onChange={(e) => setTiempoPreparacion(e.target.value)}
+                                                    />
+                                                    
+                                                    <button 
+                                                        id="btnAgregarTiempo" 
+                                                        className="btn-agregar-tiempo" 
+                                                        title="Agregar 1 minuto" 
+                                                        onClick={agregarMinuto}>
+                                                        <i className="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+
+                                                <div className="modal-error-tiempo-preparacion" style={{height:'20px'}}>
+                                                    {errorTiempo && <div id="modalErrorTiempoPreparacion" > {errorTiempo} </div>}
+                                                </div>
+
+                                                {/* Ingredientes */}
+                                                <div className="div-ingredientes">
+                                                    <label className="label-ingredientes">Ingredientes característicos de la receta:</label>
+                                                    <input 
+                                                    ref={ingredientesRef}
                                                     type="text" 
-                                                    id="tiempoPreparacion" 
-                                                    className={`input-tiempo-preparacion ${errorTiempo ? 'input-error' : ''}`}   
-                                                    value={tiempoPreparacion} 
-                                                    onChange={(e) => setTiempoPreparacion(e.target.value)}
-                                                />
-                                                
-                                                <button 
-                                                    id="btnAgregarTiempo" 
-                                                    className="btn-agregar-tiempo" 
-                                                    title="Agregar 1 minuto" 
-                                                    onClick={agregarMinuto}>
-                                                    <i className="fas fa-plus"></i>
+                                                    id="ingredientesInput" 
+                                                    className= {`input-ingredientes  ${errorIngredientes ? 'input-error' : ''}`}   
+                                                    placeholder="Ingrese ingredientes..." 
+                                                    name="ingredientes" value={ingredientes} 
+                                                    onChange={(e) => setIngredientes(e.target.value)} 
+                                                    />
+                                                </div>
+                                                <div className="p-aclaracion-ingrediente">
+                                                    <p className="instruccion-ingrediente">Separe cada ingrediente por una coma ( , )</p>
+                                                </div>
+                                                <div className="modal-error-ingredientes" style={{height:'20px'}}>
+                                                    {errorIngredientes && <div id="modalErrorIngredientes" >{errorIngredientes} </div>}
+                                                </div>
+
+                                                {/* Botón para guardar receta */}
+                                                <button type="submit" id="boton-enviar" className="btn-guardar-receta">
+                                                    Guardar receta
                                                 </button>
                                             </div>
-
-                                            <div className="modal-error-tiempo-preparacion" style={{height:'20px'}}>
-                                                {errorTiempo && <div id="modalErrorTiempoPreparacion" > {errorTiempo} </div>}
-                                            </div>
-
-                                            {/* Ingredientes */}
-                                            <div className="div-ingredientes">
-                                                <label className="label-ingredientes">Ingredientes característicos de la receta:</label>
-                                                <input 
-                                                ref={ingredientesRef}
-                                                type="text" 
-                                                id="ingredientesInput" 
-                                                className= {`input-ingredientes  ${errorIngredientes ? 'input-error' : ''}`}   
-                                                placeholder="Ingrese ingredientes..." 
-                                                name="ingredientes" value={ingredientes} 
-                                                onChange={(e) => setIngredientes(e.target.value)} 
-                                                />
-                                            </div>
-                                            <div className="p-aclaracion-ingrediente">
-                                                <p className="instruccion-ingrediente">Separe cada ingrediente por una coma ( , )</p>
-                                            </div>
-                                            <div className="modal-error-ingredientes" style={{height:'20px'}}>
-                                                {errorIngredientes && <div id="modalErrorIngredientes" >{errorIngredientes} </div>}
-                                            </div>
-
-                                            {/* Botón para guardar receta */}
-                                            <button type="submit" id="boton-enviar" className="btn-guardar-receta">
-                                                Guardar receta
-                                            </button>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
                             )}
+                            
                             {/* Cargando mientras se guardar una nueva receta */}
                             {cargandoNuevaReceta && (
                                 <div className="loading-new-recipe">
