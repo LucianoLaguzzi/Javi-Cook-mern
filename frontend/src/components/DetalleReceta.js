@@ -72,9 +72,9 @@ const DetalleReceta = () => {
 
 
 
-        // Aquí estamos asignando los comentarios correctamente
+        // "comentarios tiene todos los comentarios padre, con sus datos, por lo tanto "comentario" tiene cada uno de esos."
         const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
-          // Asegúrate de que las respuestas se asignen correctamente dentro de cada comentario
+          // El array "respuestas" tiene las respuestas a cada comentario, viene en el get de la receta.
           return {
             ...comentario,
             respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
@@ -305,12 +305,12 @@ const DetalleReceta = () => {
           }
   
           // Revisar respuestas de nivel superior para manejar re-respuestas
-          if (comentario.respuestas) {
-            comentario.respuestas = comentario.respuestas.map((respuesta) => {
-              if (respuesta._id === comentarioAResponder) {
-                return {
-                  ...respuesta,
-                  respuestas: [...(respuesta.respuestas || []), nuevaRespuesta],
+          if (comentario.respuestas) { //Si el comentario padre tiene respuestas, iteramos sobre ellas:
+            comentario.respuestas = comentario.respuestas.map((respuesta) => { //Por cada "respuesta" al comentario padre:
+              if (respuesta._id === comentarioAResponder) { //Si la respuesta iterada es igual a la "respuesta" que quiero responder:
+                return { //Se agrega una re-respuesta
+                  ...respuesta, //Copia los valores de lo q tengo como "respuesta"
+                  respuestas: [...(respuesta.respuestas || []), nuevaRespuesta], //Si es la primera vez q agrego una re-respuesta al comentario entra por el array vacio y le asigna la nuevaRespuesta. Si ya existe, copia el array q ya tiene y al final le agrega la nuevaRespuesta
                 };
               }
               return respuesta;
@@ -349,7 +349,7 @@ const DetalleReceta = () => {
   };
   
 
-  // Función para manejar la edición
+  // Función para manejar la edición de comentario o de respuestas
   const editarComentario = (comentarioId, textoActual) => {
     setComentarioEditado(comentarioId);
     setNuevoComentarioEditado(textoActual);
@@ -363,16 +363,16 @@ const DetalleReceta = () => {
   };
 
 
-  // Función para guardar la edición
+  // Función para guardar la edición de un comentario o respuesta
   const guardarEdicion = async () => {
-    if (!nuevoComentarioEditado.trim()) return;
+    if (!nuevoComentarioEditado.trim()) return; //nuevoComentarioEditado es el comentario o respuesta ya editada (texto)
 
     try {
       // Llamada al servidor para editar comentario o respuesta
       const response = await axios.put(
         esRespuesta
-          ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}`
-          : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`,
+          ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}` //re-respuesta
+          : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`, //Comentario o respuesta
         {
           comentario: nuevoComentarioEditado,
           usuario: usuarioEnSesion._id,
@@ -383,7 +383,7 @@ const DetalleReceta = () => {
 
       // Actualizar estado local de los comentarios
       setComentarios((prevComentarios) => {
-        const actualizarComentarios = (comentarios) =>
+        const actualizarComentarios = (comentarios) => //Esto se declara pero no se ejecuta, hasta q se llama mas abajo.
           comentarios.map((comentario) => {
             // Si estamos editando un comentario principal
             if (!esRespuesta && comentario._id === comentarioEditado) {
@@ -763,9 +763,9 @@ const DetalleReceta = () => {
                 {!ingredientesEditable ? (
                     <>
                         <div className='valores-cantidad'>
-                            {ingredientesCantidades.split('\n').map((ingrediente, index) => {
-                                const partes = ingrediente.split(':');
-                                if (partes.length === 2) {
+                            {ingredientesCantidades.split('\n').map((ingrediente, index) => { //Separa cada linea con una "," como un elemento nuevo.
+                                const partes = ingrediente.split(':'); //Separa cada ingrediente con su cantidad , ingrediente:cantidad por cada linea.
+                                if (partes.length === 2) { //Ejemplo: partes = ["Harina", "200g"]
                                     const ingredienteFormateado = `${partes[0].trim()}: ${partes[1].trim()}`;
                                     return <div key={index}>{ingredienteFormateado}</div>;
                                 }
@@ -872,7 +872,7 @@ const DetalleReceta = () => {
                <span className='titulo-valoracion'>Tu valoración para esta receta</span>
               <div
                 className="contenedor-valoracion"
-                onMouseEnter={() => setMostrarEliminar(true)} // Muestra el ícono al pasar el mouse
+                onMouseEnter={() => setMostrarEliminar(true)} // Muestra el ícono de eliminar valoracion al pasar el mouse
                 onMouseLeave={() => setMostrarEliminar(false)} // Oculta el ícono al salir
               >
                
@@ -1025,7 +1025,7 @@ const DetalleReceta = () => {
                           {respuestasVisibles[comentario._id] && (
                             <div className="respuestas">
                               {comentario.respuestas.map((respuesta) => (
-                                <div key={respuesta._id} className="respuesta-comentario">
+                                <div key={respuesta._id} className="respuesta-comentario"> {/*Cada una de las respuestas */}
                                   <div className="imagen-nombre">
                                     <img
                                       className="imagen-perfil-comentario"
@@ -1039,7 +1039,7 @@ const DetalleReceta = () => {
                                   </span>
 
                                   {/* Modo de edición para respuestas */}
-                                  {comentarioEditado === respuesta._id ? (
+                                  {comentarioEditado === respuesta._id ? ( //Luego de establecer en comentarioEditado el id de la respuesta entra acá.
                                     <div className="modo-edicion-respuesta">
                                       <input
                                         className='input-respuesta-edicion'
@@ -1060,15 +1060,15 @@ const DetalleReceta = () => {
                                     <p className="texto-respuesta">{respuesta.comentario}</p>
                                   )}
 
-                                {/* Botón de edición para respuestas (solo si el usuario es el autor) */}
-                                {usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && (
-                                  <a
-                                    className='btn-editar-pasos'
-                                    onClick={() => editarComentario(respuesta._id, respuesta.comentario, true, comentario._id)}
-                                  >
-                                    <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
-                                  </a>
-                                )}
+                                  {/* Botón de edición para respuestas (solo si el usuario es el autor) */}
+                                  {usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && ( //comentarioEditado tiene el id de la respuesta q se va a editar
+                                    <a
+                                      className='btn-editar-pasos'
+                                      onClick={() => editarComentario(respuesta._id, respuesta.comentario, true, comentario._id)} //true y comentario._id no se estan usando
+                                    >
+                                      <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
+                                    </a>
+                                  )}
 
 
                                   <button
@@ -1160,7 +1160,7 @@ const DetalleReceta = () => {
                                     </div>
                                   )}
 
-                                  {/* Input para re-responder */}
+                                  {/* Input para re-responder (responder respuestas*/}
                                   {comentarioAResponder === respuesta._id && (
                                     <div className="input-respuesta reresp-input">
                                       <input

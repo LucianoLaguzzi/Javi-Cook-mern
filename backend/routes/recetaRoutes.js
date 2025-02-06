@@ -194,12 +194,12 @@ router.delete('/:recetaId', async (req, res) => {
         await Receta.findByIdAndDelete(recetaId);
       
         res.status(200).json({ mensaje: 'Receta eliminada con éxito.' });
-      } catch (error) {
+    } catch (error) {
         console.error('Error al eliminar la receta:', error);
         res.status(500).json({ mensaje: 'Hubo un problema al eliminar la receta.' });
-      }
+    }
       
-  });
+});
 
 
 
@@ -207,6 +207,8 @@ router.delete('/:recetaId', async (req, res) => {
 const eliminarImagenCloudinary = async (urlImagen) => {
     try {
       // Extraer el `public_id` de la URL de Cloudinary
+      //Separa la url por cada "/" con el split, luego toma los ultimos 2 elementos del array y los une (join) con un "/", 
+      //es decir: recetas/[nombreReceta] y luego con split separa la extension, tomando la primer parte sin el .jpg ya q la publicId no lo necesita.
       const publicId = urlImagen.split('/').slice(-2).join('/').split('.')[0]; // Ejemplo: recetas/abc123
   
       await cloudinary.uploader.destroy(publicId);

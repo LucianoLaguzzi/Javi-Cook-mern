@@ -309,7 +309,7 @@ const Perfil = () => {
                                         <ul>
                                             {recetas.map((receta) => (
                                                 <li key={receta._id} className="tarjeta-receta2">
-                                                     <a
+                                                    <a
                                                         href="#"
                                                         className="receta-etiqueta"
                                                         onClick={() => navigate(`/detalle-receta/${receta._id}`)}

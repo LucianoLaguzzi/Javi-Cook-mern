@@ -181,7 +181,7 @@ const Inicio = () => {
     const quitarPaso = (e) => {
         e.preventDefault();
         if (pasos.length > 1) {
-            const nuevosPasos = pasos.slice(0, -1); // Quitamos el último paso
+            const nuevosPasos = pasos.slice(0, -1); // Quitamos el último paso 0 es el inicio y -1 es el ultimo valor, pero el slice no lo incluye
             setPasos(nuevosPasos);
             
             // Actualizamos el input oculto con los nuevos pasos
@@ -1107,7 +1107,7 @@ const Inicio = () => {
                                     </div>
                                 </div>
                             )}
-                            
+
                             {/* Cargando mientras se guardar una nueva receta */}
                             {cargandoNuevaReceta && (
                                 <div className="loading-new-recipe">

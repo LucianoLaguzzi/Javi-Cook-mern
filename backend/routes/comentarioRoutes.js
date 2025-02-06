@@ -80,7 +80,7 @@ router.post('/:id/comentarios', async (req, res) => {
 });
 
 
-// Ruta para editar un comentario
+// Ruta para editar un comentario o respuesta
 router.put('/:id/comentarios/:comentarioId', async (req, res) => {
     const { id, comentarioId } = req.params; // ID de la receta y del comentario
     const { comentario, usuario } = req.body; // Comentario editado y usuario en sesión
@@ -119,7 +119,7 @@ router.put('/:id/comentarios/:comentarioId', async (req, res) => {
 });
 
 
-// Ruta para editar una respuesta específica
+// Ruta para editar una re-respuesta específica
 router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req, res) => {
     const { id, comentarioId, respuestaId } = req.params; // ID de la receta, comentario y respuesta
     const { comentario, usuario } = req.body; // Comentario editado y usuario en sesión
@@ -166,7 +166,7 @@ router.put('/:id/comentarios/:comentarioId/respuestas/:respuestaId', async (req,
 });
 
 
-// Ruta para editar cualquier comentario, respuesta o re-respuesta
+// Ruta para editar re-respuesta
 router.put('/:id/rerespuesta/:comentarioId', async (req, res) => {
     const { id, comentarioId } = req.params; // IDs de la receta y el comentario a editar
     const { comentario, usuario } = req.body; // Texto del comentario y usuario autenticado
