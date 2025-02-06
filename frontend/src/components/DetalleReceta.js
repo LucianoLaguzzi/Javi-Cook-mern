@@ -580,7 +580,7 @@ const DetalleReceta = () => {
         // Nota: Esto asume que el backend elimina en cadena, por lo que
         // puede ser necesario actualizar el estado general.
         setComentarios((prevComentarios) =>
-          prevComentarios.filter((comentario) => comentario._id !== idComentario)
+          removeDeletedFromComments(prevComentarios, idComentario)
         );
       }
     } catch (error) {
@@ -589,6 +589,17 @@ const DetalleReceta = () => {
   };
 
 
+  const removeDeletedFromComments = (comments, deletedId) => {
+    return comments
+      .filter(comment => comment._id !== deletedId) // elimina si está en el nivel actual
+      .map(comment => ({
+        ...comment,
+        // Si el comentario tiene respuestas, actualiza recursivamente
+        respuestas: comment.respuestas
+          ? removeDeletedFromComments(comment.respuestas, deletedId)
+          : []
+      }));
+  };
 
 
 
