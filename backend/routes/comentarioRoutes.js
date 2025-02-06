@@ -205,4 +205,56 @@ router.put('/:id/rerespuesta/:comentarioId', async (req, res) => {
 });
 
 
+// Ruta para eliminar un comentario o respuesta (y sus respuestas en cadena) de una receta
+router.delete('/:id/comentarios/:commentId', async (req, res) => {
+    const { id, commentId } = req.params; // id de la receta y id del comentario a borrar
+    const { usuario } = req.body; // id del usuario que solicita el borrado
+  
+    try {
+      // Buscar la receta
+      const receta = await Receta.findById(id);
+      if (!receta) {
+        return res.status(404).json({ message: 'Receta no encontrada' });
+      }
+  
+      // Buscar el comentario
+      const comentario = await Comentario.findById(commentId);
+      if (!comentario) {
+        return res.status(404).json({ message: 'Comentario no encontrado' });
+      }
+  
+      // Verificar permisos: debe ser el autor del comentario o el autor de la receta
+      if (
+        String(comentario.usuario) !== usuario &&
+        String(receta.autor) !== usuario
+      ) {
+        return res.status(403).json({
+          message: 'No tienes permiso para borrar este comentario',
+        });
+      }
+  
+      // Eliminar el comentario y en cadena todas las respuestas asociadas.
+      // Suponiendo que usas el campo parentCommentId para relacionar respuestas y re-respuestas,
+      // se elimina el comentario y todos aquellos que tengan parentCommentId igual al commentId.
+      await Comentario.deleteMany({
+        $or: [{ _id: commentId }, { parentCommentId: commentId }],
+      });
+  
+      // Opcional: remover el id del comentario borrado del array de comentarios de la receta
+      receta.comentarios = receta.comentarios.filter(
+        (cId) => String(cId) !== commentId
+      );
+      await receta.save();
+  
+      res.status(200).json({ message: 'Comentario eliminado' });
+    } catch (error) {
+      console.error("Error al borrar el comentario:", error);
+      res.status(500).json({ message: 'Error al borrar el comentario' });
+    }
+  });
+
+
+
+
+
 export default router;

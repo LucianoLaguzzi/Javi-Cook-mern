@@ -555,6 +555,39 @@ const DetalleReceta = () => {
   };
 
 
+  // Funciones para borrar comentario/respuesta
+  const confirmarBorrado = (idComentario) => {
+    if (
+      window.confirm(
+        "¿Estás seguro de que deseas eliminar este comentario? Se borrarán todas las respuestas asociadas."
+      )
+    ) {
+      borrarComentario(idComentario);
+    }
+  };
+  // Funciones para borrar comentario/respuesta
+  const borrarComentario = async (idComentario) => {
+    try {
+      const response = await axios.delete(
+        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${idComentario}`,
+        {
+          data: { usuario: usuarioEnSesion._id },
+        }
+      );
+
+      if (response.status === 200) {
+        // Actualizamos el estado eliminando el comentario borrado.
+        // Nota: Esto asume que el backend elimina en cadena, por lo que
+        // puede ser necesario actualizar el estado general.
+        setComentarios((prevComentarios) =>
+          prevComentarios.filter((comentario) => comentario._id !== idComentario)
+        );
+      }
+    } catch (error) {
+      console.error("Error al borrar el comentario:", error);
+    }
+  };
+
 
 
 
@@ -1011,6 +1044,27 @@ const DetalleReceta = () => {
                           </a>
                         )}
 
+
+
+
+                         {/* Botón de eliminación */}
+    {(usuarioEnSesion._id === comentario.usuario._id ||
+      usuarioEnSesion._id === receta.usuario?._id) && (
+      <a
+        className="btn-borrar"
+        onClick={() => confirmarBorrado(comentario._id)}
+        title="Borrar comentario"
+      >
+        <i className="fas fa-trash"></i>
+      </a>
+    )}
+
+
+
+
+
+
+
                         <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
                           Responder
                         </button>
@@ -1069,6 +1123,34 @@ const DetalleReceta = () => {
                                       <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
                                     </a>
                                   )}
+
+
+
+
+
+                                    {/* Botón de eliminación para respuestas */}
+              {(usuarioEnSesion._id === respuesta.usuario._id ||
+                usuarioEnSesion._id === receta.usuario?._id) && (
+                <a
+                  className="btn-borrar"
+                  onClick={() => confirmarBorrado(respuesta._id)}
+                  title="Borrar respuesta"
+                >
+                  <i className="fas fa-trash"></i>
+                </a>
+              )}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                                   <button
@@ -1153,6 +1235,28 @@ const DetalleReceta = () => {
                                                   <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
                                                 </a>
                                               )}
+
+
+
+
+                                               {/* Botón de eliminación para re-respuestas */}
+                          {(usuarioEnSesion._id ===
+                            rerespuesta.usuario._id ||
+                            usuarioEnSesion._id === receta.usuario?._id) && (
+                            <a
+                              className="btn-borrar"
+                              onClick={() =>
+                                confirmarBorrado(rerespuesta._id)
+                              }
+                              title="Borrar re-respuesta"
+                            >
+                              <i className="fas fa-trash"></i>
+                            </a>
+                          )}
+
+
+
+
                                             </div>
                                           ))}
                                         </div>
