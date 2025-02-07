@@ -205,7 +205,17 @@ router.put('/:id/rerespuesta/:comentarioId', async (req, res) => {
 });
 
 
-// Ruta para eliminar un comentario o respuesta (y sus respuestas en cadena) de una receta
+
+
+
+
+
+
+
+
+
+
+// Ruta para eliminar un comentario o respuesta (y sus respuestas en cadena) de una receta (MODIFICAR O BORRAR)
 router.delete('/:id/comentarios/:commentId', async (req, res) => {
     const { id, commentId } = req.params; // id de la receta y id del comentario a borrar
     const { usuario } = req.body; // id del usuario que solicita el borrado

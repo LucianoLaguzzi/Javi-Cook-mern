@@ -555,7 +555,32 @@ const DetalleReceta = () => {
   };
 
 
-  // Funciones para borrar comentario/respuesta
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Funciones para borrar comentario/respuesta (MODIFICAR O BORRAR)
   const confirmarBorrado = (idComentario) => {
     if (
       window.confirm(
@@ -565,6 +590,30 @@ const DetalleReceta = () => {
       borrarComentario(idComentario);
     }
   };
+
+
+
+  // Función que recorre recursivamente el árbol de comentarios
+// y elimina el comentario (o respuesta/re-respuesta) cuyo _id sea el indicado.
+const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
+  return comentarios.reduce((acumulador, comentario) => {
+    // Si el comentario actual es el que hay que eliminar, lo omitimos.
+    if (comentario._id === idAEliminar) return acumulador;
+    
+    // Si tiene respuestas, las recorremos recursivamente.
+    if (comentario.respuestas && comentario.respuestas.length > 0) {
+      comentario.respuestas = eliminarComentarioEnArbol(comentario.respuestas, idAEliminar);
+    }
+    
+    acumulador.push(comentario);
+    return acumulador;
+  }, []);
+};
+
+
+
+
+
   // Funciones para borrar comentario/respuesta
   const borrarComentario = async (idComentario) => {
     try {
@@ -574,13 +623,11 @@ const DetalleReceta = () => {
           data: { usuario: usuarioEnSesion._id },
         }
       );
-
+  
       if (response.status === 200) {
-        // Actualizamos el estado eliminando el comentario borrado.
-        // Nota: Esto asume que el backend elimina en cadena, por lo que
-        // puede ser necesario actualizar el estado general.
+        // Actualizamos el estado eliminando recursivamente el comentario borrado
         setComentarios((prevComentarios) =>
-          removeDeletedFromComments(prevComentarios, idComentario)
+          eliminarComentarioEnArbol(prevComentarios, idComentario)
         );
       }
     } catch (error) {
@@ -589,17 +636,25 @@ const DetalleReceta = () => {
   };
 
 
-  const removeDeletedFromComments = (comments, deletedId) => {
-    return comments
-      .filter(comment => comment._id !== deletedId) // elimina si está en el nivel actual
-      .map(comment => ({
-        ...comment,
-        // Si el comentario tiene respuestas, actualiza recursivamente
-        respuestas: comment.respuestas
-          ? removeDeletedFromComments(comment.respuestas, deletedId)
-          : []
-      }));
-  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1058,7 +1113,7 @@ const DetalleReceta = () => {
 
 
 
-                         {/* Botón de eliminación */}
+                         {/* Botón de eliminación comentario principal  (MODIFICAR O BORRAR)*/}
     {(usuarioEnSesion._id === comentario.usuario._id ||
       usuarioEnSesion._id === receta.usuario?._id) && (
       <a
@@ -1139,7 +1194,7 @@ const DetalleReceta = () => {
 
 
 
-                                    {/* Botón de eliminación para respuestas */}
+                                    {/* Botón de eliminación para respuestas (MODIFICAR O BORRAR) */}
               {(usuarioEnSesion._id === respuesta.usuario._id ||
                 usuarioEnSesion._id === receta.usuario?._id) && (
                 <a
@@ -1250,7 +1305,7 @@ const DetalleReceta = () => {
 
 
 
-                                               {/* Botón de eliminación para re-respuestas */}
+                                               {/* Botón de eliminación para re-respuestas  (MODIFICAR O BORRAR)*/}
                           {(usuarioEnSesion._id ===
                             rerespuesta.usuario._id ||
                             usuarioEnSesion._id === receta.usuario?._id) && (
