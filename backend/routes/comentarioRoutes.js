@@ -243,11 +243,26 @@ router.delete('/:id/comentarios/:commentId', async (req, res) => {
         });
       }
   
-      // Eliminar el comentario y en cadena todas las respuestas asociadas.
-      // Suponiendo que usas el campo parentCommentId para relacionar respuestas y re-respuestas,
-      // se elimina el comentario y todos aquellos que tengan parentCommentId igual al commentId.
+     // Función recursiva para obtener los IDs de todos los comentarios descendientes
+    async function obtenerIdsDescendientes(id) {
+        // Buscar respuestas directas del comentario con id dado
+        const hijos = await Comentario.find({ parentCommentId: id });
+        // Extraer los IDs de los hijos encontrados
+        let ids = hijos.map((hijo) => hijo._id.toString());
+        // Por cada hijo, obtener recursivamente sus descendientes
+        for (const hijo of hijos) {
+          const subIds = await obtenerIdsDescendientes(hijo._id);
+          ids = ids.concat(subIds);
+        }
+        return ids;
+      }
+  
+      // Obtener todos los IDs descendientes del comentario a borrar
+      const idsDescendientes = await obtenerIdsDescendientes(commentId);
+  
+      // Eliminar el comentario y TODOS sus descendientes (respuestas, re-respuestas, etc.)
       await Comentario.deleteMany({
-        $or: [{ _id: commentId }, { parentCommentId: commentId }],
+        _id: { $in: [commentId, ...idsDescendientes] }
       });
   
       // Opcional: remover el id del comentario borrado del array de comentarios de la receta
