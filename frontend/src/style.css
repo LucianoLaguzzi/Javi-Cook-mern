@@ -5165,3 +5165,8 @@ i.fas.fa-undo {
     }
 }
 
+.eliminar-comentario{
+    cursor: pointer;
+    color: red;
+    margin-left: 20px;
+}

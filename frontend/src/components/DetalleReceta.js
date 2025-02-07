@@ -1110,30 +1110,22 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                           </a>
                         )}
 
-
-
-
-                         {/* Botón de eliminación comentario principal  (MODIFICAR O BORRAR)*/}
-    {(usuarioEnSesion._id === comentario.usuario._id ||
-      usuarioEnSesion._id === receta.usuario?._id) && (
-      <a
-        className="btn-borrar"
-        onClick={() => confirmarBorrado(comentario._id)}
-        title="Borrar comentario"
-      >
-        <i className="fas fa-trash"></i>
-      </a>
-    )}
-
-
-
-
-
-
-
                         <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
                           Responder
                         </button>
+
+                        {/* Botón de eliminación comentario principal  (MODIFICAR O BORRAR)*/}
+                        {(usuarioEnSesion._id === comentario.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
+                          <a
+                            className="btn-borrar"
+                            onClick={() => confirmarBorrado(comentario._id)}
+                            title="Borrar comentario"
+                          >
+                            <i className="fas fa-trash eliminar-comentario"></i>
+                          </a>
+                        )}
+
+
                       </div>
 
                       {/* Respuestas */}
@@ -1190,41 +1182,23 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                     </a>
                                   )}
 
-
-
-
-
-                                    {/* Botón de eliminación para respuestas (MODIFICAR O BORRAR) */}
-              {(usuarioEnSesion._id === respuesta.usuario._id ||
-                usuarioEnSesion._id === receta.usuario?._id) && (
-                <a
-                  className="btn-borrar"
-                  onClick={() => confirmarBorrado(respuesta._id)}
-                  title="Borrar respuesta"
-                >
-                  <i className="fas fa-trash"></i>
-                </a>
-              )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                   <button
                                     className="boton-responder"
                                     onClick={() => responderComentario(respuesta._id)}
                                   >
                                     Responder
                                   </button>
+
+                                  {/* Botón de eliminación para respuestas (MODIFICAR O BORRAR) */}
+                                  {(usuarioEnSesion._id === respuesta.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
+                                    <a
+                                      className="btn-borrar"
+                                      onClick={() => confirmarBorrado(respuesta._id)}
+                                      title="Borrar respuesta"
+                                    >
+                                      <i className="fas fa-trash eliminar-comentario"></i>
+                                    </a>
+                                  )}
 
                                   {/* Re-Respuestas */}
                                   {respuesta.respuestas && respuesta.respuestas.length > 0 && (
@@ -1316,7 +1290,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                               }
                               title="Borrar re-respuesta"
                             >
-                              <i className="fas fa-trash"></i>
+                              <i className="fas fa-trash eliminar-comentario"></i>
                             </a>
                           )}
 
