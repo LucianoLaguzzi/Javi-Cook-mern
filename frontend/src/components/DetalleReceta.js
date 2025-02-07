@@ -1258,7 +1258,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                                   </div>
                                                 </div>
                                               ) : (
-                                                <p className="texto-respuesta">
+                                                <p className="texto-respuesta texto-rerespuesta">
                                                   <span className="mencion">@{respuesta.usuario.nombre}</span>{" "}
                                                   {rerespuesta.comentario}
                                                 </p>
