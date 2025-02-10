@@ -46,8 +46,8 @@ const DetalleReceta = () => {
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
   const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoración original antes de editar
   const [mostrarEliminar, setMostrarEliminar] = useState(false); // Controla la visibilidad del ícono de eliminar
-
   const [isEnviando, setIsEnviando] = useState(false);
+  const [isEnviandoRespuesta, setIsEnviandoRespuesta] = useState(false);
 
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -283,8 +283,10 @@ const DetalleReceta = () => {
 
   // Función para agregar respuesta
   const agregarRespuesta = async () => {
-    if (!respuestaTexto.trim()) return; // No enviar si está vacío
+    if (!respuestaTexto.trim() || isEnviandoRespuesta) return; // No enviar si está vacío
   
+    setIsEnviandoRespuesta(true); // Marcar que ya se está enviando una respuesta
+
     try {
       const response = await axios.post(
         `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
@@ -330,6 +332,8 @@ const DetalleReceta = () => {
     } catch (error) {
       console.error("Error al agregar la respuesta:", error);
     }
+
+    setIsEnviandoRespuesta(false); // Permitir nuevos envíos
   };
 
   // Función para manejar la respuesta
@@ -1279,7 +1283,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                         onChange={(e) => setRespuestaTexto(e.target.value)}
                                         placeholder={`Responder a @${respuesta.usuario.nombre || 'usuario'}`}
                                       />
-                                      <button className='boton-enviar-re-respuesta' onClick={agregarRespuesta}>Enviar</button>
+                                      <button className='boton-enviar-re-respuesta' onClick={agregarRespuesta}  disabled={isEnviandoRespuesta}>Enviar</button>
                                     </div>
                                   )}
                                 </div>
@@ -1299,7 +1303,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                             onChange={(e) => setRespuestaTexto(e.target.value)}
                             placeholder="Escribe tu respuesta..."
                           />
-                          <button onClick={agregarRespuesta}>Enviar</button>
+                          <button onClick={agregarRespuesta} disabled={isEnviandoRespuesta}>Enviar</button>
                         </div>
                       )}
                     </div>
