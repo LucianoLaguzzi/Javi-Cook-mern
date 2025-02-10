@@ -47,6 +47,8 @@ const DetalleReceta = () => {
   const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoración original antes de editar
   const [mostrarEliminar, setMostrarEliminar] = useState(false); // Controla la visibilidad del ícono de eliminar
 
+  const [isEnviando, setIsEnviando] = useState(false);
+
   const botonRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -259,8 +261,9 @@ const DetalleReceta = () => {
 
   // Agregar comentario
   const agregarComentario = async () => {
-    if (!nuevoComentario) return;
+    if (!nuevoComentario || isEnviando) return;
 
+    setIsEnviando(true); // Marcamos que ya se está enviando
     try {
         const response = await axios.post(
             `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
@@ -275,6 +278,7 @@ const DetalleReceta = () => {
     } catch (error) {
         console.error('Error al agregar el comentario:', error);
     }
+    setIsEnviando(false); // Se restablece el estado, permitiendo nuevos envíos
   };
 
   // Función para agregar respuesta
@@ -559,7 +563,7 @@ const DetalleReceta = () => {
   // Funciones para borrar comentario/respuesta (MODIFICAR O BORRAR)
   const confirmarBorrado = (idComentario) => {
     Swal.fire({
-      title: 'Eliminar receta',
+      title: 'Eliminar comentario',
       text: '¿Estás seguro? ¡No podrás revertir esto!',
       icon: 'warning',
       showCancelButton: true,
@@ -1023,7 +1027,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                   onChange={(e) => setNuevoComentario(e.target.value)}
                   placeholder="Agregar comentario..."
                 />
-                <button className='boton-comentario' onClick={agregarComentario}>Enviar</button>
+                <button className='boton-comentario' onClick={agregarComentario}  disabled={isEnviando}>Enviar</button>
               </div>
             
               <div className="comentarios-usuarios">
