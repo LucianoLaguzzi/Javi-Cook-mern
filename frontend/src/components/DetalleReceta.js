@@ -556,39 +556,29 @@ const DetalleReceta = () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // Funciones para borrar comentario/respuesta (MODIFICAR O BORRAR)
   const confirmarBorrado = (idComentario) => {
-    if (
-      window.confirm(
-        "¿Estás seguro de que deseas eliminar este comentario? Se borrarán todas las respuestas asociadas."
-      )
-    ) {
-      borrarComentario(idComentario);
-    }
+    Swal.fire({
+      title: 'Eliminar receta',
+      text: '¿Estás seguro? ¡No podrás revertir esto!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#4caf50',  // Verde del botón aceptar
+      cancelButtonColor: '#d33',      // Rojo del botón cancelar
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      background: '#2a2a2a',          // Color del popup más claro que #333333
+      color: 'rgb(150 150 150)',                  // Color del texto del popup (blanco)
+      customClass: {
+        popup: 'custom-popup-class',  // Clase personalizada para más estilos
+        confirmButton: 'boton-confirmar-verde',
+        cancelButton: 'boton-cancelar-rojo'  // Clases personalizadas para uniformar los botones
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        borrarComentario(idComentario);  // Llama a la función de eliminación solo si se confirma
+      }
+    });
   };
 
 
@@ -634,27 +624,6 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
       console.error("Error al borrar el comentario:", error);
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1276,26 +1245,18 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                                 </a>
                                               )}
 
-
-
-
-                                               {/* Botón de eliminación para re-respuestas  (MODIFICAR O BORRAR)*/}
-                          {(usuarioEnSesion._id ===
-                            rerespuesta.usuario._id ||
-                            usuarioEnSesion._id === receta.usuario?._id) && (
-                            <a
-                              className="btn-borrar"
-                              onClick={() =>
-                                confirmarBorrado(rerespuesta._id)
-                              }
-                              title="Borrar re-respuesta"
-                            >
-                              <i className="fas fa-trash eliminar-comentario"></i>
-                            </a>
-                          )}
-
-
-
+                                              {/* Botón de eliminación para re-respuestas  (MODIFICAR O BORRAR)*/}
+                                              {(usuarioEnSesion._id ===rerespuesta.usuario._id ||usuarioEnSesion._id === receta.usuario?._id) && (
+                                                <a
+                                                  className="btn-borrar"
+                                                  onClick={() =>
+                                                    confirmarBorrado(rerespuesta._id)
+                                                  }
+                                                  title="Borrar re-respuesta"
+                                                >
+                                                  <i className="fas fa-trash eliminar-comentario"></i>
+                                                </a>
+                                              )}
 
                                             </div>
                                           ))}
