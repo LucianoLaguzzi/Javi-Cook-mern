@@ -3107,14 +3107,18 @@ i.fas.fa-undo {
   
 /* Cuando se pase el mouse sobre el contenedor, muestra el botón */
 .comentario-principal:hover .btn-borrar {
-    display: block;
+    display: inline;
 }
 
 
+.respuesta-comentario:hover .btn-borrar {
+    display: inline;
+}
 
 
-
-
+.reresp-comentario:hover .btn-borrar {
+    display: inline;
+}
 
 
 
