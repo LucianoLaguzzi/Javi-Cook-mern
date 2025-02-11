@@ -1051,6 +1051,16 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         </div>
                         <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
 
+                        {/* Botón de eliminación comentario principal  (MODIFICAR O BORRAR)*/}
+                        {(usuarioEnSesion._id === comentario.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
+                          <a
+                            className="btn-borrar"
+                            onClick={() => confirmarBorrado(comentario._id)}
+                            title="Borrar comentario"
+                          >
+                            <i className="fas fa-trash eliminar-comentario"></i>
+                          </a>
+                        )}
 
                         {/* Modo de edición de comentario */}
                         {comentarioEditado === comentario._id ? (
@@ -1091,18 +1101,6 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                           Responder
                         </button>
 
-                        {/* Botón de eliminación comentario principal  (MODIFICAR O BORRAR)*/}
-                        {(usuarioEnSesion._id === comentario.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
-                          <a
-                            className="btn-borrar"
-                            onClick={() => confirmarBorrado(comentario._id)}
-                            title="Borrar comentario"
-                          >
-                            <i className="fas fa-trash eliminar-comentario"></i>
-                          </a>
-                        )}
-
-
                       </div>
 
                       {/* Respuestas */}
@@ -1126,6 +1124,17 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                   <span className="comentario-fecha">
                                     {new Date(respuesta.fecha).toLocaleDateString()}
                                   </span>
+
+                                  {/* Botón de eliminación para respuestas (MODIFICAR O BORRAR) */}
+                                  {(usuarioEnSesion._id === respuesta.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
+                                    <a
+                                      className="btn-borrar"
+                                      onClick={() => confirmarBorrado(respuesta._id)}
+                                      title="Borrar respuesta"
+                                    >
+                                    <i className="fas fa-trash eliminar-comentario"></i>
+                                    </a>
+                                  )}
 
                                   {/* Modo de edición para respuestas */}
                                   {comentarioEditado === respuesta._id ? ( //Luego de establecer en comentarioEditado el id de la respuesta entra acá.
@@ -1165,17 +1174,6 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                   >
                                     Responder
                                   </button>
-
-                                  {/* Botón de eliminación para respuestas (MODIFICAR O BORRAR) */}
-                                  {(usuarioEnSesion._id === respuesta.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
-                                    <a
-                                      className="btn-borrar"
-                                      onClick={() => confirmarBorrado(respuesta._id)}
-                                      title="Borrar respuesta"
-                                    >
-                                      <i className="fas fa-trash eliminar-comentario"></i>
-                                    </a>
-                                  )}
 
                                   {/* Re-Respuestas */}
                                   {respuesta.respuestas && respuesta.respuestas.length > 0 && (
