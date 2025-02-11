@@ -1208,6 +1208,21 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                                 {new Date(rerespuesta.fecha).toLocaleDateString()}
                                               </span>
 
+
+                                               {/* Botón de eliminación para re-respuestas  (MODIFICAR O BORRAR)*/}
+                                               {(usuarioEnSesion._id ===rerespuesta.usuario._id ||usuarioEnSesion._id === receta.usuario?._id) && (
+                                                <a
+                                                  className="btn-borrar"
+                                                  onClick={() =>
+                                                    confirmarBorrado(rerespuesta._id)
+                                                  }
+                                                  title="Borrar re-respuesta"
+                                                >
+                                                  <i className="fas fa-trash eliminar-comentario"></i>
+                                                </a>
+                                              )}
+
+
                                               {/* Modo de edición para re-respuestas */}
                                               {comentarioEditado === rerespuesta._id ? (
                                                 <div className="modo-edicion-re-respuesta">
@@ -1253,18 +1268,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                                 </a>
                                               )}
 
-                                              {/* Botón de eliminación para re-respuestas  (MODIFICAR O BORRAR)*/}
-                                              {(usuarioEnSesion._id ===rerespuesta.usuario._id ||usuarioEnSesion._id === receta.usuario?._id) && (
-                                                <a
-                                                  className="btn-borrar"
-                                                  onClick={() =>
-                                                    confirmarBorrado(rerespuesta._id)
-                                                  }
-                                                  title="Borrar re-respuesta"
-                                                >
-                                                  <i className="fas fa-trash eliminar-comentario"></i>
-                                                </a>
-                                              )}
+                                             
 
                                             </div>
                                           ))}
