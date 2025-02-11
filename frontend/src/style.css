@@ -3119,8 +3119,7 @@ i.fas.fa-undo {
     display: inline;
 }
 
-/* Cuando en la respuesta (respuesta-comentario) se esté haciendo hover sobre alguna re-respuesta,
-   se oculta el botón de borrar de la respuesta */
+/* Cuando en la respuesta (respuesta-comentario) se esté haciendo hover sobre alguna re-respuesta, se oculta el botón de borrar de la respuesta */
 .respuesta-comentario:has(.reresp-comentario:hover) > .btn-borrar {
     display: none;
 }

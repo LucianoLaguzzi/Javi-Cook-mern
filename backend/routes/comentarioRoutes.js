@@ -235,8 +235,7 @@ router.delete('/:id/comentarios/:commentId', async (req, res) => {
   
       // Verificar permisos: debe ser el autor del comentario o el autor de la receta
       if (
-        String(comentario.usuario) !== usuario &&
-        String(receta.autor) !== usuario
+        String(comentario.usuario) !== usuario && String(receta.usuario) !== usuario
       ) {
         return res.status(403).json({
           message: 'No tienes permiso para borrar este comentario',
