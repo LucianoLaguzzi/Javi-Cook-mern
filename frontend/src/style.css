@@ -3091,6 +3091,34 @@ i.fas.fa-undo {
     color: #6d6d6d;
 }
 
+
+
+
+/* Asegúrate de que el contenedor tenga posición relativa */
+.comentario-principal {
+    position: relative;
+}
+  
+/* Oculta el botón de borrar por defecto */
+.btn-borrar {
+    display: none;           /* Oculto por defecto */
+    position: absolute;      /* Posicionamiento absoluto respecto al contenedor */
+}
+  
+/* Cuando se pase el mouse sobre el contenedor, muestra el botón */
+.comentario-principal:hover .btn-borrar {
+    display: block;
+}
+
+
+
+
+
+
+
+
+
+
 .boton-comentario{
     border: none;
     outline: none;
