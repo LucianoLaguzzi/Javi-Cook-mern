@@ -3105,18 +3105,17 @@ i.fas.fa-undo {
     position: absolute;      /* Posicionamiento absoluto respecto al contenedor */
 }
   
-/* Cuando se pase el mouse sobre el contenedor, muestra el botón */
-.comentario-principal:hover .btn-borrar {
+/* Mostrar el botón de borrar solo en el contenedor actual al pasar el mouse */
+.comentario-principal:hover > .btn-borrar {
     display: inline;
 }
 
 
-.respuesta-comentario:hover .btn-borrar {
+.respuesta-comentario:hover > .btn-borrar {
     display: inline;
 }
 
-
-.reresp-comentario:hover .btn-borrar {
+.reresp-comentario:hover > .btn-borrar {
     display: inline;
 }
 
