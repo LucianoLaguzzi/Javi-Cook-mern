@@ -91,7 +91,7 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
   } catch (error) {
       // Si el error es de duplicidad (duplicate key error) se verifica con error.code === 11000
       if (error.code === 11000) {
-          return res.status(400).json({ error: 'El email ya está en uso' });
+          return res.status(400).json({ error: 'El email o el usuario que intentas modificar ya están en uso' });
       }
       res.status(500).json({ error: 'Error al actualizar el perfil del usuario' });
   }
