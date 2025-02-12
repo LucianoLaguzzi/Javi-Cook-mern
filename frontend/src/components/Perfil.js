@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
+import Swal from 'sweetalert2';
 
 
 
@@ -112,6 +113,20 @@ const Perfil = () => {
             
         } catch (error) {
             console.error('Error al actualizar el usuario:', error);
+            // Si la respuesta tiene un mensaje de error lo usamos para SweetAlert
+            if (error.response && error.response.data && error.response.data.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al actualizar',
+                    text: error.response.data.error,
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error inesperado',
+                    text: 'Hubo un error al actualizar el perfil, inténtelo de nuevo más tarde.',
+                });
+            }
         }
     };
 
