@@ -110,9 +110,15 @@ const Perfil = () => {
             
             // Actualiza el usuario en el localStorage para que persista el cambio sin necesidad de recargar
             localStorage.setItem('usuario', JSON.stringify(response.data));
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Perfil actualizado',
+                text: 'Los cambios se han guardado correctamente.',
+              });
             
         } catch (error) {
-            console.error('Error al actualizar el usuario:', error);
+            
             // Si la respuesta tiene un mensaje de error lo usamos para SweetAlert
             if (error.response && error.response.data && error.response.data.error) {
                 Swal.fire({
@@ -127,24 +133,45 @@ const Perfil = () => {
                     text: 'Hubo un error al actualizar el perfil, inténtelo de nuevo más tarde.',
                 });
             }
+            // Lanza el error para que la función que llamó a actualizarUsuario pueda manejarlo
+            throw error;
         }
     };
 
     // Función para guardar el nuevo nombre
-    const guardarNombre = () => {
+    const guardarNombre = async () => {
         if (nuevoNombre !== usuario.nombre) {
-            actualizarUsuario({ ...usuario, nombre: nuevoNombre });
+            try {
+                await actualizarUsuario({ ...usuario, nombre: nuevoNombre });
+                // Si se actualizó correctamente, terminamos la edición
+                setEditandoNombre(false);
+            } catch (error) { 
+            // Si hay error (por ejemplo, nombre duplicado), revertimos el valor del input
+            setNuevoNombre(usuario.nombre)
+            setEditandoNombre(false);
+            }
+        } else {
+            setEditandoNombre(false);
         }
-        setEditandoNombre(false); // Termina la edición
+        
     };
 
     // Función para guardar el nuevo email
-    const guardarEmail = () => {
+    const guardarEmail = async () => {
         if (nuevoEmail !== usuario.email) {
-            actualizarUsuario({ ...usuario, email: nuevoEmail });
+          try {
+            await actualizarUsuario({ ...usuario, email: nuevoEmail });
+            // Si se actualizó correctamente, terminamos la edición
+            setEditandoEmail(false);
+          } catch (error) {
+            // Si hay error (por ejemplo, email duplicado), revertimos el valor del input
+            setNuevoEmail(usuario.email);
+            setEditandoEmail(false);
+          }
+        } else {
+          setEditandoEmail(false);
         }
-        setEditandoEmail(false); // Termina la edición
-    };
+      };
 
     // Función para cancelar la edición de nombre
     const cancelarNombre = () => {
