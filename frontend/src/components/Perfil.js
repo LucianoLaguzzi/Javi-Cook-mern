@@ -103,7 +103,6 @@ const Perfil = () => {
     const actualizarUsuario = async (actualizado) => {
         try {
             const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/actualizarPerfil/${usuario._id}`, actualizado);
-            console.log('Usuario actualizado:', response.data);
             
             // Actualiza el estado del usuario
             setUsuario(response.data);
