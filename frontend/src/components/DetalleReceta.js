@@ -568,7 +568,7 @@ const DetalleReceta = () => {
   const confirmarBorrado = (idComentario) => {
     Swal.fire({
       title: 'Eliminar comentario',
-      text: '¿Estás seguro? ¡No podrás revertir esto!',
+      html: '¿Estás seguro?<br>Se eliminarán los comentarios asociados.<br>¡No podrás revertir esto!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#4caf50',  // Verde del botón aceptar
