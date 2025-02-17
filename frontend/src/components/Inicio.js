@@ -48,7 +48,6 @@ const Inicio = () => {
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
 
 
-
     //Calculos para mostrar bien las cantidades de recetas en la paginacion
     const indexOfLastReceta = paginaActual * recetasPorPagina; // Última receta en la página actual
     const indexOfFirstReceta = indexOfLastReceta - recetasPorPagina; // Primera receta en la página actual
@@ -57,7 +56,6 @@ const Inicio = () => {
     //Calculos para manejar la paginacion bien
     const totalRecetas = recetasFiltradas.length; // Total de recetas filtradas
     const totalPaginas = Math.max(1, Math.ceil(totalRecetas / recetasPorPagina)); // Asegurar que sea al menos 1 // Calcular el total de páginas
-
 
 
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
@@ -407,24 +405,15 @@ const Inicio = () => {
     };
     
 
-    
-
-    
-
-
-    //                                                  Aca ya van los metodos de la vista:
-
-        // Referencias de los campos
-        const tituloRef = useRef();
-        const cantidadIngredienteRef = useRef();
-        const pasosRef = useRef();
-        const imagenRef = useRef();
-        const dificultadRef = useRef();
-        const categoriaRef = useRef();
-        const tiempoPreparacionRef = useRef();
-        const ingredientesRef = useRef();
-
-
+    // Referencias de los campos
+    const tituloRef = useRef();
+    const cantidadIngredienteRef = useRef();
+    const pasosRef = useRef();
+    const imagenRef = useRef();
+    const dificultadRef = useRef();
+    const categoriaRef = useRef();
+    const tiempoPreparacionRef = useRef();
+    const ingredientesRef = useRef();
 
 
     //Envio del formulario para dar de alta receta
