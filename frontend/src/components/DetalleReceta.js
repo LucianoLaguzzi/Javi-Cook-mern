@@ -93,7 +93,6 @@ const DetalleReceta = () => {
           setYaValorado(true);
         }
 
-
       } catch (error) {
         console.error('Error al cargar la receta', error);
        } finally {
@@ -183,10 +182,6 @@ const DetalleReceta = () => {
     setTiempoInicial(isNaN(valor) ? 0 : valor * 60);  // Convertir minutos a segundos
     setTiempo(isNaN(valor) ? 0 : valor * 60);  // Establecer tiempo inicial
   };
-
-
-
- 
 
 
   // Manejar la edición del título
@@ -563,8 +558,7 @@ const DetalleReceta = () => {
   };
 
 
-
-  // Funciones para borrar comentario/respuesta (MODIFICAR O BORRAR)
+  // Funciones para borrar comentario/respuesta
   const confirmarBorrado = (idComentario) => {
     Swal.fire({
       title: 'Eliminar comentario',
@@ -1051,7 +1045,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         </div>
                         <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
 
-                        {/* Botón de eliminación comentario principal  (MODIFICAR O BORRAR)*/}
+                        {/* Botón de eliminación comentario principal*/}
                         {(usuarioEnSesion._id === comentario.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
                           <a
                             className="btn-borrar"
@@ -1125,7 +1119,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                     {new Date(respuesta.fecha).toLocaleDateString()}
                                   </span>
 
-                                  {/* Botón de eliminación para respuestas (MODIFICAR O BORRAR) */}
+                                  {/* Botón de eliminación para respuestas */}
                                   {(usuarioEnSesion._id === respuesta.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
                                     <a
                                       className="btn-borrar"
@@ -1207,7 +1201,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                               </span>
 
 
-                                               {/* Botón de eliminación para re-respuestas  (MODIFICAR O BORRAR)*/}
+                                               {/* Botón de eliminación para re-respuestas */}
                                                {(usuarioEnSesion._id ===rerespuesta.usuario._id ||usuarioEnSesion._id === receta.usuario?._id) && (
                                                 <a
                                                   className="btn-borrar"
@@ -1265,8 +1259,6 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                                   <i className="fas fa-pencil-alt" title="Editar respuesta"></i>
                                                 </a>
                                               )}
-
-                                             
 
                                             </div>
                                           ))}

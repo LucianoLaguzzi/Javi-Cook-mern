@@ -4926,8 +4926,6 @@ i.fas.fa-undo {
 }
 
 
-
-
 /* Titileo para el botón flotante */
 .boton-abre-tempo.titileo {
     animation: titileo 1s infinite;
@@ -5131,18 +5129,10 @@ i.fas.fa-undo {
     }
 }
 
-
 .reresp-comentario{
     margin-bottom: 10px;
     margin-left: 14px;
 }
-
-
-
-
-
-
-
 
 .btn-cancelar-edicion{
     color: #a91515;
