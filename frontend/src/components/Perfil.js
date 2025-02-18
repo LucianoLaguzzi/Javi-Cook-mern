@@ -247,32 +247,50 @@ const Perfil = () => {
                             }}  />
                     </div>
                 </div>
-<div className='notifica'>
-<div className="icono-notificaciones">
-                        <i className="fas fa-bell campana" onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}></i>
-                        {notificaciones.filter(n => !n.leida).length > 0 && (
-                            <span className="contador-notificaciones">{notificaciones.filter(n => !n.leida).length}</span>
-                        )}
 
-                        {mostrarNotificaciones && (
-                            <div className="lista-notificaciones">
-                                {notificaciones.length > 0 ? (
-                                    notificaciones.map(notif => (
-                                        <div key={notif._id} className={`notificacion ${notif.leida ? 'leida' : ''}`}>
-                                            <p>{notif.mensaje}</p>
-                                            {!notif.leida && (
-                                                <button onClick={() => marcarComoLeida(notif._id)}>Marcar como leída</button>
-                                            )}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No tienes notificaciones.</p>
-                                )}
-                            </div>
-                        )}
-                    </div>
 
-</div>
+
+
+
+
+
+
+
+
+
+                <div className='notifica'>
+                        <div className="icono-notificaciones">
+                            <i className="fas fa-bell campana" onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}></i>
+                            {notificaciones.filter(n => !n.leida).length > 0 && (
+                                <span className="contador-notificaciones">{notificaciones.filter(n => !n.leida).length}</span>
+                            )}
+
+                            {mostrarNotificaciones && (
+                                <div className="lista-notificaciones">
+                                    {notificaciones.length > 0 ? (
+                                        notificaciones.map(notif => (
+                                            <div key={notif._id} className={`notificacion ${notif.leida ? 'leida' : ''}`}>
+                                                <p>{notif.mensaje}</p>
+                                                {!notif.leida && (
+                                                    <button onClick={() => marcarComoLeida(notif._id)}>Marcar como leída</button>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No tienes notificaciones.</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                </div>
+
+
+
+
+
+
+                
 
                 <section class="perfil-section">
                     <div className="perfil-form">

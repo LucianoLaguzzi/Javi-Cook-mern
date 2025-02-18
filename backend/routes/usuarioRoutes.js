@@ -342,7 +342,7 @@ router.post('/cambiar-contrasenia', async (req, res) => {
 
 router.get('/:idUsuario', async (req, res) => {
   try {
-      const notificaciones = await Notificacion.find({ usuario: req.params.idUsuario }).sort({ fecha: -1 });
+      const notificaciones = await Notificacion.find({ usuarioDestino: req.params.idUsuario }).sort({ fecha: -1 });
       res.json(notificaciones);
   } catch (error) {
       res.status(500).json({ error: 'Error al obtener notificaciones' });
