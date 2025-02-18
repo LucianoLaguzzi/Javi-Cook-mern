@@ -62,6 +62,33 @@ router.post('/:id/comentarios', async (req, res) => {
         // Guardar el comentario en la base de datos
         const comentarioGuardado = await nuevoComentario.save();
 
+
+
+
+
+
+
+
+        // Crear la notificación para el autor de la receta
+        if (receta.usuario.toString() !== usuario) {  // No notificar si el autor comenta en su propia receta
+            const nuevaNotificacion = new Notificacion({
+                usuario: receta.usuario,  // El dueño de la receta recibe la notificación
+                mensaje: `@${usuario.nombre} comentó en tu receta "${receta.titulo}"`,
+                leida: false
+            });
+
+            await nuevaNotificacion.save();
+        }
+
+
+
+
+
+
+        
+
+
+
         // Agregar el ID del comentario al array de comentarios de la receta
         receta.comentarios.push(comentarioGuardado._id);
         await receta.save(); // Guardar la receta actualizada
