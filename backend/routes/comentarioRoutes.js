@@ -71,11 +71,15 @@ router.post('/:id/comentarios', async (req, res) => {
 
 
        // Crear la notificación para el autor de la receta
+// Poblar el usuario para obtener su nombre
+const usuarioEmisor = await Usuario.findById(usuario).select('nombre'); 
+
+// Crear la notificación para el autor de la receta
 if (receta.usuario.toString() !== usuario) {  // No notificar si el autor comenta en su propia receta
     const nuevaNotificacion = new Notificacion({
-        usuarioDestino: receta.usuario,  // Cambiar "usuario" por "usuarioDestino"
-        mensaje: `@${usuario.nombre} comentó en tu receta "${receta.titulo}"`,
-        enlace: `/receta/${receta._id}`, // Agregamos un enlace opcional
+        usuarioDestino: receta.usuario,  
+        mensaje: `@${usuarioEmisor.nombre} comentó en tu receta "${receta.titulo}"`, // Ahora usuarioEmisor tiene el nombre
+        enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`, // Enlace corregido
         leida: false
     });
 
