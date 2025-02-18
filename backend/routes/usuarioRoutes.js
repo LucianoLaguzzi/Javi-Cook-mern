@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs'; // Importa bcrypt
 import Usuario from '../models/Usuario.js';
+import Notificacion from '../models/Notificacion.js'
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
