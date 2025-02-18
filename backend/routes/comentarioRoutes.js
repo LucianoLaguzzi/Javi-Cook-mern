@@ -70,16 +70,17 @@ router.post('/:id/comentarios', async (req, res) => {
 
 
 
-        // Crear la notificación para el autor de la receta
-        if (receta.usuario.toString() !== usuario) {  // No notificar si el autor comenta en su propia receta
-            const nuevaNotificacion = new Notificacion({
-                usuario: receta.usuario,  // El dueño de la receta recibe la notificación
-                mensaje: `@${usuario.nombre} comentó en tu receta "${receta.titulo}"`,
-                leida: false
-            });
+       // Crear la notificación para el autor de la receta
+if (receta.usuario.toString() !== usuario) {  // No notificar si el autor comenta en su propia receta
+    const nuevaNotificacion = new Notificacion({
+        usuarioDestino: receta.usuario,  // Cambiar "usuario" por "usuarioDestino"
+        mensaje: `@${usuario.nombre} comentó en tu receta "${receta.titulo}"`,
+        enlace: `/receta/${receta._id}`, // Agregamos un enlace opcional
+        leida: false
+    });
 
-            await nuevaNotificacion.save();
-        }
+    await nuevaNotificacion.save();
+}
 
 
 
