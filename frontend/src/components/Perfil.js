@@ -17,6 +17,10 @@ const Perfil = () => {
     const [mostrarRecetas, setMostrarRecetas] = useState(false);
     const [mostrandoBotonGuardar, setMostrandoBotonGuardar] = useState(false);
 
+    const [notificaciones, setNotificaciones] = useState([]);
+    const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+
+
     const navigate = useNavigate();
     
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
@@ -27,6 +31,7 @@ const Perfil = () => {
             setUsuario(usuarioEnSesion);
             setNuevoNombre(usuarioEnSesion.nombre);
             setNuevoEmail(usuarioEnSesion.email);
+            obtenerNotificaciones();
         } else {
             console.error('No se encontró el usuario en el almacenamiento local');
         }
@@ -44,6 +49,27 @@ const Perfil = () => {
             obtenerRecetas();
         }
     }, []);
+
+
+    const obtenerNotificaciones = async () => {
+        try {
+            const response = await axios.get(`https://javicook-mern.onrender.com/api/notificaciones/${usuarioEnSesion._id}`);
+            setNotificaciones(response.data);
+        } catch (error) {
+            console.error('Error al obtener las notificaciones:', error);
+        }
+    };
+
+
+    const marcarComoLeida = async (id) => {
+        try {
+            await axios.put(`https://javicook-mern.onrender.com/api/notificaciones/marcarLeida/${id}`);
+            setNotificaciones(prev => prev.map(notif => notif._id === id ? { ...notif, leida: true } : notif));
+        } catch (error) {
+            console.error('Error al marcar la notificación como leída:', error);
+        }
+    };
+
 
 
     const toggleRecetas = (e) => {
@@ -221,7 +247,32 @@ const Perfil = () => {
                             }}  />
                     </div>
                 </div>
+<div className='notifica'>
+<div className="icono-notificaciones">
+                        <i className="fas fa-bell campana" onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}></i>
+                        {notificaciones.filter(n => !n.leida).length > 0 && (
+                            <span className="contador-notificaciones">{notificaciones.filter(n => !n.leida).length}</span>
+                        )}
 
+                        {mostrarNotificaciones && (
+                            <div className="lista-notificaciones">
+                                {notificaciones.length > 0 ? (
+                                    notificaciones.map(notif => (
+                                        <div key={notif._id} className={`notificacion ${notif.leida ? 'leida' : ''}`}>
+                                            <p>{notif.mensaje}</p>
+                                            {!notif.leida && (
+                                                <button onClick={() => marcarComoLeida(notif._id)}>Marcar como leída</button>
+                                            )}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No tienes notificaciones.</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+</div>
 
                 <section class="perfil-section">
                     <div className="perfil-form">

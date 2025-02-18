@@ -5199,3 +5199,68 @@ i.fas.fa-undo {
 .texto-rerespuesta{
     margin-bottom: 7px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.icono-notificaciones {
+    position: relative;
+    cursor: pointer;
+}
+
+.campana {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.contador-notificaciones {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    padding: 3px 6px;
+}
+
+.lista-notificaciones {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.notificacion {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.notificacion.leida {
+    color: gray;
+}

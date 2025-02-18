@@ -325,4 +325,40 @@ router.post('/cambiar-contrasenia', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+router.get('/:idUsuario', async (req, res) => {
+  try {
+      const notificaciones = await Notificacion.find({ usuario: req.params.idUsuario }).sort({ fecha: -1 });
+      res.json(notificaciones);
+  } catch (error) {
+      res.status(500).json({ error: 'Error al obtener notificaciones' });
+  }
+});
+
+
+
+
+router.put('/marcarLeida/:id', async (req, res) => {
+  try {
+      await Notificacion.findByIdAndUpdate(req.params.id, { leida: true });
+      res.json({ mensaje: 'Notificación marcada como leída' });
+  } catch (error) {
+      res.status(500).json({ error: 'Error al actualizar la notificación' });
+  }
+});
+
+
 export default router;
