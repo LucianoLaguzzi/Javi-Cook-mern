@@ -2,6 +2,7 @@ import express from 'express';
 import Comentario from '../models/Comentario.js'; // Asegúrate de que esté bien importado
 import Receta from '../models/Receta.js';
 import Notificacion from '../models/Notificacion.js';
+import Usuario from '../models/Usuario.js';
 
 const router = express.Router();
 
