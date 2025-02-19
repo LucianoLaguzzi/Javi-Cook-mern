@@ -3666,7 +3666,7 @@ i.fas.fa-undo {
 @media (max-width: 700px) {
     .perfil-section  {
         left: 8%;
-        margin-top: 2%;
+        margin-top: 15%;
         margin-bottom: 2%;
         width: 87%;
     }
@@ -5224,6 +5224,9 @@ i.fas.fa-undo {
 .icono-notificaciones {
     position: relative;
     cursor: pointer;
+    margin-top: 15px;
+    float: right;
+    right: 35px;
 }
 
 .campana {
@@ -5232,14 +5235,12 @@ i.fas.fa-undo {
 }
 
 .contador-notificaciones {
-    position: absolute;
-    top: -5px;
-    right: -5px;
     background: red;
-    color: white;
-    font-size: 0.8rem;
     border-radius: 50%;
-    padding: 3px 6px;
+    color: #fff;
+    font-size: .8rem;
+    padding: 3px 7px;
+    bottom: 10px;
 }
 
 .lista-notificaciones {
