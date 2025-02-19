@@ -5230,38 +5230,95 @@ i.fas.fa-undo {
 }
 
 .campana {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #fff;
+    transition: transform 0.2s ease-in-out;
 }
 
+.campana:hover {
+    transform: scale(1.1);
+}
+
+/* Contador de notificaciones */
 .contador-notificaciones {
+    position: absolute;
+    top: -5px;
+    right: -5px;
     background: red;
     border-radius: 50%;
     color: #fff;
-    font-size: .8rem;
+    font-size: 0.8rem;
     padding: 3px 7px;
-    bottom: 10px;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
+/* Contenedor de la lista de notificaciones */
 .lista-notificaciones {
     position: absolute;
-    top: 30px;
     right: 0;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 250px;
-    max-height: 300px;
-    overflow-y: auto;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 10;
+    top: 35px;
+    width: 450px;
+    background: linear-gradient(135deg, #ffffff, #f8f8f8);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ddd;
+    overflow: hidden;
+    z-index: 100;
 }
 
+/* Piquito en la parte superior apuntando a la campana */
+.lista-notificaciones::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ddd;
+}
+
+/* Notificación individual */
 .notificacion {
-    padding: 5px;
+    padding: 12px;
     border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #333;
+    transition: background-color 0.2s;
 }
 
+.notificacion:hover {
+    background: #f0f0f0;
+}
+
+/* Notificación leída */
 .notificacion.leida {
     color: gray;
+    font-style: italic;
+}
+
+/* Botón "Marcar como leída" */
+.notificacion button {
+    background: #007bff;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+}
+
+.notificacion button:hover {
+    background: #0056b3;
+}
+
+.notificacion.leida button {
+    background: #aaa;
+    cursor: default;
 }
