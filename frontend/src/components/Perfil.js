@@ -71,6 +71,27 @@ const Perfil = () => {
     };
 
 
+    const manejarClickNotificacion = async (notif) => {
+        if (!notif.leida) {
+            await marcarComoLeida(notif._id);
+        }
+        if (notif.enlace) {
+            window.location.href = notif.enlace;  // Redirige a la receta
+        }
+    };
+
+    const eliminarNotificacion = async (e, id) => {
+        e.stopPropagation(); // Evita que se dispare el click de redirección
+    
+        try {
+            await axios.delete(`https://javicook-mern.onrender.com/api/notificaciones/eliminar/${id}`);
+            setNotificaciones(prev => prev.filter(notif => notif._id !== id));
+        } catch (error) {
+            console.error('Error al eliminar la notificación:', error);
+        }
+    };
+
+
 
     const toggleRecetas = (e) => {
         e.preventDefault();
@@ -269,11 +290,15 @@ const Perfil = () => {
                                 <div className="lista-notificaciones">
                                     {notificaciones.length > 0 ? (
                                         notificaciones.map(notif => (
-                                            <div key={notif._id} className={`notificacion ${notif.leida ? 'leida' : ''}`}>
+                                            <div key={notif._id} 
+                                            className={`notificacion ${notif.leida ? 'leida' : ''}`}
+                                            onClick={() => manejarClickNotificacion(notif)}>
+
+                                                
                                                 <p>{notif.mensaje}</p>
-                                                {!notif.leida && (
-                                                    <button onClick={() => marcarComoLeida(notif._id)}>Marcar como leída</button>
-                                                )}
+                                                <button className="btn-eliminar" onClick={(e) => eliminarNotificacion(e, notif._id)}>
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                             </div>
                                         ))
                                     ) : (

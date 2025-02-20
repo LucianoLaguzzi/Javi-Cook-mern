@@ -5223,7 +5223,6 @@ i.fas.fa-undo {
 
 .icono-notificaciones {
     position: relative;
-    cursor: pointer;
     margin-top: 15px;
     float: right;
     right: 35px;
@@ -5233,6 +5232,7 @@ i.fas.fa-undo {
     font-size: 1.8rem;
     color: #fff;
     transition: transform 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 .campana:hover {
@@ -5242,8 +5242,8 @@ i.fas.fa-undo {
 /* Contador de notificaciones */
 .contador-notificaciones {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    right: -10px;
+    top: -9px;
     background: red;
     border-radius: 50%;
     color: #fff;
@@ -5251,6 +5251,7 @@ i.fas.fa-undo {
     padding: 3px 7px;
     font-weight: bold;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    cursor: default;
 }
 
 /* Contenedor de la lista de notificaciones */
@@ -5290,6 +5291,7 @@ i.fas.fa-undo {
     font-size: 0.9rem;
     color: #333;
     transition: background-color 0.2s;
+    cursor: pointer;
 }
 
 .notificacion:hover {
@@ -5321,4 +5323,18 @@ i.fas.fa-undo {
 .notificacion.leida button {
     background: #aaa;
     cursor: default;
+}
+
+
+.btn-eliminar {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #c00;
+    transition: color 0.2s;
+}
+
+.btn-eliminar:hover {
+    color: red;
 }
