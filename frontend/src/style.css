@@ -5235,6 +5235,14 @@ i.fas.fa-undo {
     cursor: pointer;
 }
 
+.campana-inactiva {
+    color: #fff; /* Color cuando está cerrada */
+  }
+  
+  .campana-activa {
+    color: #ffcc00; /* Color cuando está abierta, por ejemplo dorado */
+  }
+
 .campana:hover {
     transform: scale(1.1);
 }

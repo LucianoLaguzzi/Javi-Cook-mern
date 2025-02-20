@@ -285,40 +285,35 @@ const Perfil = () => {
 
 
 
-
-
-
-
-
-
                 <div className='notifica'>
-                        <div className="icono-notificaciones">
-                            <i className="fas fa-bell campana" onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}></i>
-                            {notificaciones.filter(n => !n.leida).length > 0 && (
-                                <span className="contador-notificaciones">{notificaciones.filter(n => !n.leida).length}</span>
-                            )}
+                    <div className="icono-notificaciones">
+                    <i  className={`fas fa-bell campana ${mostrarNotificaciones ? 'campana-activa' : 'campana-inactiva'}`} 
+                        onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}>
+                    </i>
+                        {notificaciones.filter(n => !n.leida).length > 0 && (
+                            <span className="contador-notificaciones">{notificaciones.filter(n => !n.leida).length}</span>
+                        )}
 
-                            {mostrarNotificaciones && (
-                                <div className="lista-notificaciones">
-                                    {notificaciones.length > 0 ? (
-                                        notificaciones.map(notif => (
-                                            <div key={notif._id} 
-                                            className={`notificacion ${notif.leida ? 'leida' : ''}`}
-                                            onClick={() => manejarClickNotificacion(notif)}
-                                            >
-                                               <p>{formatearMensaje(notif.mensaje)}</p>
-                                                <button className="btn-eliminar" title='Eliminar notificación' onClick={(e) => eliminarNotificacion(e, notif._id)}>
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No tienes notificaciones.</p>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
+                        {mostrarNotificaciones && (
+                            <div className="lista-notificaciones">
+                                {notificaciones.length > 0 ? (
+                                    notificaciones.map(notif => (
+                                        <div key={notif._id} 
+                                        className={`notificacion ${notif.leida ? 'leida' : ''}`}
+                                        onClick={() => manejarClickNotificacion(notif)}
+                                        >
+                                            <p>{formatearMensaje(notif.mensaje)}</p>
+                                            <button className="btn-eliminar" title='Eliminar notificación' onClick={(e) => eliminarNotificacion(e, notif._id)}>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No tienes notificaciones.</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
 
