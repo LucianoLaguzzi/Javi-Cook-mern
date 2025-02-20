@@ -92,6 +92,18 @@ const Perfil = () => {
     };
 
 
+    const formatearMensaje = (mensaje) => {
+        // Separa el mensaje en partes usando una expresión regular que detecta palabras que empiezan con "@"
+        const partes = mensaje.split(/(@\w+)/g);
+        return partes.map((parte, i) => {
+          // Si la parte empieza con @, envuélvela en un span con una clase para estilizarla
+          if (parte.startsWith('@')) {
+            return <span key={i} className="mencion">{parte}</span>;
+          }
+          return parte;
+        });
+      };
+
 
     const toggleRecetas = (e) => {
         e.preventDefault();
@@ -294,7 +306,7 @@ const Perfil = () => {
                                             className={`notificacion ${notif.leida ? 'leida' : ''}`}
                                             onClick={() => manejarClickNotificacion(notif)}
                                             >
-                                                <p>{notif.mensaje}</p>
+                                               <p>{formatearMensaje(notif.mensaje)}</p>
                                                 <button className="btn-eliminar" title='Eliminar notificación' onClick={(e) => eliminarNotificacion(e, notif._id)}>
                                                     <i class="fas fa-trash"></i>
                                                 </button>
