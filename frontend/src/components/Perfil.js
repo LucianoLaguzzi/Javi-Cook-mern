@@ -292,11 +292,10 @@ const Perfil = () => {
                                         notificaciones.map(notif => (
                                             <div key={notif._id} 
                                             className={`notificacion ${notif.leida ? 'leida' : ''}`}
-                                            onClick={() => manejarClickNotificacion(notif)}>
-
-                                                
+                                            onClick={() => manejarClickNotificacion(notif)}
+                                            >
                                                 <p>{notif.mensaje}</p>
-                                                <button className="btn-eliminar" onClick={(e) => eliminarNotificacion(e, notif._id)}>
+                                                <button className="btn-eliminar" title='Eliminar notificación' onClick={(e) => eliminarNotificacion(e, notif._id)}>
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>

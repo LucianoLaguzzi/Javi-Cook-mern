@@ -5261,7 +5261,7 @@ i.fas.fa-undo {
     top: 35px;
     width: 450px;
     background: linear-gradient(135deg, #ffffff, #f8f8f8);
-    border-radius: 8px;
+    border-radius: 15px 0px 15px 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border: 1px solid #ddd;
     overflow: hidden;
@@ -5295,7 +5295,7 @@ i.fas.fa-undo {
 }
 
 .notificacion:hover {
-    background: #f0f0f0;
+    background: #dedcdc;
 }
 
 /* Notificación leída */
@@ -5306,19 +5306,13 @@ i.fas.fa-undo {
 
 /* Botón "Marcar como leída" */
 .notificacion button {
-    background: #007bff;
     border: none;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 5px;
+    color: #a3a3a3;
     cursor: pointer;
-    font-size: 0.8rem;
+    /*font-size: 0.8rem;*/
     transition: background-color 0.2s;
 }
 
-.notificacion button:hover {
-    background: #0056b3;
-}
 
 .notificacion.leida button {
     background: #aaa;
