@@ -362,4 +362,17 @@ router.put('/marcarLeida/:id', async (req, res) => {
 });
 
 
+// Eliminar una notificación por ID
+router.delete('/eliminar/:id', async (req, res) => {
+  try {
+      const { id } = req.params;
+      await Notificacion.findByIdAndDelete(id);
+      res.json({ mensaje: 'Notificación eliminada correctamente' });
+  } catch (error) {
+      console.error('Error al eliminar la notificación:', error);
+      res.status(500).json({ error: 'Hubo un problema al eliminar la notificación' });
+  }
+});
+
+
 export default router;
