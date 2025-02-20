@@ -5292,6 +5292,7 @@ i.fas.fa-undo {
     color: #333;
     transition: background-color 0.2s;
     cursor: pointer;
+    font-family: Poppins
 }
 
 .notificacion:hover {
@@ -5302,6 +5303,7 @@ i.fas.fa-undo {
 .notificacion.leida {
     color: gray;
     font-style: italic;
+    background: #e0e0e085;
 }
 
 /* Botón "Marcar como leída" */
@@ -5315,8 +5317,7 @@ i.fas.fa-undo {
 
 
 .notificacion.leida button {
-    background: #aaa;
-    cursor: default;
+    cursor: pointer;
 }
 
 
