@@ -52,14 +52,9 @@ if (!usuarioEmisor) {
 } else {
   if (receta.usuario && receta.usuario.toString() !== usuarioId.toString()) {  // No notificar si el autor valoró su propia receta
       try {
-          console.log("Creando notificación con:", {
-              usuarioDestino: receta.usuario,
-              mensaje: `@${usuarioEmisor.nombre} valoró la receta "${receta.titulo}"`,
-              enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`
-          });
           const nuevaNotificacion = new Notificacion({
               usuarioDestino: receta.usuario,  
-              mensaje: `@${usuarioEmisor.nombre} valoró la receta "${receta.titulo}"`,
+              mensaje: `@${usuarioEmisor.nombre} valoró tu receta "${receta.titulo}"`,
               enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
               leida: false
           });
