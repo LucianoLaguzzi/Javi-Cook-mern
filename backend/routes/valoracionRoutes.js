@@ -43,24 +43,31 @@ router.post('/', async (req, res) => {
 
       // Crear la notificación para el autor de la receta
       // Poblar el usuario para obtener su nombre
-      const usuarioEmisor = await Usuario.findById(usuarioId).select('nombre'); 
+     // Crear la notificación para el autor de la receta
+const usuarioEmisor = await Usuario.findById(usuarioId).select('nombre'); 
 
-      if (!usuarioEmisor) {
-        console.error("Usuario emisor no encontrado para ID:", usuarioId);
-      }
-
-      // Crear la notificación para el autor de la receta
-      if  (receta.usuario && receta.usuario.toString() !== usuarioId.toString()) {  // No notificar si el autor comenta en su propia receta
+if (!usuarioEmisor) {
+  console.error("Usuario emisor no encontrado para ID:", usuarioId);
+} else {
+  if (receta.usuario && receta.usuario.toString() !== usuarioId.toString()) {  // No notificar si el autor valoró su propia receta
+      try {
+          console.log("Creando notificación con:", {
+              usuarioDestino: receta.usuario,
+              mensaje: `@${usuarioEmisor.nombre} valoró la receta "${receta.titulo}"`,
+              enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`
+          });
           const nuevaNotificacion = new Notificacion({
               usuarioDestino: receta.usuario,  
-              mensaje: `@${usuarioEmisor.nombre} valoró la receta "${receta.titulo}"`, // Ahora usuarioEmisor tiene el nombre
-              enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`, // Enlace corregido
+              mensaje: `@${usuarioEmisor.nombre} valoró la receta "${receta.titulo}"`,
+              enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
               leida: false
           });
-
           await nuevaNotificacion.save();
+      } catch (err) {
+          console.error("Error al guardar la notificación:", err);
       }
-
+  }
+}
 
 
     res.status(200).json({ mensaje: 'Valoración guardada correctamente', valoracion: receta.valoracion });
