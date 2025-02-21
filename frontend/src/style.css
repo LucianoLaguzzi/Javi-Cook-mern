@@ -5307,6 +5307,10 @@ i.fas.fa-undo {
     background: #dedcdc;
 }
 
+.notificacion p{
+    width: 92%;
+}
+
 /* Notificación leída */
 .notificacion.leida {
     color: gray;
