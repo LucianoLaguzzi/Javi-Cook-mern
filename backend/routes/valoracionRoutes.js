@@ -45,8 +45,12 @@ router.post('/', async (req, res) => {
       // Poblar el usuario para obtener su nombre
       const usuarioEmisor = await Usuario.findById(usuarioId).select('nombre'); 
 
+      if (!usuarioEmisor) {
+        console.error("Usuario emisor no encontrado para ID:", usuarioId);
+      }
+
       // Crear la notificación para el autor de la receta
-      if (receta.usuario.toString() !== usuarioId) {  // No notificar si el autor comenta en su propia receta
+      if  (receta.usuario && receta.usuario.toString() !== usuarioId.toString()) {  // No notificar si el autor comenta en su propia receta
           const nuevaNotificacion = new Notificacion({
               usuarioDestino: receta.usuario,  
               mensaje: `@${usuarioEmisor.nombre} valoró la receta "${receta.titulo}"`, // Ahora usuarioEmisor tiene el nombre
