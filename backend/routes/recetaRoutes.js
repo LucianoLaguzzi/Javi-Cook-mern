@@ -6,6 +6,7 @@ import Receta from '../models/Receta.js'; // Ajusta la ruta al modelo
 import Valoracion from  '../models/Valoracion.js';
 import Comentario from  '../models/Comentario.js';
 import Usuario from  '../models/Usuario.js';
+import Notificacion from '../models/Notificacion.js';
 import path from 'path';
 import cloudinary from 'cloudinary';
 
@@ -189,6 +190,21 @@ router.delete('/:recetaId', async (req, res) => {
             console.log('Intentando eliminar la imagen:', receta.imagen); // Imprime el valor
             await eliminarImagenCloudinary (receta.imagen);
         }
+
+
+
+
+
+
+
+        // Eliminar las notificaciones asociadas a esta receta
+        await Notificacion.deleteMany({ enlace: { $regex: recetaId, $options: 'i' } });
+
+
+
+
+
+
       
         // Finalmente, eliminar la receta
         await Receta.findByIdAndDelete(recetaId);
