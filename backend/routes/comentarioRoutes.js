@@ -67,18 +67,31 @@ router.post('/:id/comentarios', async (req, res) => {
 
         // Crear la notificación para el autor de la receta
         // Poblar el usuario para obtener su nombre
-        const usuarioEmisor = await Usuario.findById(usuario).select('nombre'); 
+        const usuarioEmisor = await Usuario.findById(usuario).select('nombre');
 
-        // Crear la notificación para el autor de la receta
-        if (receta.usuario.toString() !== usuario) {  // No notificar si el autor comenta en su propia receta
+        if (parentCommentId) {
+          // Es una respuesta o re-respuesta: notificar al autor del comentario padre
+          const comentarioPadre = await Comentario.findById(parentCommentId).populate('usuario', 'nombre');
+          if (comentarioPadre && comentarioPadre.usuario.toString() !== usuario) {
             const nuevaNotificacion = new Notificacion({
-                usuarioDestino: receta.usuario,  
-                mensaje: `@${usuarioEmisor.nombre} comentó en tu receta "${receta.titulo}"`, // Ahora usuarioEmisor tiene el nombre
-                enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`, // Enlace corregido
-                leida: false
+              usuarioDestino: comentarioPadre.usuario,
+              mensaje: `@${usuarioEmisor.nombre} respondió a tu comentario en la receta "${receta.titulo}"`,
+              enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
+              leida: false
             });
-
             await nuevaNotificacion.save();
+          }
+        } else {
+          // Es un comentario raíz: notificar al autor de la receta
+          if (receta.usuario.toString() !== usuario) {
+            const nuevaNotificacion = new Notificacion({
+              usuarioDestino: receta.usuario,
+              mensaje: `@${usuarioEmisor.nombre} comentó en tu receta "${receta.titulo}"`,
+              enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
+              leida: false
+            });
+            await nuevaNotificacion.save();
+          }
         }
 
 

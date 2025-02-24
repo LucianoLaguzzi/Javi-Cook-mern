@@ -191,21 +191,9 @@ router.delete('/:recetaId', async (req, res) => {
             await eliminarImagenCloudinary (receta.imagen);
         }
 
-
-
-
-
-
-
         // Eliminar las notificaciones asociadas a esta receta
         await Notificacion.deleteMany({ enlace: { $regex: recetaId, $options: 'i' } });
 
-
-
-
-
-
-      
         // Finalmente, eliminar la receta
         await Receta.findByIdAndDelete(recetaId);
       
