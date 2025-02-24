@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs'; // Importa bcrypt
 import Usuario from '../models/Usuario.js';
 import Notificacion from '../models/Notificacion.js'
+import Receta from '../models/Receta.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -178,6 +179,17 @@ router.get('/:id/favoritos', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
 // Añadir una receta a favoritos
 router.post('/:id/favoritos', async (req, res) => {
   const { id } = req.params;
@@ -190,6 +202,52 @@ router.post('/:id/favoritos', async (req, res) => {
       if (!usuario.recetasFavoritas.includes(recetaId)) {
           usuario.recetasFavoritas.push(recetaId);
           await usuario.save();
+
+
+
+
+
+
+
+
+
+
+
+
+           // Buscar la receta para obtener datos (autor y título)
+           const receta = await Receta.findById(recetaId);
+           if (!receta) {
+               console.error("Receta no encontrada");
+           } else {
+               // No notificar si el usuario agregó su propia receta a favoritos
+               if (receta.usuario.toString() !== usuario._id.toString()) {
+                   // Obtener el nombre del usuario que agregó a favoritos
+                   const usuarioEmisor = await Usuario.findById(id).select('nombre');
+ 
+                   // Crear la notificación para el autor de la receta
+                   const nuevaNotificacion = new Notificacion({
+                       usuarioDestino: receta.usuario,
+                       mensaje: `@${usuarioEmisor.nombre} ha agregado a favoritos tu receta "${receta.titulo}"`,
+                       enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
+                       leida: false
+                   });
+                   await nuevaNotificacion.save();
+               }
+           }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           res.status(200).json({ mensaje: 'Receta añadida a favoritos' });
       } else {
           res.status(400).json({ mensaje: 'La receta ya está en favoritos' });
@@ -198,6 +256,19 @@ router.post('/:id/favoritos', async (req, res) => {
       res.status(500).json({ mensaje: 'Error al agregar a favoritos' });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Eliminar una receta de favoritos
 router.delete('/:id/favoritos', async (req, res) => {
@@ -215,9 +286,6 @@ router.delete('/:id/favoritos', async (req, res) => {
       res.status(500).json({ mensaje: 'Error al eliminar de favoritos' });
   }
 });
-
-
-
 
 
 

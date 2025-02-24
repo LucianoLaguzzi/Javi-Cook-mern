@@ -42,29 +42,28 @@ router.post('/', async (req, res) => {
 
 
 
-      // Crear la notificación para el autor de la receta
-      // Poblar el usuario para obtener su nombre
-     // Crear la notificación para el autor de la receta
-const usuarioEmisor = await Usuario.findById(usuarioId).select('nombre'); 
+    // Crear la notificación para el autor de la receta
+    // Poblar el usuario para obtener su nombre
+    // Crear la notificación para el autor de la receta
+    const usuarioEmisor = await Usuario.findById(usuarioId).select('nombre'); 
 
-if (!usuarioEmisor) {
-  console.error("Usuario emisor no encontrado para ID:", usuarioId);
-} else {
-  if (receta.usuario && receta.usuario.toString() !== usuarioId.toString()) {  // No notificar si el autor valoró su propia receta
-      try {
-          const nuevaNotificacion = new Notificacion({
-              usuarioDestino: receta.usuario,  
-              mensaje: `@${usuarioEmisor.nombre} valoró tu receta "${receta.titulo}"`,
-              enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
-              leida: false
-          });
-          await nuevaNotificacion.save();
-      } catch (err) {
-          console.error("Error al guardar la notificación:", err);
+    if (!usuarioEmisor) {
+      console.error("Usuario emisor no encontrado para ID:", usuarioId);
+    } else {
+      if (receta.usuario && receta.usuario.toString() !== usuarioId.toString()) {  // No notificar si el autor valoró su propia receta
+          try {
+              const nuevaNotificacion = new Notificacion({
+                  usuarioDestino: receta.usuario,  
+                  mensaje: `@${usuarioEmisor.nombre} valoró tu receta "${receta.titulo}"`,
+                  enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
+                  leida: false
+              });
+              await nuevaNotificacion.save();
+          } catch (err) {
+              console.error("Error al guardar la notificación:", err);
+          }
       }
-  }
-}
-
+    }
 
     res.status(200).json({ mensaje: 'Valoración guardada correctamente', valoracion: receta.valoracion });
   } catch (error) {
