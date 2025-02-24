@@ -5371,3 +5371,9 @@ i.fas.fa-undo {
 .btn-eliminar:hover {
     color: red;
 }
+
+
+.no-notification{
+    padding: 10px;
+    text-align: center;
+}

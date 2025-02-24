@@ -309,7 +309,7 @@ const Perfil = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <p>No tienes notificaciones.</p>
+                                    <p className="no-notification">No tienes notificaciones.</p>
                                 )}
                             </div>
                         )}
