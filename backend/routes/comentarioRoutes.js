@@ -72,7 +72,7 @@ router.post('/:id/comentarios', async (req, res) => {
         if (parentCommentId) {
           // Es una respuesta o re-respuesta: notificar al autor del comentario padre
           const comentarioPadre = await Comentario.findById(parentCommentId).populate('usuario', 'nombre');
-          if (comentarioPadre && comentarioPadre.usuario.toString() !== usuario) {
+          if (comentarioPadre && comentarioPadre.usuario._id.toString() !== usuario) {
             const nuevaNotificacion = new Notificacion({
               usuarioDestino: comentarioPadre.usuario,
               mensaje: `@${usuarioEmisor.nombre} respondió a tu comentario en la receta "${receta.titulo}"`,
