@@ -10,6 +10,9 @@ import Token from '../models/Token.js'; // el modelo de token que creaste
 import nodemailer from 'nodemailer'; // usar para enviar el correo
 import { randomBytes } from 'crypto'; // Importa randomBytes aquí
 import cloudinary from 'cloudinary';
+import sgMail from '@sendgrid/mail';
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 const router = express.Router();
@@ -251,7 +254,10 @@ router.post('/recuperar', async (req, res) => {
 
     try {
         // Buscar al usuario por nombre de usuario o email
-        const user = await Usuario.findOne({ $or: [{ nombre: usuario }, { email: usuario }] });
+        const user = await Usuario.findOne({
+            $or: [{ nombre: usuario }, { email: usuario }]
+        });
+
         if (!user) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
@@ -263,24 +269,16 @@ router.post('/recuperar', async (req, res) => {
         });
         await token.save();
 
-        // Crear el enlace de recuperación (aca iba `https://localhost:3000/recuperar/${token.token}`)
-        // const enlace = `https://192.168.0.178:3000/recuperar/${token.token}`;
+        // Crear el enlace de recuperación
         const enlace = `https://javicook-mern-front.onrender.com/recuperar/${token.token}`;
 
-        // Configurar y enviar el email
-       const transporter = nodemailer.createTransport({
-            host: 'smtp.sendgrid.net',
-            port: 587,
-            secure: false,
-            auth: {
-                user: 'apikey',
-                pass: process.env.SENDGRID_API_KEY
-            }
-        });
-
-        const mailOptions = {
-            from: `JaviCook <${process.env.EMAIL_USER}>`,
+        // Enviar email con SendGrid (API, NO SMTP)
+        await sgMail.send({
             to: user.email,
+            from: {
+                email: process.env.EMAIL_USER,
+                name: 'JaviCook'
+            },
             subject: 'Recuperación de contraseña',
             html: `
             <div style="font-family: Arial, sans-serif; color: #333; text-align: center;">
@@ -297,15 +295,14 @@ router.post('/recuperar', async (req, res) => {
                 <p>Saludos,<br>Equipo de Javicook</p>
                 <p style="color: #ccc;">© ${new Date().getFullYear()} Javicook. Todos los derechos reservados.</p>
             </div>
-        `
-        };
+            `
+        });
 
-      await transporter.sendMail(mailOptions);
+        res.status(200).json({ mensaje: "Revisa tu email para cambiar la contraseña" });
 
-      res.status(200).json({ mensaje: "Revisa tu email para cambiar la contraseña" });
     } catch (error) {
-      console.error("Error en recuperación de contraseña", error);
-      res.status(500).json({ error: "Error en recuperación de contraseña" });
+        console.error("Error en recuperación de contraseña", error);
+        res.status(500).json({ error: "Error en recuperación de contraseña" });
     }
 });
 
