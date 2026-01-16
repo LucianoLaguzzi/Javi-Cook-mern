@@ -181,15 +181,6 @@ router.get('/:id/favoritos', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
 // Añadir una receta a favoritos
 router.post('/:id/favoritos', async (req, res) => {
   const { id } = req.params;
@@ -202,17 +193,6 @@ router.post('/:id/favoritos', async (req, res) => {
       if (!usuario.recetasFavoritas.includes(recetaId)) {
           usuario.recetasFavoritas.push(recetaId);
           await usuario.save();
-
-
-
-
-
-
-
-
-
-
-
 
            // Buscar la receta para obtener datos (autor y título)
            const receta = await Receta.findById(recetaId);
@@ -235,19 +215,6 @@ router.post('/:id/favoritos', async (req, res) => {
                }
            }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
           res.status(200).json({ mensaje: 'Receta añadida a favoritos' });
       } else {
           res.status(400).json({ mensaje: 'La receta ya está en favoritos' });
@@ -256,17 +223,6 @@ router.post('/:id/favoritos', async (req, res) => {
       res.status(500).json({ mensaje: 'Error al agregar a favoritos' });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -391,19 +347,6 @@ router.post('/cambiar-contrasenia', async (req, res) => {
       res.status(500).json({ error: "Error al cambiar la contraseña" });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
