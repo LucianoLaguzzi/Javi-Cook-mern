@@ -5394,6 +5394,12 @@ i.fas.fa-undo {
     }
 }
 
+@media (max-width: 1410px) {
+    .auth-links {
+        padding-right: 10px;
+    }
+}
+
 .auth-link {
     color: #dbdb0d;
     cursor: pointer;
@@ -5404,6 +5410,19 @@ i.fas.fa-undo {
 .auth-link:hover {
     text-decoration: underline;
     transform: scale(1.05);
+}
+
+@media (max-width: 1410px) {
+    .auth-links {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 1300px) {
+    .auth-links {
+        flex-direction: column;
+        gap:24px
+    }
 }
 
 .nav-left-placeholder {
