@@ -714,24 +714,27 @@ const Inicio = () => {
                 <div className="main-content">
                     <div className="encabezado">
                         <div className="barra-navegacion">
-                            <img
-                                src="../images/JaviCook_logo.png"
-                                alt="Logotipo"
-                                className="logo-principal"
-                            />
+                            
+                            <div className="nav-left">
+                                <img
+                                    src="../images/JaviCook_logo.png"
+                                    alt="Logotipo"
+                                    className="logo-principal"
+                                />
 
-                            {isLogged && (
-                                <>
-                                    <span className="bienvenido-text">Bienvenido, </span>
-                                    <button
-                                        className="link-al-perfil"
-                                        title="Ir al perfil"
-                                        onClick={() => navigate(`/perfil/${usuarioEnSesion._id}`)}
-                                    >
-                                        {usuario.nombre} !
-                                    </button>
-                                </>
-                            )}
+                                {isLogged && (
+                                    <>
+                                        <span className="bienvenido-text">Bienvenido, </span>
+                                        <button
+                                            className="link-al-perfil"
+                                            title="Ir al perfil"
+                                            onClick={() => navigate(`/perfil/${usuarioEnSesion._id}`)}
+                                        >
+                                            {usuario.nombre} !
+                                        </button>
+                                    </>
+                                )}
+                            </div>
 
                             <span className="subtitulo">
                                 Inspírate con recetas exclusivas
