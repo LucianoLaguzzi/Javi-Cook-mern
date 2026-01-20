@@ -5379,24 +5379,29 @@ i.fas.fa-undo {
 }
 
 
-.nav-auth-actions {
+.auth-links {
+    margin-left: auto;          /* 🔑 esto lo manda a la derecha */
+    padding-right: 35px;
     display: flex;
+    gap: 18px;
     align-items: center;
-    gap: 16px;
+    z-index: 10;
 }
 
-.nav-link {
-    color: #f5e6b3; /* dorado suave */
-    font-size: 0.95rem;
+@media (max-width: 1410px) {
+    .auth-links {
+        padding-right: 5px;
+    }
+}
+
+.auth-link {
+    color: #dbdb0d;              /* el dorado que vos usás */
     cursor: pointer;
-    transition: color 0.2s ease;
+    font-size: 16px;
+    transition: all 0.3s ease;
 }
 
-.nav-link:hover {
-    color: #ffd966;
+.auth-link:hover {
     text-decoration: underline;
-}
-
-.nav-link-register {
-    font-weight: 600;
+    transform: scale(1.05);
 }

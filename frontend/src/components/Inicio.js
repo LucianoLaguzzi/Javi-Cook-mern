@@ -718,8 +718,6 @@ const Inicio = () => {
                                 src="../images/JaviCook_logo.png"
                                 alt="Logotipo"
                                 className="logo-principal"
-                                onClick={() => navigate('/inicio')}
-                                style={{ cursor: 'pointer' }}
                             />
 
                             {isLogged && (
@@ -735,38 +733,38 @@ const Inicio = () => {
                                 </>
                             )}
 
-                            <span className="subtitulo">Inspírate con recetas exclusivas</span>
+                            <span className="subtitulo">
+                                Inspírate con recetas exclusivas
+                            </span>
 
-                            {/* Zona derecha: auth actions */}
-                            <div className="nav-auth-actions">
-                                {isLogged ? (
-                                    <img
-                                        src="/images/cubiertos-cruzados.png"
-                                        className="img-cerrar-sesion"
-                                        title="Cerrar Sesión"
-                                        onClick={() => {
-                                            localStorage.removeItem('usuario');
-                                            navigate('/login');
-                                        }}
-                                        alt="Cerrar sesión"
-                                    />
-                                ) : (
-                                    <>
-                                        <span
-                                            className="nav-link"
-                                            onClick={() => navigate('/login')}
-                                        >
-                                            Iniciar sesión
-                                        </span>
-                                        <span
-                                            className="nav-link nav-link-register"
-                                            onClick={() => navigate('/registro')}
-                                        >
-                                            Registrarse
-                                        </span>
-                                    </>
-                                )}
-                            </div>
+                            {/* Zona derecha */}
+                            {isLogged ? (
+                                <img
+                                    src="/images/cubiertos-cruzados.png"
+                                    className="img-cerrar-sesion"
+                                    title="Cerrar Sesión"
+                                    onClick={() => {
+                                        localStorage.removeItem('usuario');
+                                        navigate('/login');
+                                    }}
+                                    alt="Cerrar sesión"
+                                />
+                            ) : (
+                                <div className="auth-links">
+                                    <span
+                                        className="auth-link"
+                                        onClick={() => navigate('/login')}
+                                    >
+                                        Iniciar sesión
+                                    </span>
+                                    <span
+                                        className="auth-link"
+                                        onClick={() => navigate('/registro')}
+                                    >
+                                        Registrarse
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
