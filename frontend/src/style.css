@@ -5395,7 +5395,7 @@ i.fas.fa-undo {
 }
 
 .auth-link {
-    color: #dbdb0d;              /* el dorado que vos usás */
+    color: #dbdb0d;
     cursor: pointer;
     font-size: 16px;
     transition: all 0.3s ease;
@@ -5404,23 +5404,4 @@ i.fas.fa-undo {
 .auth-link:hover {
     text-decoration: underline;
     transform: scale(1.05);
-}
-
-@media (max-width: 600px) {
-    .auth-links {
-        flex-direction: column;
-        gap: 6px;
-        align-items: flex-end;
-    }
-
-    .auth-link {
-        font-size: 14px;
-    }
-}
-
-
-.nav-left {
-    display: flex;
-    align-items: center;
-    min-width: fit-content;
 }
