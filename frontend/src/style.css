@@ -5405,3 +5405,7 @@ i.fas.fa-undo {
     text-decoration: underline;
     transform: scale(1.05);
 }
+
+.nav-left-placeholder {
+    min-width: 180px; /* similar al Bienvenido + nombre */
+}

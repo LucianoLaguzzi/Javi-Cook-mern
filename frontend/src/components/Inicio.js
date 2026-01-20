@@ -733,6 +733,11 @@ const Inicio = () => {
                                 </>
                             )}
 
+                            {/* Placeholder para mantener el layout */}
+                            {!isLogged && (
+                                <div className="nav-left-placeholder"></div>
+                            )}
+
                             <span className="subtitulo">
                                 Inspírate con recetas exclusivas
                             </span>
