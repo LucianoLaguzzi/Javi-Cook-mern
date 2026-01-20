@@ -5400,6 +5400,27 @@ i.fas.fa-undo {
     }
 }
 
+@media (max-width: 1300px) {
+    .auth-links {
+        flex-direction: column;
+        gap:24px;
+        width: 20%;
+    }
+}
+
+@media (max-width: 700px) {
+    .auth-links {
+         width: 30%;
+         gap:20px;
+    }
+}
+
+@media (max-width: 500px) {
+    .auth-links {
+         width: 35%;
+    }
+}
+
 .auth-link {
     color: #dbdb0d;
     cursor: pointer;
@@ -5413,17 +5434,24 @@ i.fas.fa-undo {
 }
 
 @media (max-width: 1410px) {
-    .auth-links {
+    .auth-link {
         font-size: 14px;
     }
 }
 
-@media (max-width: 1300px) {
-    .auth-links {
-        flex-direction: column;
-        gap:24px
+@media (max-width: 1000px) {
+    .auth-link {
+        font-size: 12px;
     }
 }
+
+@media (max-width: 700px) {
+    .auth-link {
+        font-size: 10px;
+    }
+}
+
+
 
 .nav-left-placeholder {
     min-width: 180px; /* similar al Bienvenido + nombre */
