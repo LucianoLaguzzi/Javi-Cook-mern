@@ -10,6 +10,13 @@ import Swal from 'sweetalert2';
 const Inicio = () => {
     // Recupera la información del usuario del localStorage
     const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+    //Estado para ver si esta logueado o pasa de una al home
+    const isLogged = Boolean(usuario);
+
+
+
+
     const navigate = useNavigate(); // Hook para redireccionar
 
     // Estado para las recetas
@@ -281,6 +288,7 @@ const Inicio = () => {
 
     // Manejar el toggle de favoritos
     const toggleFavorito = (recetaId) => {
+
         const isFavorito = favoritos.includes(recetaId);
     
         if (isFavorito) {
@@ -548,7 +556,8 @@ const Inicio = () => {
     };
     
 
-    //Mensaje bloqueante
+    //Mensaje bloqueante (pasar a otro lado)
+    /*
     if (!usuarioEnSesion) {
         return (
         <div className="overlay-bloqueante">
@@ -559,6 +568,7 @@ const Inicio = () => {
         </div>
         );
     }
+    */
 
 
 
@@ -705,6 +715,7 @@ const Inicio = () => {
                     <div className="encabezado">
                         <div className="barra-navegacion">
                             <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
+
                             {usuario && (
                                 <>
                                     <span className="bienvenido-text">Bienvenido, </span>
@@ -713,18 +724,34 @@ const Inicio = () => {
                                     </button>
                                 </>
                             )}
+
+                            {/*Si no eta logueado:*/}
+                            {!isLogged && (
+                                <button
+                                    className="link-al-login"
+                                    onClick={() => navigate('/login')}
+                                >
+                                    Iniciar sesión
+                                </button>
+                            )}
+
+
                             <span className="subtitulo"> Inspírate con recetas exclusivas </span>
-                            <img 
-                                src="/images/cubiertos-cruzados.png" 
-                                className="img-cerrar-sesion" 
-                                title="Cerrar Sesión" 
-                                onClick={() => {
-                                    localStorage.removeItem('usuario');
-                                    console.log('Cerrando sesión');
-                                    navigate('/login');
-                                }} 
-                                alt="Cerrar sesión"
-                            />
+
+                            {isLogged && (
+
+                                <img 
+                                    src="/images/cubiertos-cruzados.png" 
+                                    className="img-cerrar-sesion" 
+                                    title="Cerrar Sesión" 
+                                    onClick={() => {
+                                        localStorage.removeItem('usuario');
+                                        console.log('Cerrando sesión');
+                                        navigate('/login');
+                                    }} 
+                                    alt="Cerrar sesión"
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -807,10 +834,14 @@ const Inicio = () => {
                                                             <span className="nombre-usuario">{receta.usuario.nombre}</span>  
                                                             <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString('es-AR')}</span>
                                                         </div>
-                                                        <i className={`fas fa-heart icono-favorito ${favoritos.includes(receta._id) ? 'favorito' : ''}`}
-                                                            title={favoritos.includes(receta._id) ? 'Quitar de favoritos' : 'Guardar como favorito'}
-                                                            onClick={() => toggleFavorito(receta._id)}
-                                                        ></i>
+
+                                                        {isLogged && (
+                                                            <i className={`fas fa-heart icono-favorito ${favoritos.includes(receta._id) ? 'favorito' : ''}`}
+                                                                title={favoritos.includes(receta._id) ? 'Quitar de favoritos' : 'Guardar como favorito'}
+                                                                onClick={() => toggleFavorito(receta._id)}
+                                                            ></i>
+                                                        )}
+
                                                     </div>
                                                     <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
                                                     <p>Categoría: {receta.categoria}</p>
@@ -857,12 +888,14 @@ const Inicio = () => {
                             </div>
 
 
-                            {/* Botón para agregar una nueva receta */}
-                            <div className="div-agregar-receta">
-                                <button id="btnAbrirModalAgregarReceta" className="add-recipe-btn" onClick={abrirModal}>
-                                    <i className="fas fa-plus"></i> Nueva receta
-                                </button>
-                            </div>
+                            {/* Botón para agregar una nueva receta si se esta logueado*/}
+                            {isLogged && (
+                                <div className="div-agregar-receta">
+                                    <button id="btnAbrirModalAgregarReceta" className="add-recipe-btn" onClick={abrirModal}>
+                                        <i className="fas fa-plus"></i> Nueva receta
+                                    </button>
+                                </div>
+                            )}
 
                             
                             {modalVisible && (
@@ -1145,48 +1178,48 @@ const Inicio = () => {
 
 
 
-
-                        <section id="favoritos" className="favoritos">
-                            <p className="favoritos-titulo">Mis Recetas Favoritas</p>
-                            {favoritos.length === 0 ? (
-                                <span className="mensaje-no-recetas-favoritas">Aún no has agregado recetas a tu sección de favoritas. ¡Agrega las recetas que más te hayan gustado para encontrarlas más fácilmente!</span>
-                            ) : (
-                                <div className="panel-recetas">
-                                    {recetas.filter(receta => favoritos.map(fav => fav.toString()).includes(receta._id)).map(receta => (
-                                        <div key={receta._id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")}>
-                                            <div className="imagen-contenedor-chica">
-                                                <img src={receta.imagen} alt={receta.titulo} />
-                                                <div className="info-imagen">
-                                                    <span className="nombre-usuario">{receta.usuario.nombre}</span>
-                                                    <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString()}</span>
+                        {isLogged && (            
+                            <section id="favoritos" className="favoritos">
+                                <p className="favoritos-titulo">Mis Recetas Favoritas</p>
+                                {favoritos.length === 0 ? (
+                                    <span className="mensaje-no-recetas-favoritas">Aún no has agregado recetas a tu sección de favoritas. ¡Agrega las recetas que más te hayan gustado para encontrarlas más fácilmente!</span>
+                                ) : (
+                                    <div className="panel-recetas">
+                                        {recetas.filter(receta => favoritos.map(fav => fav.toString()).includes(receta._id)).map(receta => (
+                                            <div key={receta._id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")}>
+                                                <div className="imagen-contenedor-chica">
+                                                    <img src={receta.imagen} alt={receta.titulo} />
+                                                    <div className="info-imagen">
+                                                        <span className="nombre-usuario">{receta.usuario.nombre}</span>
+                                                        <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString()}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
-                                            <p>Categoría: {receta.categoria}</p>
-                                            <p>
-                                                <span className="tiempo">Tiempo de preparación: {receta.tiempoPreparacion}'</span>
-                                                <i className="far fa-clock"></i>
-                                                <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>{receta.dificultad}</span>
-                                            </p>
+                                                <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
+                                                <p>Categoría: {receta.categoria}</p>
+                                                <p>
+                                                    <span className="tiempo">Tiempo de preparación: {receta.tiempoPreparacion}'</span>
+                                                    <i className="far fa-clock"></i>
+                                                    <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>{receta.dificultad}</span>
+                                                </p>
 
-                                            <div className="valoracion">
-                                                <p>Valoración Promedio</p>
-                                                <div className="estrellas">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <i key={i} className={`fa${i < receta.valoracion ? 's' : 'r'} fa-star`}></i>
-                                                    ))}
+                                                <div className="valoracion">
+                                                    <p>Valoración Promedio</p>
+                                                    <div className="estrellas">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <i key={i} className={`fa${i < receta.valoracion ? 's' : 'r'} fa-star`}></i>
+                                                        ))}
+                                                    </div>
                                                 </div>
+
+                                                <a className="ver-mas" onClick={() => navigate(`/detalle-receta/${receta._id}`)}>
+                                                    Ver más
+                                                </a>
                                             </div>
-
-                                            <a className="ver-mas" onClick={() => navigate(`/detalle-receta/${receta._id}`)}>
-                                                Ver más
-                                            </a>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </section>
-
+                                        ))}
+                                    </div>
+                                )}
+                            </section>
+                        )}
                        
 
 
