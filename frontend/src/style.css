@@ -5377,3 +5377,26 @@ i.fas.fa-undo {
     padding: 10px;
     text-align: center;
 }
+
+
+.nav-auth-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.nav-link {
+    color: #f5e6b3; /* dorado suave */
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #ffd966;
+    text-decoration: underline;
+}
+
+.nav-link-register {
+    font-weight: 600;
+}

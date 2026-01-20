@@ -714,46 +714,62 @@ const Inicio = () => {
                 <div className="main-content">
                     <div className="encabezado">
                         <div className="barra-navegacion">
-                            <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
+                            <img
+                                src="../images/JaviCook_logo.png"
+                                alt="Logotipo"
+                                className="logo-principal"
+                                onClick={() => navigate('/inicio')}
+                                style={{ cursor: 'pointer' }}
+                            />
 
-                            {usuario && (
+                            {isLogged && (
                                 <>
                                     <span className="bienvenido-text">Bienvenido, </span>
-                                    <button className="link-al-perfil" title="Ir al perfil" onClick={() => navigate(`/perfil/${usuarioEnSesion._id}`)}>
+                                    <button
+                                        className="link-al-perfil"
+                                        title="Ir al perfil"
+                                        onClick={() => navigate(`/perfil/${usuarioEnSesion._id}`)}
+                                    >
                                         {usuario.nombre} !
                                     </button>
                                 </>
                             )}
 
-                            {/*Si no eta logueado:*/}
-                            {!isLogged && (
-                                <button
-                                    className="link-al-login"
-                                    onClick={() => navigate('/login')}
-                                >
-                                    Iniciar sesión
-                                </button>
-                            )}
+                            <span className="subtitulo">Inspírate con recetas exclusivas</span>
 
-
-                            <span className="subtitulo"> Inspírate con recetas exclusivas </span>
-
-                            {isLogged && (
-
-                                <img 
-                                    src="/images/cubiertos-cruzados.png" 
-                                    className="img-cerrar-sesion" 
-                                    title="Cerrar Sesión" 
-                                    onClick={() => {
-                                        localStorage.removeItem('usuario');
-                                        console.log('Cerrando sesión');
-                                        navigate('/login');
-                                    }} 
-                                    alt="Cerrar sesión"
-                                />
-                            )}
+                            {/* Zona derecha: auth actions */}
+                            <div className="nav-auth-actions">
+                                {isLogged ? (
+                                    <img
+                                        src="/images/cubiertos-cruzados.png"
+                                        className="img-cerrar-sesion"
+                                        title="Cerrar Sesión"
+                                        onClick={() => {
+                                            localStorage.removeItem('usuario');
+                                            navigate('/login');
+                                        }}
+                                        alt="Cerrar sesión"
+                                    />
+                                ) : (
+                                    <>
+                                        <span
+                                            className="nav-link"
+                                            onClick={() => navigate('/login')}
+                                        >
+                                            Iniciar sesión
+                                        </span>
+                                        <span
+                                            className="nav-link nav-link-register"
+                                            onClick={() => navigate('/registro')}
+                                        >
+                                            Registrarse
+                                        </span>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
+
 
                     <div className="barra-secundaria">
                         <a href="#recetas" className="link-secundario"  onMouseEnter={() => reproducirSonido("item")}  onMouseUp={() => reproducirSonido("popup")}>Recetas</a>
