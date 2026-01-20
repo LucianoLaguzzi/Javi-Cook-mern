@@ -5422,13 +5422,14 @@ i.fas.fa-undo {
 }
 
 .auth-link {
-    color: #dbdb0d;
+    color: #deb887;
     cursor: pointer;
     font-size: 16px;
     transition: all 0.3s ease;
 }
 
 .auth-link:hover {
+    color:#ca8345;
     text-decoration: underline;
     transform: scale(1.05);
 }
