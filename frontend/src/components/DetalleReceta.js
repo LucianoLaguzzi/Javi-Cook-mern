@@ -9,6 +9,9 @@ import Swal from 'sweetalert2';
 const DetalleReceta = () => {
       
   const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
+  //Para ver si hay un usuario logueado en la sesion
+  const isLogged = Boolean(usuarioEnSesion);
+
   const { id } = useParams(); // Para obtener el id de la receta desde la URL
   const navigate = useNavigate();
 
@@ -55,52 +58,69 @@ const DetalleReceta = () => {
   
 
   useEffect(() => {
-    // Obtener detalles de la receta desde el backend usando Axios
     const obtenerReceta = async () => {
       try {
-        setIsLoading(true); // Activa el loading antes de empezar
+        setIsLoading(true);
 
-        const response = await axios.get(`https://javicook-mern.onrender.com/api/detalles/${id}`);
-        setReceta(response.data);
+        // 1️⃣ Obtener receta (SIEMPRE)
+        const response = await axios.get(
+          `https://javicook-mern.onrender.com/api/detalles/${id}`
+        );
 
-        // Comparar IDs para determinar si es propietario
-        if (response.data.usuario._id === usuarioEnSesion._id) {
-          console.log("Es propietario de la receta")
-          setEsPropietario(true);
-        }
+        const recetaData = response.data;
+        setReceta(recetaData);
 
-        setIngredientesCantidades(response.data.ingredientesCantidades.join('\r\n'));
-        setPasos(response.data.pasos.join('\r\n'));
+        // 2️⃣ Ingredientes y pasos (SIEMPRE)
+        setIngredientesCantidades(
+          recetaData.ingredientesCantidades.join('\r\n')
+        );
+        setPasos(recetaData.pasos.join('\r\n'));
 
-
-
-        // "comentarios tiene todos los comentarios padre, con sus datos, por lo tanto "comentario" tiene cada uno de esos."
-        const comentariosConRespuestas = response.data.comentarios.map((comentario) => {
-          // El array "respuestas" tiene las respuestas a cada comentario, viene en el get de la receta.
-          return {
+        // 3️⃣ Comentarios (SIEMPRE - solo lectura si es guest)
+        const comentariosConRespuestas = recetaData.comentarios.map(
+          (comentario) => ({
             ...comentario,
-            respuestas: comentario.respuestas || [] // Si no tiene respuestas, inicialízalo como un arreglo vacío
-          };
-        });
+            respuestas: comentario.respuestas || [],
+          })
+        );
+        setComentarios(comentariosConRespuestas);
 
-        setComentarios(comentariosConRespuestas); // Asigna los comentarios al estado
+        // 4️⃣ SOLO si hay usuario logueado
+        if (usuarioEnSesion) {
+          // 👉 verificar propietario
+          if (recetaData.usuario._id === usuarioEnSesion._id) {
+            setEsPropietario(true);
+          } else {
+            setEsPropietario(false);
+          }
 
+          // 👉 obtener valoración del usuario
+          const valoracionResponse = await axios.get(
+            `https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`
+          );
 
-        // Obtener la valoración del usuario
-        const valoracionResponse = await axios.get(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
-        if (valoracionResponse.data.valoracionUsuario) {
-          setValoracionUsuario(valoracionResponse.data.valoracionUsuario);
-          setYaValorado(true);
+          if (valoracionResponse.data.valoracionUsuario) {
+            setValoracionUsuario(valoracionResponse.data.valoracionUsuario);
+            setYaValorado(true);
+          } else {
+            setYaValorado(false);
+          }
+        } else {
+          // 5️⃣ Guest → limpiar estados sensibles
+          setEsPropietario(false);
+          setYaValorado(false);
+          setValoracionUsuario(null);
         }
-
       } catch (error) {
         console.error('Error al cargar la receta', error);
-       } finally {
-        setIsLoading(false); // Desactiva el loading después de completar la carga
+      } finally {
+        setIsLoading(false);
       }
     };
+
     obtenerReceta();
   }, [id]);
+
 
   
   // Temporizador
@@ -721,6 +741,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
   };
 
   //Mensaje bloqueante
+  /* Lo saco porque ahora no necesita ir al login de entrada
   if (!usuarioEnSesion) {
     return (
       <div className="overlay-bloqueante">
@@ -731,6 +752,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
       </div>
     );
   }
+  */
 
 
   // Crear la URL absoluta de la imagen
@@ -748,7 +770,17 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
         <div className="encabezado">
           <div className="barra-navegacion">
             <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
-            <span className="bienvenido-text">Bienvenido, {usuarioEnSesion?.nombre}!</span>
+
+            {/* Placeholder para mantener el layout */}
+              {!isLogged && (
+                <div className="nav-left-placeholder"></div>
+            )}
+
+            {isLogged && (
+              <span className="bienvenido-text">
+                Bienvenido, {usuarioEnSesion.nombre}!
+              </span>
+            )}
 
             <span class="subtitulo-detalle-receta"> Detalles de la receta </span>
             <img src="../images/cubiertos-cruzados.png" className="img-cerrar-sesion" alt="Cerrar Sesión" 
@@ -939,57 +971,60 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
 
               {/* Valoración */}
-               <span className='titulo-valoracion'>Tu valoración para esta receta</span>
-              <div
-                className="contenedor-valoracion"
-                onMouseEnter={() => setMostrarEliminar(true)} // Muestra el ícono de eliminar valoracion al pasar el mouse
-                onMouseLeave={() => setMostrarEliminar(false)} // Oculta el ícono al salir
-              >
-               
-                <div className="detalles-valoracion" ref={estrellasRef}>
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <i
-                      key={i}
-                      className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
-                      style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
-                      onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
-                      onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
-                      onMouseLeave={() => setValoracionHover(0)}
-                    />
-                  ))}
-                </div>
+              {isLogged && (
+                <>
+                  <span className='titulo-valoracion'>Tu valoración para esta receta</span>
+                  <div
+                    className="contenedor-valoracion"
+                    onMouseEnter={() => setMostrarEliminar(true)} // Muestra el ícono de eliminar valoracion al pasar el mouse
+                    onMouseLeave={() => setMostrarEliminar(false)} // Oculta el ícono al salir
+                  >
+                  
+                    <div className="detalles-valoracion" ref={estrellasRef}>
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <i
+                          key={i}
+                          className={`fa ${i <= (valoracionHover || valoracionUsuario) ? 'fas fa-star' : 'far fa-star'}`}
+                          style={{ cursor: edicionActiva || !yaValorado ? 'pointer' : 'default' }}
+                          onClick={() => (edicionActiva || !yaValorado) && manejarValoracion(i)} // Permitir click si está en modo edición o aún no ha valorado
+                          onMouseEnter={() => (edicionActiva || !yaValorado) && setValoracionHover(i)}
+                          onMouseLeave={() => setValoracionHover(0)}
+                        />
+                      ))}
+                    </div>
 
-                {/* Espacio reservado para el ícono de borrar valoracion */}
-                {yaValorado && (
-                  <i
-                    className="fa fa-trash boton-eliminar-valoracion"
-                    onClick={eliminarValoracion}
-                    title="Eliminar mi valoración"
-                    style={{ cursor: "pointer", color: "red" }}
-                  />
-                )}
-              </div>
+                    {/* Espacio reservado para el ícono de borrar valoracion */}
+                    {yaValorado && (
+                      <i
+                        className="fa fa-trash boton-eliminar-valoracion"
+                        onClick={eliminarValoracion}
+                        title="Eliminar mi valoración"
+                        style={{ cursor: "pointer", color: "red" }}
+                      />
+                    )}
+                  </div>
 
-              {/* Botón para activar la edición */}
-              {yaValorado && !edicionActiva && (
-                <a
-                  onClick={() => {
-                    setValoracionOriginal(valoracionUsuario); // Guarda la valoración actual
-                    setEdicionActiva(true);  // Activa la edición
-                    setValoracionUsuario(0); // Reinicia la valoración
-                    setValoracionHover(0);   // Reinicia las estrellas a 0
-                  }}
-                  className="boton-editar"
-                >
-                  Editar valoración
-                </a>
+                  {/* Botón para activar la edición */}
+                  {yaValorado && !edicionActiva && (
+                    <a
+                      onClick={() => {
+                        setValoracionOriginal(valoracionUsuario); // Guarda la valoración actual
+                        setEdicionActiva(true);  // Activa la edición
+                        setValoracionUsuario(0); // Reinicia la valoración
+                        setValoracionHover(0);   // Reinicia las estrellas a 0
+                      }}
+                      className="boton-editar"
+                    >
+                      Editar valoración
+                    </a>
+                  )}
+
+                  {/* Mostrar mensaje de edición */}
+                  {edicionActiva && (
+                    <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
+                  )}
+                </>
               )}
-
-              {/* Mostrar mensaje de edición */}
-              {edicionActiva && (
-                <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
-              )}
-
 
 
               {esPropietario && (
@@ -1018,15 +1053,27 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                 <h3>Comentarios</h3>
               </div>
 
-              <div className="input-comentarios">
-                <input
-                  className="input-comentario"
-                  value={nuevoComentario}
-                  onChange={(e) => setNuevoComentario(e.target.value)}
-                  placeholder="Agregar comentario..."
-                />
-                <button className='boton-comentario' onClick={agregarComentario}  disabled={isEnviando}>Enviar</button>
-              </div>
+              {isLogged ? (
+                <div className="input-comentarios">
+                  <input
+                    className="input-comentario"
+                    value={nuevoComentario}
+                    onChange={(e) => setNuevoComentario(e.target.value)}
+                    placeholder="Agregar comentario..."
+                  />
+                  <button
+                    className="boton-comentario"
+                    onClick={agregarComentario}
+                    disabled={isEnviando}
+                  >
+                    Enviar
+                  </button>
+                </div>
+              ) : (
+                <p className="mensaje-login">
+                  Iniciá sesión para comentar esta receta.
+                </p>
+              )}
             
               <div className="comentarios-usuarios">
                 {comentarios && comentarios.length > 0 ? (
@@ -1046,14 +1093,15 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         <span className="comentario-fecha">{new Date(comentario.fecha).toLocaleDateString()}</span>
 
                         {/* Botón de eliminación comentario principal*/}
-                        {(usuarioEnSesion._id === comentario.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
-                          <a
-                            className="btn-borrar"
-                            onClick={() => confirmarBorrado(comentario._id)}
-                            title="Borrar comentario"
-                          >
-                            <i className="fas fa-trash eliminar-comentario"></i>
-                          </a>
+                        {isLogged &&
+                          (usuarioEnSesion._id === comentario.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
+                            <a
+                              className="btn-borrar"
+                              onClick={() => confirmarBorrado(comentario._id)}
+                              title="Borrar comentario"
+                            >
+                              <i className="fas fa-trash eliminar-comentario"></i>
+                            </a>
                         )}
 
                         {/* Modo de edición de comentario */}
@@ -1091,10 +1139,15 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                           </a>
                         )}
 
-                        <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
-                          Responder
-                        </button>
-
+                        {isLogged ? (
+                          <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
+                            Responder
+                          </button>
+                        ) : (
+                          <span className="aviso-login">
+                            Iniciá sesión para responder
+                          </span>
+                        )}
                       </div>
 
                       {/* Respuestas */}
