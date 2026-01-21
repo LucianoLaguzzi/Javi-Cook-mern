@@ -5457,3 +5457,23 @@ i.fas.fa-undo {
 .nav-left-placeholder {
     min-width: 180px; /* similar al Bienvenido + nombre */
 }
+
+@media (max-width: 1000px) {
+    .nav-left-placeholder {
+        min-width: 100px;
+    }
+}
+
+
+.mensaje-login {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+
+  text-align: center;
+  font-size: 14px;
+  color: #ccc;
+  font-style: italic;
+}
