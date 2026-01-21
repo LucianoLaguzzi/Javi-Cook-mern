@@ -1146,15 +1146,15 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                             </a>
                         )}
 
-                        {isLogged ? (
-                          <button className="boton-responder" onClick={() => responderComentario(comentario._id)}>
+                        {isLogged && (
+                          <button
+                            className="boton-responder"
+                            onClick={() => responderComentario(comentario._id)}
+                          >
                             Responder
                           </button>
-                        ) : (
-                          <span className="aviso-login">
-                            Iniciá sesión para responder
-                          </span>
                         )}
+                        
                       </div>
 
                       {/* Respuestas */}
@@ -1180,7 +1180,8 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                   </span>
 
                                   {/* Botón de eliminación para respuestas */}
-                                  {(usuarioEnSesion._id === respuesta.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
+                                  {isLogged &&
+                                  (usuarioEnSesion._id === respuesta.usuario._id || usuarioEnSesion._id === receta.usuario?._id) && (
                                     <a
                                       className="btn-borrar"
                                       onClick={() => confirmarBorrado(respuesta._id)}
@@ -1213,7 +1214,8 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                   )}
 
                                   {/* Botón de edición para respuestas (solo si el usuario es el autor) */}
-                                  {usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && ( //comentarioEditado tiene el id de la respuesta q se va a editar
+                                  {isLogged &&
+                                    usuarioEnSesion._id === respuesta.usuario._id && comentarioEditado !== respuesta._id && ( //comentarioEditado tiene el id de la respuesta q se va a editar
                                     <a
                                       className='btn-editar-pasos'
                                       onClick={() => editarComentario(respuesta._id, respuesta.comentario, true, comentario._id)} //true y comentario._id no se estan usando
@@ -1262,7 +1264,8 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
 
                                                {/* Botón de eliminación para re-respuestas */}
-                                               {(usuarioEnSesion._id ===rerespuesta.usuario._id ||usuarioEnSesion._id === receta.usuario?._id) && (
+                                              {isLogged &&
+                                               (usuarioEnSesion._id ===rerespuesta.usuario._id ||usuarioEnSesion._id === receta.usuario?._id) && (
                                                 <a
                                                   className="btn-borrar"
                                                   onClick={() =>
@@ -1309,7 +1312,8 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                               )}
 
                                               {/* Botón de edición para re-respuestas */}
-                                              {usuarioEnSesion._id === rerespuesta.usuario._id && comentarioEditado !== rerespuesta._id && (
+                                              {isLogged &&
+                                              usuarioEnSesion._id === rerespuesta.usuario._id && comentarioEditado !== rerespuesta._id && (
                                                 <a
                                                   className="btn-editar-pasos"
                                                   onClick={() =>
