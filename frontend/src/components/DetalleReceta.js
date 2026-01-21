@@ -1133,10 +1133,17 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         )}
 
                         {/* Botón de edición (solo si el usuario es el autor del comentario) */}
-                        {usuarioEnSesion._id === comentario.usuario._id && !comentarioEditado && (
-                          <a className='btn-editar-pasos' onClick={() => editarComentario(comentario._id, comentario.comentario)}>
-                            <i class="fas fa-pencil-alt" title="Editar comentario"></i>
-                          </a>
+                        {isLogged &&
+                          usuarioEnSesion._id === comentario.usuario._id &&
+                          !comentarioEditado && (
+                            <a
+                              className="btn-editar-pasos"
+                              onClick={() =>
+                                editarComentario(comentario._id, comentario.comentario)
+                              }
+                            >
+                              <i className="fas fa-pencil-alt" title="Editar comentario"></i>
+                            </a>
                         )}
 
                         {isLogged ? (
