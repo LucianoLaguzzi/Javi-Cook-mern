@@ -50,14 +50,6 @@ function Login() {
 
     return (
         <body className="login">
-            
-            <span
-                className="volver-inicio-login"
-                onClick={() => navigate('/inicio')}
-            >
-                ← Volver al inicio
-            </span>
-
             <header>
                 <h1>¡Bienvenido a JaviCook!</h1>
                 <p>Por favor, inicia sesión para continuar.</p>
