@@ -5492,3 +5492,80 @@ i.fas.fa-undo {
   color: #ccc;
   font-style: italic;
 }
+
+
+.acceso-denegado {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fafafa;
+    text-align: center;
+    padding: 20px;
+}
+
+.acceso-denegado h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #d32f2f;
+}
+
+.acceso-denegado p {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    color: #444;
+}
+
+.acceso-denegado button {
+    margin: 6px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #ff7043;
+    color: white;
+    transition: all 0.2s;
+}
+
+.acceso-denegado button:hover {
+    background-color: #f4511e;
+}
+
+.pagina-no-encontrada {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fffdf8;
+    text-align: center;
+    padding: 20px;
+}
+
+.pagina-no-encontrada h2 {
+    font-size: 3rem;
+    color: #ff7043;
+    margin-bottom: 10px;
+}
+
+.pagina-no-encontrada p {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.pagina-no-encontrada button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #ff7043;
+    color: white;
+}
+
+.pagina-no-encontrada button:hover {
+    background-color: #f4511e;
+}

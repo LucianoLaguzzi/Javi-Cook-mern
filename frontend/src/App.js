@@ -9,6 +9,7 @@ import Perfil from './components/Perfil';
 import RecuperarContrasenia from './components/RecuperarConsetania';
 import CambiarContrasenia from './components/CambiarContrasenia';
 import LoadingScreen from './components/LoadingScreen';
+import { Helmet } from 'react-helmet';
 
 
 
@@ -26,6 +27,24 @@ function App() {
                     <Route path="/perfil/:id" element={<Perfil />} />
                     <Route path="/recuperar" element={<RecuperarContrasenia />} />
                     <Route path="/recuperar/:token" element={<CambiarContrasenia />} />
+
+                    <Route
+                        path="*"
+                        element={
+                            <div className="pagina-no-encontrada">
+                            <Helmet>
+                                <title>Página no encontrada - JaviCook</title>
+                            </Helmet>
+
+                            <h2>404</h2>
+                            <p>La página que estás buscando no existe.</p>
+
+                            <button onClick={() => window.location.href = '/inicio'}>
+                                Ir al inicio
+                            </button>
+                            </div>
+                        }
+                    />
 
                 </Routes>
             </div>
