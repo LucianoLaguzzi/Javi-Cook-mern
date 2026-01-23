@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../style.css';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
@@ -14,6 +14,8 @@ const DetalleReceta = () => {
 
   const { id } = useParams(); // Para obtener el id de la receta desde la URL
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   const [receta, setReceta] = useState({});
   const [esPropietario, setEsPropietario] = useState(false);
@@ -757,6 +759,23 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
   // Crear la URL absoluta de la imagen
   //const imageUrl = `${window.location.origin}/${receta.imagen?.replace('\\', '/')}`;
+
+
+  const handleLogoClick = () => {
+      if (location.pathname !== "/inicio") {
+          navigate("/inicio");
+      }
+
+      // Siempre vuelve arriba
+      window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+      });
+  };
+
+
+
+
   const imageUrl = receta.imagen;
 
   return (
@@ -769,7 +788,14 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
       <div className="body-detalles">
         <div className="encabezado">
           <div className="barra-navegacion">
-            <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
+            <img 
+              src="../images/JaviCook_logo.png" 
+              alt="Logotipo" 
+              className="logo-principal"
+              onClick={handleLogoClick}
+              style={{ cursor: "pointer" }}
+
+            />
 
             {/* Placeholder para mantener el layout */}
               {!isLogged && (

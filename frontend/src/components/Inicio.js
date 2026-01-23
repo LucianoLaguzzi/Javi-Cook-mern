@@ -1,7 +1,7 @@
 // Inicio.js
 import React, { useState, useEffect, useRef } from 'react';
 import '../style.css'; // Asegúrate de que la ruta sea correcta
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Cropper from 'react-easy-crop'; // Importa el componente de recorte
@@ -18,6 +18,7 @@ const Inicio = () => {
 
 
     const navigate = useNavigate(); // Hook para redireccionar
+    const location = useLocation();
 
     // Estado para las recetas
     const [recetas, setRecetas] = useState([]);
@@ -698,6 +699,19 @@ const Inicio = () => {
     }
     return placeholders;
     };
+
+
+    const handleLogoClick = () => {
+        if (location.pathname !== "/inicio") {
+            navigate("/inicio");
+        }
+
+        // Siempre vuelve arriba
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    };
     
 
     
@@ -718,6 +732,8 @@ const Inicio = () => {
                                 src="../images/JaviCook_logo.png"
                                 alt="Logotipo"
                                 className="logo-principal"
+                                onClick={handleLogoClick}
+                                style={{ cursor: "pointer" }}
                             />
 
                             {isLogged && (
@@ -733,7 +749,7 @@ const Inicio = () => {
                                 </>
                             )}
 
-                            {/* Placeholder para mantener el layout */}
+                            {/* Placeholder para mantener el layout si no se esta logueado */}
                             {!isLogged && (
                                 <div className="nav-left-placeholder"></div>
                             )}
