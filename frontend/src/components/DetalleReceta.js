@@ -809,13 +809,37 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
             )}
 
             <span class="subtitulo-detalle-receta"> Detalles de la receta </span>
-            <img src="../images/cubiertos-cruzados.png" className="img-cerrar-sesion" alt="Cerrar Sesión" 
-              onClick={() => {
-                  localStorage.removeItem('usuario');
-                  console.log('Cerrar sesión');
-                  navigate('/login');
-                  window.history.pushState(null, '', '/login'); // Asegura que no pueda regresar a la página anterior
-              }}  />
+
+
+            {isLogged ? (
+              <img
+                  src="/images/cubiertos-cruzados.png"
+                  className="img-cerrar-sesion"
+                  title="Cerrar Sesión"
+                  onClick={() => {
+                      localStorage.removeItem('usuario');
+                      navigate('/inicio');
+                      window.scrollTo(0, 0);
+                  }}
+                  alt="Cerrar sesión"
+              />
+            ) : (
+              <div className="auth-links">
+                  <span
+                      className="auth-link"
+                      onClick={() => navigate('/login')}
+                  >
+                      Iniciar sesión
+                  </span>
+                  <span
+                      className="auth-link"
+                      onClick={() => navigate('/registro')}
+                  >
+                      Registrarse
+                  </span>
+              </div>
+            )}
+
           </div>
         </div>
   
