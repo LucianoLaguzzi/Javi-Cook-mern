@@ -5569,3 +5569,20 @@ i.fas.fa-undo {
 .pagina-no-encontrada button:hover {
     background-color: #f4511e;
 }
+
+
+.volver-inicio-login {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+
+    font-size: 0.9rem;
+    color: #ff7043;
+    cursor: pointer;
+    text-decoration: underline;
+    z-index: 1000;
+}
+
+.volver-inicio-login:hover {
+    opacity: 0.8;
+}

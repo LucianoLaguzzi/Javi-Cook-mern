@@ -307,13 +307,16 @@ const Perfil = () => {
                             <span > Pefil del usuario </span>
                         </div>
 
-                        <img src="../images/cubiertos-cruzados.png" className="img-cerrar-sesion" alt="Cerrar Sesión" 
+                        <img
+                            src="../images/cubiertos-cruzados.png"
+                            className="img-cerrar-sesion"
+                            alt="Cerrar Sesión"
+                            title="Cerrar sesión"
                             onClick={() => {
                                 localStorage.removeItem('usuario');
-                                console.log('Cerrar sesión');
-                                navigate('/login');
-                                window.history.pushState(null, '', '/login'); // Asegura que no pueda regresar a la página anterior
-                            }}  />
+                                navigate('/inicio', { replace: true });
+                            }}
+                        />
                     </div>
                 </div>
 
