@@ -5466,7 +5466,7 @@ i.fas.fa-undo {
 
 @media (max-width: 700px) {
     .nav-left-placeholder {
-        min-width: 100px;
+        min-width: 30px;
     }
 }
 
