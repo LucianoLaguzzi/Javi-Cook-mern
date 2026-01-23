@@ -614,7 +614,7 @@ font-weight: bold;
 
 @media (max-width: 500px) {
     .logo-principal  {
-        width: 160px;
+        width: 100px;
         height: 76px;
         margin-right: 4px;
     }
@@ -2636,6 +2636,7 @@ span.fecha-subida{
         font-size: 30px;
         margin: 25px;
         margin-bottom: 0px;
+        text-align: center;
     }
 }
 
@@ -5461,6 +5462,12 @@ i.fas.fa-undo {
 @media (max-width: 1000px) {
     .nav-left-placeholder {
         min-width: 100px;
+    }
+}
+
+@media (max-width: 700px) {
+    .nav-left-placeholder {
+        min-width: 30px;
     }
 }
 
