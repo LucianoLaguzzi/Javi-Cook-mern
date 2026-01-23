@@ -7,6 +7,11 @@ import Swal from 'sweetalert2';
 
 
 const Perfil = () => {
+    const navigate = useNavigate();
+
+    const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
+
+
     const [usuario, setUsuario] = useState(null);
     const [recetas, setRecetas] = useState([]);
     const [editandoNombre, setEditandoNombre] = useState(false);
@@ -16,15 +21,8 @@ const Perfil = () => {
     const [imagenPerfil, setImagenPerfil] = useState(null);
     const [mostrarRecetas, setMostrarRecetas] = useState(false);
     const [mostrandoBotonGuardar, setMostrandoBotonGuardar] = useState(false);
-
     const [notificaciones, setNotificaciones] = useState([]);
     const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
-
-
-    const navigate = useNavigate();
-    
-    const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
-
 
     useEffect(() => {
         if (usuarioEnSesion) {
@@ -250,7 +248,45 @@ const Perfil = () => {
         return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
     };
 
-    return (
+
+
+
+
+
+
+
+
+    
+    if (!usuarioEnSesion) {
+        return (
+            <div className="acceso-denegado">
+               <Helmet>
+                    <title>
+                        {usuarioEnSesion
+                            ? `Perfil del Usuario - ${usuarioEnSesion.nombre}`
+                            : 'Perfil - JaviCook'}
+                    </title>
+                    <link rel="icon" href="/favicon-login.png" />
+                </Helmet>
+
+                <h2>Acceso denegado</h2>
+                <p>Tenés que iniciar sesión para acceder a tu perfil.</p>
+
+                <button onClick={() => navigate('/login')}>
+                    Iniciar sesión
+                </button>
+
+                <button onClick={() => navigate('/inicio')}>
+                    Volver al inicio
+                </button>
+            </div>
+        );
+    }
+
+
+
+
+    return (        
         <div>
             <Helmet>
                 <title>{`Perfil del Usuario - ${usuarioEnSesion.nombre}`}</title>
