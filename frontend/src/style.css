@@ -660,7 +660,6 @@ img.img-cerrar-sesion:hover {
     .subtitulo {
         font-size: 25px;
         text-align: center;
-        right: 60px;
     }
 }
 
@@ -5467,7 +5466,7 @@ i.fas.fa-undo {
 
 @media (max-width: 700px) {
     .nav-left-placeholder {
-        min-width: 30px;
+        min-width: 100px;
     }
 }
 
