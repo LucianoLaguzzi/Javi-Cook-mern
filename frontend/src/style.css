@@ -660,6 +660,12 @@ img.img-cerrar-sesion:hover {
     .subtitulo {
         font-size: 25px;
         text-align: center;
+  
+    }
+}
+
+@media (max-width: 700px) {
+    .subtitulo {
         right: 15%;
     }
 }
