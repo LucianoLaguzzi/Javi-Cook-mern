@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Importar el hook useNavigate
 import '../style.css';
+import { API_BASE_URL } from '../config/api';
+
 
 
 function Login() {
@@ -19,7 +21,7 @@ function Login() {
         setIsLoading(true); // Activa el estado de carga
 
         try {
-            const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/login', { //antes de /api va la url del backend
+            const response = await axios.post(`${API_BASE_URL}/api/usuarios/login`, { //antes de /api va la url del backend
                 nombre: usuario,
                 contrasenia
             });         

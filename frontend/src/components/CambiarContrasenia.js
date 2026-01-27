@@ -27,7 +27,7 @@ const CambiarContrasenia = () => {
         }
 
         try {
-            const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/cambiar-contrasenia', // Ruta relativa
+            const response = await axios.post('${API_BASE_URL}/api/usuarios/cambiar-contrasenia', // Ruta relativa
                 { token, nuevaContrasenia },
                 { headers: { 'Content-Type': 'application/json' } }
             );

@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
               const nuevaNotificacion = new Notificacion({
                   usuarioDestino: receta.usuario,  
                   mensaje: `@${usuarioEmisor.nombre} valoró tu receta "${receta.titulo}"`,
-                  enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
+                  enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${receta._id}`,
                   leida: false
               });
               await nuevaNotificacion.save();

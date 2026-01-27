@@ -1,4 +1,8 @@
+import dotenv from 'dotenv';
+dotenv.config();
 console.log("Iniciando servidor...");
+
+
 
 import express from 'express';
 import cors from 'cors';
@@ -10,6 +14,7 @@ import recetaRoutes from './routes/recetaRoutes.js';
 import detalleRoutes from './routes/detalleRoutes.js';
 import comentarioRoutes from './routes/comentarioRoutes.js';
 import valoracionRoutes from './routes/valoracionRoutes.js';
+
 
 // Importa e inicializa Cloudinary
 import cloudinary from 'cloudinary';
@@ -25,15 +30,18 @@ cloudinary.v2.config({
 
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
+
+app.use(express.json());
 
 // Middleware
 app.use(cors({
-  origin: 'https://javicook-mern-front.onrender.com', // Dominio del frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: [
+    'http://localhost:3000',
+    'https://javicook-mern-front.onrender.com'
+  ],
+  credentials: true
 }));
-app.use(express.json());
 
 
 // Conexión a MongoDB

@@ -211,7 +211,7 @@ router.post('/:id/favoritos', async (req, res) => {
                    const nuevaNotificacion = new Notificacion({
                        usuarioDestino: receta.usuario,
                        mensaje: `@${usuarioEmisor.nombre} ha agregado a favoritos tu receta "${receta.titulo}"`,
-                       enlace: `https://javicook-mern-front.onrender.com/detalle-receta/${receta._id}`,
+                       enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${receta._id}`,
                        leida: false
                    });
                    await nuevaNotificacion.save();
@@ -270,7 +270,7 @@ router.post('/recuperar', async (req, res) => {
         await token.save();
 
         // Crear el enlace de recuperación
-        const enlace = `https://javicook-mern-front.onrender.com/recuperar/${token.token}`;
+        const enlace =  `${process.env.FRONTEND_URL}/recuperar/${token.token}`;
 
         // Enviar email con SendGrid (API, NO SMTP)
         await sgMail.send({

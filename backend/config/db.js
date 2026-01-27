@@ -2,15 +2,13 @@ import mongoose from 'mongoose';
 
 const conectarDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/javicook';
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI no está definida');
+    }
 
+    const conexion = await mongoose.connect(process.env.MONGODB_URI);
 
-    await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    
-    console.log('Conectado a MongoDB');
+    console.log(`MongoDB conectado en: ${conexion.connection.host}`);
   } catch (error) {
     console.error('Error al conectar a MongoDB:', error.message);
     process.exit(1);

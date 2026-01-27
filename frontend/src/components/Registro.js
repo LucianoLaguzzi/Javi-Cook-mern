@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import '../style.css'; // Asegúrate de que la ruta sea correcta
+import { API_BASE_URL } from '../config/api';
+
 
 const Registro = () => {
   const [nombre, setNombre] = useState('');
@@ -15,7 +17,7 @@ const Registro = () => {
   const manejarRegistro = async (e) => {
     e.preventDefault(); // Evitar que el formulario se envíe de manera convencional
     try {
-      const response = await axios.post('https://javicook-mern.onrender.com/api/usuarios/registrar', {
+      const response = await axios.post(`${API_BASE_URL}/api/usuarios/registrar`, {
         nombre,
         contrasenia,
         email,

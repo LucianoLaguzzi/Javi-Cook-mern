@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet';
+import { API_BASE_URL } from '../config/api';
+
 
 const RecuperarContrasenia = () => {
     const [usuario, setUsuario] = useState('');
@@ -22,7 +24,7 @@ const RecuperarContrasenia = () => {
             }
         });
 
-        axios.post('https://javicook-mern.onrender.com/api/usuarios/recuperar', { usuario })
+        axios.post(`${API_BASE_URL}/api/usuarios/recuperar`, { usuario })
         .then(response => {
             Swal.fire({
                 icon: 'success',

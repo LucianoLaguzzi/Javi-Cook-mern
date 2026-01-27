@@ -4,6 +4,8 @@ import '../style.css';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../config/api';
+
 
 
 const DetalleReceta = () => {
@@ -66,7 +68,7 @@ const DetalleReceta = () => {
 
         // 1️⃣ Obtener receta (SIEMPRE)
         const response = await axios.get(
-          `https://javicook-mern.onrender.com/api/detalles/${id}`
+          `${API_BASE_URL}/api/detalles/${id}`
         );
 
         const recetaData = response.data;
@@ -98,7 +100,7 @@ const DetalleReceta = () => {
 
           // 👉 obtener valoración del usuario
           const valoracionResponse = await axios.get(
-            `https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`
+            `${API_BASE_URL}/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`
           );
 
           if (valoracionResponse.data.valoracionUsuario) {
@@ -221,7 +223,7 @@ const DetalleReceta = () => {
   // Función para guardar el nuevo título
   const guardarTitulo = async () => {
       try {
-      await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/titulo`, { titulo: receta.titulo });
+      await axios.put(`${API_BASE_URL}/api/recetas/${id}/titulo`, { titulo: receta.titulo });
       setTituloEditable(false);
       } catch (error) {
       console.error('Error al guardar el título', error);
@@ -245,7 +247,7 @@ const DetalleReceta = () => {
   // Guardar ingredientes
   const guardarIngredientes = async () => {
       try {
-        await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/ingredientesCantidades`, { ingredientesCantidades });
+        await axios.put(`${API_BASE_URL}/api/recetas/${id}/ingredientesCantidades`, { ingredientesCantidades });
         setIngredientesEditable(false);
       } catch (error) {
       console.error('Error al guardar ingredientes', error);
@@ -259,7 +261,7 @@ const DetalleReceta = () => {
         const pasosFormateados = pasosEditados.join('\r\n');
 
         // Usa una URL relativa para evitar clavar localhost
-        const response = await axios.put(`https://javicook-mern.onrender.com/api/recetas/${id}/pasos`, {
+        const response = await axios.put(`${API_BASE_URL}/api/recetas/${id}/pasos`, {
             pasos: pasosFormateados
         });
 
@@ -283,7 +285,7 @@ const DetalleReceta = () => {
     setIsEnviando(true); // Marcamos que ya se está enviando
     try {
         const response = await axios.post(
-            `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+            `${API_BASE_URL}/api/recetas/${id}/comentarios`,
             { comentario: nuevoComentario, usuario: usuarioEnSesion._id }
         );
 
@@ -306,7 +308,7 @@ const DetalleReceta = () => {
 
     try {
       const response = await axios.post(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios`,
+        `${API_BASE_URL}/api/recetas/${id}/comentarios`,
         {
           comentario: respuestaTexto, // Texto de la respuesta
           usuario: usuarioEnSesion._id, // Usuario actual
@@ -396,8 +398,8 @@ const DetalleReceta = () => {
       // Llamada al servidor para editar comentario o respuesta
       const response = await axios.put(
         esRespuesta
-          ? `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}` //re-respuesta
-          : `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${comentarioEditado}`, //Comentario o respuesta
+          ? `${API_BASE_URL}/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}` //re-respuesta
+          : `${API_BASE_URL}/api/recetas/${id}/comentarios/${comentarioEditado}`, //Comentario o respuesta
         {
           comentario: nuevoComentarioEditado,
           usuario: usuarioEnSesion._id,
@@ -466,7 +468,7 @@ const DetalleReceta = () => {
 
     try {
       const response = await axios.put(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/rerespuesta/${comentarioId}`,
+        `${API_BASE_URL}/api/recetas/${id}/rerespuesta/${comentarioId}`,
         {
           comentario: nuevoComentarioEditado,
           usuario: usuarioEnSesion._id,
@@ -516,7 +518,7 @@ const DetalleReceta = () => {
   const eliminarValoracion = async () => {
     try {
       // Llamada al backend para eliminar la valoración
-      await axios.delete(`https://javicook-mern.onrender.com/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+      await axios.delete(`${API_BASE_URL}/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
 
       // Actualiza el estado de la valoración
       setValoracionUsuario(0);  // La valoración pasa a ser 0
@@ -563,7 +565,7 @@ const DetalleReceta = () => {
   const manejarValoracion = async (valor) => {
   try {
     // Si está en modo de edición o es una nueva valoración
-    await axios.post('https://javicook-mern.onrender.com/api/valoraciones', {
+    await axios.post(`${API_BASE_URL}/api/valoraciones`, {
       recetaId: id,
       usuarioId: usuarioEnSesion._id,
       valor,
@@ -632,7 +634,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
   const borrarComentario = async (idComentario) => {
     try {
       const response = await axios.delete(
-        `https://javicook-mern.onrender.com/api/recetas/${id}/comentarios/${idComentario}`,
+        `${API_BASE_URL}/api/recetas/${id}/comentarios/${idComentario}`,
         {
           data: { usuario: usuarioEnSesion._id },
         }
@@ -682,7 +684,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
       // Activa el estado de loading
       setLoading(true);
 
-      await axios.delete(`https://javicook-mern.onrender.com/api/recetas/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/recetas/${id}`, {
         data: { usuarioId: usuarioEnSesion._id }
       });
       

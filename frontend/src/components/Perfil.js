@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../config/api';
+
 
 
 
@@ -36,7 +38,7 @@ const Perfil = () => {
 
         const obtenerRecetas = async () => {
             try {
-                const response = await axios.get(`https://javicook-mern.onrender.com/api/recetas/usuario/${usuarioEnSesion._id}`);
+                const response = await axios.get(`${API_BASE_URL}/api/recetas/usuario/${usuarioEnSesion._id}`);
                 setRecetas(response.data);
             } catch (error) {
                 console.error('Error al obtener las recetas del usuario:', error);
@@ -51,7 +53,7 @@ const Perfil = () => {
 
     const obtenerNotificaciones = async () => {
         try {
-            const response = await axios.get(`https://javicook-mern.onrender.com/api/notificaciones/${usuarioEnSesion._id}`);
+            const response = await axios.get(`${API_BASE_URL}/api/notificaciones/${usuarioEnSesion._id}`);
             setNotificaciones(response.data);
         } catch (error) {
             console.error('Error al obtener las notificaciones:', error);
@@ -61,7 +63,7 @@ const Perfil = () => {
 
     const marcarComoLeida = async (id) => {
         try {
-            await axios.put(`https://javicook-mern.onrender.com/api/notificaciones/marcarLeida/${id}`);
+            await axios.put(`${API_BASE_URL}/api/notificaciones/marcarLeida/${id}`);
             setNotificaciones(prev => prev.map(notif => notif._id === id ? { ...notif, leida: true } : notif));
         } catch (error) {
             console.error('Error al marcar la notificación como leída:', error);
@@ -82,7 +84,7 @@ const Perfil = () => {
         e.stopPropagation(); // Evita que se dispare el click de redirección
     
         try {
-            await axios.delete(`https://javicook-mern.onrender.com/api/notificaciones/eliminar/${id}`);
+            await axios.delete(`${API_BASE_URL}/api/notificaciones/eliminar/${id}`);
             setNotificaciones(prev => prev.filter(notif => notif._id !== id));
         } catch (error) {
             console.error('Error al eliminar la notificación:', error);
@@ -131,7 +133,7 @@ const Perfil = () => {
 
         try {
             const response = await axios.put(
-                `https://javicook-mern.onrender.com/api/usuarios/imagen-perfil/${usuario._id}`,
+                `${API_BASE_URL}/api/usuarios/imagen-perfil/${usuario._id}`,
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
@@ -159,7 +161,7 @@ const Perfil = () => {
     // Función para actualizar usuario en el backend
     const actualizarUsuario = async (actualizado) => {
         try {
-            const response = await axios.put(`https://javicook-mern.onrender.com/api/usuarios/actualizarPerfil/${usuario._id}`, actualizado);
+            const response = await axios.put(`${API_BASE_URL}/api/usuarios/actualizarPerfil/${usuario._id}`, actualizado);
             
             // Actualiza el estado del usuario
             setUsuario(response.data);
