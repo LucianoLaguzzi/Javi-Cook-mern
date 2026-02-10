@@ -383,7 +383,10 @@ const Inicio = () => {
             }
 
             // Si hay una receta, redirigir al detalle
-            navigate(`/detalle-receta/${response.data._id}`);
+            const slug = generarSlug(response.data.titulo);
+
+            navigate(`/detalle-receta/${slug}/${response.data._id}`);
+
             // Eliminar el efecto después de la redirección
             categoriaBoton.classList.remove('shine-effect');
            
