@@ -716,7 +716,11 @@ const Inicio = () => {
     };
     
 
-    
+    const generarSlug = (texto) =>
+        texto.toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]/g, '');
 
     
     return (
@@ -895,9 +899,15 @@ const Inicio = () => {
                                                             ))}
                                                         </div>
                                                     </div>
-                                                    <a className="ver-mas" onClick={() => navigate(`/detalle-receta/${receta._id}`)}>
+                                                    <a
+                                                        className="ver-mas"
+                                                        onClick={() =>
+                                                            navigate(`/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`)
+                                                        }
+                                                        >
                                                         Ver más
                                                     </a>
+
                                                 </div>
                                             ))}
                                         </div>

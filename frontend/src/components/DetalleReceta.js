@@ -791,7 +791,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
         <div className="encabezado">
           <div className="barra-navegacion">
             <img 
-              src="../images/JaviCook_logo.png" 
+              src="/images/JaviCook_logo.png" 
               alt="Logotipo" 
               className="logo-principal"
               onClick={handleLogoClick}
@@ -1448,7 +1448,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
             "Minimizar" // Texto cuando está desplegado
           ) : (
             <img 
-              src="../images/cronometro.png" // Ruta de la imagen
+              src="/images/cronometro.png" // Ruta de la imagen
               alt="Abrir Temporizador" 
               style={{ width: "25px", height: "25px" }} // Ajusta el tamaño
             />
