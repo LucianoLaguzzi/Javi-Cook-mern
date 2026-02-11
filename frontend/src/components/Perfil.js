@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect} from 'react';
+import { useNavigate, useLocation} from 'react-router-dom';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Swal from 'sweetalert2';
@@ -10,6 +10,7 @@ import { API_BASE_URL } from '../config/api';
 
 const Perfil = () => {
     const navigate = useNavigate();
+        const location = useLocation();
 
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
 
@@ -287,6 +288,19 @@ const Perfil = () => {
 
 
 
+    const handleLogoClick = () => {
+        if (location.pathname !== "/inicio") {
+            navigate("/inicio");
+        }
+
+        // Siempre vuelve arriba
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    };
+
+
 
     return (        
         <div>
@@ -298,9 +312,13 @@ const Perfil = () => {
             <div className="body-pefil">
                 <div className="encabezado">
                     <div className="barra-navegacion">
-                        <img src="../images/JaviCook_logo.png" alt="Logotipo" className="logo-principal" />
+                        <img src="../images/JaviCook_logo.png" 
+                            alt="Logotipo" 
+                            className="logo-principal" 
+                            onClick={handleLogoClick}
+                            style={{ cursor: "pointer" }}
+                        />
 
-                    
                         <div className="bienvenido-text">
                             <span >Bienvenido, {usuarioEnSesion?.nombre}!</span>
                         </div>

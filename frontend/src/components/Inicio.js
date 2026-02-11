@@ -1219,7 +1219,14 @@ const Inicio = () => {
                                                 <i className={`fa${receta.valoracion >= 5 ? 's' : 'r'} fa-star`}></i>
                                             </div>
                                         </div>
-                                        <a href={`/detalle-receta/${receta._id}`} className="ver-mas">Ver más</a>
+                                        <a
+                                            className="ver-mas"
+                                            onClick={() =>
+                                                navigate(`/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`)
+                                            }
+                                            >
+                                            Ver más
+                                        </a>
                                     </div>
                                 ))}
                                 {generarTarjetasPlaceholder(tarjetasFaltantes)}
@@ -1261,7 +1268,12 @@ const Inicio = () => {
                                                     </div>
                                                 </div>
 
-                                                <a className="ver-mas" onClick={() => navigate(`/detalle-receta/${receta._id}`)}>
+                                                <a
+                                                    className="ver-mas"
+                                                    onClick={() =>
+                                                        navigate(`/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`)
+                                                    }
+                                                    >
                                                     Ver más
                                                 </a>
                                             </div>

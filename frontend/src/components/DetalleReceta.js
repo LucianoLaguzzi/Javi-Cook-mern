@@ -55,6 +55,10 @@ const DetalleReceta = () => {
   const [mostrarEliminar, setMostrarEliminar] = useState(false); // Controla la visibilidad del ícono de eliminar
   const [isEnviando, setIsEnviando] = useState(false);
   const [isEnviandoRespuesta, setIsEnviandoRespuesta] = useState(false);
+  const [copiado, setCopiado] = useState(false);
+
+
+
 
   const botonRef = useRef(null);
   const inputRef = useRef(null);
@@ -715,11 +719,6 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
     
   };
 
-  
-
-
-
-
   //Evento para cancelar la edicion de valorar
   // Aquí defines el useRef
   const estrellasRef = useRef(null);
@@ -744,24 +743,6 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
     setEdicionActiva(false); // Salir del modo edición
   };
 
-  //Mensaje bloqueante
-  /* Lo saco porque ahora no necesita ir al login de entrada
-  if (!usuarioEnSesion) {
-    return (
-      <div className="overlay-bloqueante">
-        <div className="mensaje-bloqueante">
-          <p>Debes iniciar sesión para interactuar con esta página.</p>
-          <button onClick={() => navigate('/login')}>Iniciar sesión</button>
-        </div>
-      </div>
-    );
-  }
-  */
-
-
-  // Crear la URL absoluta de la imagen
-  //const imageUrl = `${window.location.origin}/${receta.imagen?.replace('\\', '/')}`;
-
 
   const handleLogoClick = () => {
       if (location.pathname !== "/inicio") {
@@ -774,6 +755,24 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
           behavior: "smooth"
       });
   };
+
+
+
+
+  const copiarLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopiado(true);
+
+      setTimeout(() => setCopiado(false), 1500);
+    } catch (err) {
+      console.error("No se pudo copiar");
+    }
+  };
+
+
+
+
 
 
 
@@ -1018,6 +1017,25 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                       </>
                     )}
               </div>
+
+
+
+              {/* ===== Compartir receta ===== */}
+              <button
+                className={`btn-compartir ${copiado ? "copiado" : ""}`}
+                onClick={copiarLink}
+                aria-label="Copiar enlace de la receta"
+                title="Copiar enlace"
+              >
+                {/* icono copiar (SVG inline, no instalás nada) */}
+                <svg className="icono" viewBox="0 0 24 24">
+                  <path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+
+                <span>{copiado ? "Enlace copiado" : "Compartir receta"}</span>
+              </button>
+
+
 
               <hr className='divider'></hr>
 
