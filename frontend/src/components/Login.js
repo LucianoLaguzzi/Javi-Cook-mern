@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Importar el hook useNavigate
+import { useNavigate, Link } from 'react-router-dom'; // Importar el hook useNavigate
 import '../style.css';
 import { API_BASE_URL } from '../config/api';
+
 
 
 
@@ -99,12 +100,12 @@ function Login() {
 
                     <div className="panel-links">
                         <span className="mensaje-ir-registrar">
-                            ¿No tenés usuario? <a href="/registro" className="link">Registrarse</a>
+                            ¿No tenés usuario? <Link to="/registro" className="link">Registrarse</Link>
                         </span>
                     </div>
 
                     <span className="mensaje-recuperar-contrasenia">
-                        <a href="/recuperar" className="link">¿Olvidaste tu contraseña?</a>
+                        <Link to="/recuperar" className="link">¿Olvidaste tu contraseña?</Link>
                     </span>
                 </form>
 
@@ -116,6 +117,12 @@ function Login() {
                 }
 
             </section>
+
+            <div className="volver-inicio">
+                <Link to="/inicio" className="link-volver">
+                    ← Explorar recetas sin iniciar sesión
+                </Link>
+            </div>
         </body>
     );
 }

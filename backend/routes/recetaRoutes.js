@@ -41,7 +41,7 @@ router.get('/usuario/:id', async (req, res) => {
   
 
 
-// Aqui iba el multer
+
 const upload = multer();
 
 

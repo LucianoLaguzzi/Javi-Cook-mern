@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import '../style.css'; // Asegúrate de que la ruta sea correcta
 import { API_BASE_URL } from '../config/api';
+import { Link } from 'react-router-dom'; // Importar el hook useNavigate
 
 
 const Registro = () => {
@@ -118,6 +119,13 @@ const Registro = () => {
             </div>
           </form>
         </section>
+
+        <div className="volver-inicio">
+            <Link to="/inicio" className="link-volver">
+                ← Explorar recetas sin iniciar sesión
+            </Link>
+        </div>
+
       </div>
     </div>
   );
