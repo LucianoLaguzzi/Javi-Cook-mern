@@ -56,6 +56,11 @@ const DetalleReceta = () => {
   const [isEnviando, setIsEnviando] = useState(false);
   const [isEnviandoRespuesta, setIsEnviandoRespuesta] = useState(false);
   const [copiado, setCopiado] = useState(false);
+  const [imagenesPasos, setImagenesPasos] = useState([]);
+  const [imagenesPasosFiles, setImagenesPasosFiles] = useState([]);
+  const [imagenesOriginales, setImagenesOriginales] = useState([]);
+
+  const [imagenActiva, setImagenActiva] = useState(null);
 
 
 
@@ -77,6 +82,8 @@ const DetalleReceta = () => {
 
         const recetaData = response.data;
         setReceta(recetaData);
+
+        setImagenesPasos(recetaData.imagenesPasos || []);
 
         // 2️⃣ Ingredientes y pasos (SIEMPRE)
         setIngredientesCantidades(
@@ -261,26 +268,97 @@ const DetalleReceta = () => {
   // Guardar pasos
   const guardarPasos = async () => {
     try {
-        // Combina los pasos en un solo string separado por '\r\n'
-        const pasosFormateados = pasosEditados.join('\r\n');
+      const pasosFormateados = pasosEditados.join('\r\n');
 
-        // Usa una URL relativa para evitar clavar localhost
-        const response = await axios.put(`${API_BASE_URL}/api/recetas/${id}/pasos`, {
-            pasos: pasosFormateados
+      let imagenesPasosUrls = [...(receta.imagenesPasos || [])];
+
+      // 🧠 Vamos a registrar qué imágenes hay que eliminar
+      const imagenesAEliminar = [];
+
+      // 🔥 SUBIR SOLO LAS IMÁGENES NUEVAS
+      for (let i = 0; i < pasosEditados.length; i++) {
+        const fileData = imagenesPasosFiles[i];
+
+        // 📷 Caso 1: usuario subió nueva imagen
+        if (fileData?.file instanceof File) {
+
+          // si había una imagen antes → marcar para borrar
+          if (imagenesOriginales[i]) {
+            imagenesAEliminar.push(imagenesOriginales[i]);
+          }
+
+          const formData = new FormData();
+          formData.append("file", fileData.file);
+          formData.append("upload_preset", "recipe_images");
+          formData.append("folder", "recetas");
+
+          const resCloudinary = await axios.post(
+            "https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload",
+            formData
+          );
+
+          imagenesPasosUrls[i] = resCloudinary.data.secure_url;
+        }
+
+        // ❌ Caso 2: el paso ya no existe → borrar imagen
+        if (!pasosEditados[i] && imagenesOriginales[i]) {
+          imagenesAEliminar.push(imagenesOriginales[i]);
+          imagenesPasosUrls[i] = undefined;
+        }
+      }
+
+      // 🔥 Si se eliminaron pasos al achicar el array
+      if (imagenesOriginales.length > pasosEditados.length) {
+        for (let i = pasosEditados.length; i < imagenesOriginales.length; i++) {
+          if (imagenesOriginales[i]) {
+            imagenesAEliminar.push(imagenesOriginales[i]);
+          }
+        }
+      }
+
+
+      // 🔥 GUARDAR EN TU BACKEND
+      const response = await axios.put(
+        `${API_BASE_URL}/api/recetas/${id}/pasos`,
+        {
+          pasos: pasosFormateados,
+          imagenesPasos: imagenesPasosUrls,
+          imagenesAEliminar
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Pasos e imágenes actualizados");
+
+        setPasos(pasosFormateados);
+        setReceta(prev => ({
+          ...prev,
+          imagenesPasos: imagenesPasosUrls
+        }));
+
+        imagenesPasosFiles.forEach(img => {
+          if (img?.preview && img.file) {
+            URL.revokeObjectURL(img.preview);
+          }
         });
 
-        if (response.status === 200) {
-            console.log("Pasos actualizados correctamente");
-            // Después de guardar, actualiza el estado de los pasos originales
-            setPasos(pasosFormateados);  // Actualiza el estado de los pasos mostrados
-            setPasosEditable(false);      // Salir del modo edición
-        } else {
-            console.error("Error al actualizar los pasos");
-        }
+        setImagenesPasosFiles([]); // limpiar buffer
+        setPasosEditable(false);
+      }
+
     } catch (error) {
-        console.error("Error al hacer la solicitud para actualizar los pasos", error);
+      console.error("Error al actualizar pasos", error);
     }
   };
+
+  const limpiarPreviews = () => {
+  imagenesPasosFiles.forEach(img => {
+    if (img?.preview && img.file) {
+      URL.revokeObjectURL(img.preview);
+    }
+  });
+};
+
 
   // Agregar comentario
   const agregarComentario = async () => {
@@ -540,9 +618,16 @@ const DetalleReceta = () => {
   // useEffect para cargar los pasos al activar el modo edición
   useEffect(() => {
     if (pasosEditable) {
-        setPasosEditados(pasos.split('\r\n')); // Cargar los pasos actuales al estado de edición
+        setPasosEditados(pasos.split('\r\n'));
+
+        // 📸 Snapshot de imágenes reales al empezar a editar
+        setImagenesOriginales(receta.imagenesPasos || []);
+        
+        // 🔥 limpiar cualquier basura previa
+        setImagenesPasosFiles([]);
     }
   }, [pasosEditable]);
+
 
   // Función para manejar cambios en un paso específico
   const manejarCambioPaso = (index, nuevoValor) => {
@@ -558,11 +643,33 @@ const DetalleReceta = () => {
 
   // Función para quitar el último paso
   const quitarPaso = () => {
-    if (pasosEditados.length > 1) {
-        setPasosEditados(pasosEditados.slice(0, -1)); // Quitar el último paso
-    }
-  };
+    setPasosEditados(prevPasos => {
+      if (prevPasos.length <= 1) return prevPasos;
 
+      const nuevaCantidad = prevPasos.length - 1;
+
+      // 🔥 sincronizamos también imágenes locales
+      setImagenesPasosFiles(prevImagenes => {
+        const nuevas = prevImagenes.slice(0, nuevaCantidad);
+
+        // limpiar blob preview si existía
+        const eliminada = prevImagenes[nuevaCantidad];
+        if (eliminada?.preview && eliminada?.file) {
+          URL.revokeObjectURL(eliminada.preview);
+        }
+
+        return nuevas;
+      });
+
+      // 🔥 sincronizamos imágenes originales de la receta
+      setReceta(prevReceta => ({
+        ...prevReceta,
+        imagenesPasos: (prevReceta.imagenesPasos || []).slice(0, nuevaCantidad)
+      }));
+
+      return prevPasos.slice(0, nuevaCantidad);
+    });
+  };
 
 
   //Valoracion de receta
@@ -771,6 +878,47 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
   };
 
 
+  const manejarImagenPaso = (index, file) => {
+    if (!file) return;
+
+    const nuevasImagenes = [...imagenesPasosFiles];
+    nuevasImagenes[index] = {
+      file,
+      preview: URL.createObjectURL(file)
+    };
+
+    setImagenesPasosFiles(nuevasImagenes);
+  };
+
+
+  const autoResize = (e) => {
+      const textarea = e.target;
+      textarea.style.height = '0'; // Reinicia la altura para calcularla de nuevo
+      textarea.style.height = textarea.scrollHeight + 'px'; // Ajusta la altura al scrollHeight
+  };
+
+
+  const reconstruirImagenesDesdeReceta = (imagenes = []) => {
+    return imagenes.map(url => ({
+      file: null,
+      preview: url || null
+    }));
+  };
+
+  const entrarEnEdicionPasos = () => {
+    setPasosEditable(true);
+
+    const pasosArray = pasos ? pasos.split('\n') : [];
+    setPasosEditados(pasosArray);
+
+    setImagenesOriginales(receta.imagenesPasos || []);
+
+    setImagenesPasosFiles([]); // 🔥 limpiar estado viejo
+
+    setImagenesPasosFiles(
+      reconstruirImagenesDesdeReceta(receta.imagenesPasos || [])
+    );
+  };
 
 
 
@@ -958,14 +1106,30 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                     <>
                       {/* Mapear los pasos para mostrar el número y el contenido */}
                       {pasos.split('\n').map((paso, index) => (
-                          <div className="paso-item" key={index}>
-                              <div className="numero-paso">{index + 1}</div> {/* Número de paso */}
-                              <div className="texto-paso">{capitalizarPrimeraLetra(paso)}</div> {/* Texto del paso */}
+                        <div className="paso-item" key={index}>
+                          <div className="paso-header">
+                            <div className="numero-paso">{index + 1}</div>
+
+                            <div className="texto-paso">
+                                {capitalizarPrimeraLetra(paso)}
+                            </div>
                           </div>
+                            {/* 👇 Imagen del paso (solo si existe) */}
+                            {receta.imagenesPasos && receta.imagenesPasos[index] && (
+                             <div className="ver-foto-row">
+                              <span
+                                className="link-imagen"
+                                onClick={() => setImagenActiva(receta.imagenesPasos[index])}
+                              >
+                                Ver imagen
+                              </span>
+                            </div>
+                            )}
+                        </div>
                       ))}
 
                       {esPropietario && (
-                          <a className='btn-editar-pasos' onClick={() => setPasosEditable(true)}>
+                          <a className='btn-editar-pasos' onClick={entrarEnEdicionPasos}>
                               <i className="fas fa-pencil-alt" title='Editar pasos'></i>
                           </a>
                       )}
@@ -984,7 +1148,41 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                 placeholder="Escribe el paso..."
                                 value={paso}
                                 onChange={(e) => manejarCambioPaso(index, e.target.value)}
+                                onInput={autoResize}
                               />
+
+                              <label htmlFor={`filePaso${index}`} className="btn-subir-imagen">
+                                📷 Cambiar / Agregar imagen
+                              </label>
+
+                              <input
+                                id={`filePaso${index}`}
+                                type="file"
+                                accept="image/*"
+                                className="input-file-oculto"
+                                onChange={(e) => manejarImagenPaso(index, e.target.files[0])}
+                              />
+
+                              {imagenesPasosFiles[index]?.preview ? (
+                                <img
+                                  src={imagenesPasosFiles[index].preview}
+                                  alt="preview"
+                                  className="preview-imagen-paso"
+                                />
+                              ) : (
+                                receta.imagenesPasos &&
+                                receta.imagenesPasos[index] && (
+                                  <img
+                                    src={receta.imagenesPasos[index]}
+                                    alt="preview"
+                                    className="preview-imagen-paso"
+                                  />
+                                )
+                              )}
+
+
+
+
                             </div>
                           ))} 
                             
@@ -1005,7 +1203,20 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         </div>
 
                         <div className='cancel-ok-pasos'>
-                            <a className='btn-cancelar-pasos' onClick={() => setPasosEditable(false)}>
+                            <a
+                              className='btn-cancelar-pasos'
+                              onClick={() => {
+                                setPasosEditable(false);
+                                  limpiarPreviews ()
+                                // 🔁 reconstruir previews desde lo que está guardado en la receta
+                                const reconstruidas = (receta.imagenesPasos || []).map(url => ({
+                                  file: null,
+                                  preview: url
+                                }));
+
+                                setImagenesPasosFiles(reconstruidas);
+                            }}
+                            >
                                 <i className="fas fa-times-circle"></i>
                             </a>
                             <a className='btn-guardar-pasos' onClick={guardarPasos}>
@@ -1018,7 +1229,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                     )}
               </div>
 
-
+              <hr className='divider'></hr>
 
               {/* ===== Compartir receta ===== */}
               <button
@@ -1509,7 +1720,25 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
         )}
       </div>
 
+
+      {imagenActiva && (
+        <div className="lightbox" onClick={() => setImagenActiva(null)}>
+          <img
+            src={imagenActiva}
+            className="lightbox-img"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="lightbox-cerrar"
+            onClick={() => setImagenActiva(null)}
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
+
+    
   );
 };
     

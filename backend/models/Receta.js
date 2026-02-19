@@ -54,7 +54,11 @@ const RecetaSchema = new mongoose.Schema({
   comentarios: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comentario'
-}]
+  }],
+  imagenesPasos: {
+    type: [String],
+    default: [],
+  },
 }, { timestamps: true }); // Agrega createdAt y updatedAt automáticamente
 
 

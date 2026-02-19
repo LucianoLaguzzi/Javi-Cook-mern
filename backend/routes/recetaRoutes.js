@@ -51,7 +51,7 @@ router.post('/', upload.none(), async (req, res) => {
     console.log('Apenas entro al backend, recibo en el body:', req.body); 
 
     try {
-        const { titulo, ingredientesCantidades, pasos, imagen, dificultad, categoria, tiempoPreparacion, ingredientes, usuario } = req.body;
+        const { titulo, ingredientesCantidades, pasos, imagen, dificultad, categoria, tiempoPreparacion, ingredientes, usuario,imagenesPasos } = req.body;
         // Validación de campos
         if (!titulo || !ingredientesCantidades || !pasos  ||  !imagen || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
@@ -68,6 +68,7 @@ router.post('/', upload.none(), async (req, res) => {
             tiempoPreparacion,
             ingredientes,
             usuario,
+            imagenesPasos: imagenesPasos || [],
         });
 
         const recetaGuardada = await nuevaReceta.save();
@@ -136,26 +137,48 @@ router.put('/:id/ingredientesCantidades', async (req, res) => {
 
 // Ruta para actualizar los pasos de una receta
 router.put('/:id/pasos', async (req, res) => {
-    const { id } = req.params;
-    const { pasos } = req.body;
+  const { id } = req.params;
+  const { pasos, imagenesPasos, imagenesAEliminar } = req.body;
 
-    try {
-        const recetaActualizada = await Receta.findByIdAndUpdate(
-            id,
-            { pasos },
-            { new: true }
-        );
+  try {
+    const receta = await Receta.findById(id);
 
-        if (!recetaActualizada) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
-        }
-
-        res.json(recetaActualizada); // Devolver la receta actualizada
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al actualizar la receta' });
+    if (!receta) {
+      return res.status(404).json({ message: 'Receta no encontrada' });
     }
+
+    // 🧹 1. Eliminar imágenes viejas SOLO si existen
+    if (imagenesAEliminar && imagenesAEliminar.length > 0) {
+      for (const url of imagenesAEliminar) {
+        if (url) { // 🔥 importante para no romper Cloudinary
+          await eliminarImagenCloudinary(url);
+        }
+      }
+    }
+
+    // 🧼 2. Limpiar array de imágenes (Mongo NO quiere undefined)
+    let imagenesLimpias = [];
+
+    if (Array.isArray(imagenesPasos)) {
+      imagenesLimpias = imagenesPasos.filter(img => img); 
+      // elimina undefined/null automáticamente
+    }
+
+    // 💾 3. Guardar receta
+    receta.pasos = pasos;
+    receta.imagenesPasos = imagenesLimpias;
+
+    await receta.save();
+
+    res.json(receta);
+
+  } catch (error) {
+    console.error("Error actualizando pasos:", error);
+    res.status(500).json({ message: 'Error al actualizar la receta' });
+  }
 });
+
+
 
 
 // Ruta para eliminar una receta
@@ -210,18 +233,30 @@ router.delete('/:recetaId', async (req, res) => {
 // Función para eliminar la imagen en cloudinary
 const eliminarImagenCloudinary = async (urlImagen) => {
     try {
+           if (!urlImagen) return;
+
+        // 🔥 obtener todo lo que viene después de /upload/
+        const partes = urlImagen.split('/upload/')[1];
+
+        // quitar versión si existe (v123456/)
+        const sinVersion = partes.replace(/^v\d+\//, '');
+
+
+
       // Extraer el `public_id` de la URL de Cloudinary
       //Separa la url por cada "/" con el split, luego toma los ultimos 2 elementos del array y los une (join) con un "/", 
       //es decir: recetas/[nombreReceta] y luego con split separa la extension, tomando la primer parte sin el .jpg ya q la publicId no lo necesita.
-      const publicId = urlImagen.split('/').slice(-2).join('/').split('.')[0]; // Ejemplo: recetas/abc123
+       const publicId = sinVersion.substring(0, sinVersion.lastIndexOf('.'));
   
-      await cloudinary.uploader.destroy(publicId);
+       console.log('Eliminando en Cloudinary:', publicId);
+
+       await cloudinary.uploader.destroy(publicId);
       console.log('Imagen eliminada con éxito de Cloudinary.');
     } catch (error) {
       console.error('Error al eliminar la imagen de Cloudinary:', error);
       throw error;
     }
-  };
+};
 
 
 //Top 3
