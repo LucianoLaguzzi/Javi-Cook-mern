@@ -52,10 +52,29 @@ router.post('/', upload.none(), async (req, res) => {
 
     try {
         const { titulo, ingredientesCantidades, pasos, imagen, dificultad, categoria, tiempoPreparacion, ingredientes, usuario,imagenesPasos } = req.body;
+
+
+        // 👇👇👇 AGREGAR ESTO
+        let imagenesPasosArray = [];
+
+        if (imagenesPasos) {
+            try {
+                imagenesPasosArray = JSON.parse(imagenesPasos);
+            } catch (error) {
+                console.error('Error parseando imagenesPasos:', error);
+                imagenesPasosArray = [];
+            }
+        }
+
+
+
         // Validación de campos
         if (!titulo || !ingredientesCantidades || !pasos  ||  !imagen || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
             return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
         }
+
+
+
 
         // Crear la receta con la URL de la imagen
         const nuevaReceta = new Receta({
@@ -68,7 +87,7 @@ router.post('/', upload.none(), async (req, res) => {
             tiempoPreparacion,
             ingredientes,
             usuario,
-            imagenesPasos: imagenesPasos || [],
+            imagenesPasos: imagenesPasosArray,
         });
 
         const recetaGuardada = await nuevaReceta.save();
@@ -209,9 +228,25 @@ router.delete('/:recetaId', async (req, res) => {
         );
       
         // Eliminar la imagen asociada a la receta si existe
+       // 🖼️ Eliminar imagen principal
         if (receta.imagen) {
-            console.log('Intentando eliminar la imagen:', receta.imagen); // Imprime el valor
-            await eliminarImagenCloudinary (receta.imagen);
+            console.log('Eliminando imagen principal:', receta.imagen);
+            await eliminarImagenCloudinary(receta.imagen);
+        }
+
+        // 🖼️ Eliminar imágenes de los pasos
+        if (receta.imagenesPasos && receta.imagenesPasos.length > 0) {
+            console.log('Eliminando imágenes de pasos...');
+
+            for (const url of receta.imagenesPasos) {
+                if (!url) continue; // salta null
+
+                try {
+                    await eliminarImagenCloudinary(url);
+                } catch (err) {
+                    console.error('Error eliminando imagen de paso:', url, err);
+                }
+            }
         }
 
         // Eliminar las notificaciones asociadas a esta receta

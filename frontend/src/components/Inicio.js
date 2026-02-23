@@ -55,6 +55,8 @@ const Inicio = () => {
     const [isLoading, setIsLoading] = useState(false); // Estado de carga al seleccionar aleatoriamente
     const [cargandoNuevaReceta, setCargandoNuevaReceta] = useState(false);
 
+    const [imagenesPasosFiles, setImagenesPasosFiles] = useState([null]);
+
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
 
 
@@ -153,6 +155,7 @@ const Inicio = () => {
         setErrorCategoria("");
         setErrorTiempo("");
         setErrorIngredientes("");
+        setImagenesPasosFiles([]);
     };
 
     // Función para manejar el cambio en el textarea de ingredientes y cantidades
@@ -181,19 +184,17 @@ const Inicio = () => {
     // Función para agregar un nuevo paso
     const agregarPaso = (e) => {
         e.preventDefault();
-        setPasos([...pasos, '']); // Agregamos un nuevo campo de paso vacío
-        aplicarAutoResize();
+        setPasos(prev => [...prev, '']);
+        setImagenesPasosFiles(prev => [...prev, null]);
     };
 
     // Función para quitar el último paso
     const quitarPaso = (e) => {
         e.preventDefault();
+
         if (pasos.length > 1) {
-            const nuevosPasos = pasos.slice(0, -1); // Quitamos el último paso 0 es el inicio y -1 es el ultimo valor, pero el slice no lo incluye
-            setPasos(nuevosPasos);
-            
-            // Actualizamos el input oculto con los nuevos pasos
-            document.getElementById("inputOculto").value = nuevosPasos.join("\r\n");
+            setPasos(prev => prev.slice(0, -1));
+            setImagenesPasosFiles(prev => prev.slice(0, -1));
         }
     };
 
@@ -518,6 +519,28 @@ const Inicio = () => {
             const response = await axios.post('https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload', formDataImagen);
             const imagenUrl = response.data.secure_url;
 
+
+            const imagenesPasosUrls = [];
+
+            for (const file of imagenesPasosFiles) {
+                 if (!file?.file) {
+                    imagenesPasosUrls.push(null);
+                    continue;
+                }
+
+                const formDataPaso = new FormData();
+                formDataPaso.append('file', file.file);
+                formDataPaso.append('upload_preset', 'recipe_images');
+                formDataPaso.append('folder', 'recetas');
+
+                const res = await axios.post(
+                    'https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload',
+                    formDataPaso
+                );
+
+                imagenesPasosUrls.push(res.data.secure_url);
+            }
+
             // Añadir la URL de la imagen a los datos de la receta
             nuevaReceta.imagen = imagenUrl;
 
@@ -532,6 +555,9 @@ const Inicio = () => {
             const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
             formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
             
+            nuevaReceta.imagenesPasos = JSON.stringify(imagenesPasosUrls);
+
+           formData.append('imagenesPasos', JSON.stringify(imagenesPasosUrls));
 
             // Enviar la receta al servidor
             const resultado = await axios.post(`${API_BASE_URL}/api/recetas`, formData, {
@@ -679,6 +705,13 @@ const Inicio = () => {
             iniciarReconocimiento();   // Iniciar el reconocimiento si está inactivo
         }
     };
+
+
+    const handleImagenPasoChange = (index, file) => {
+        const nuevasImagenes = [...imagenesPasosFiles];
+        nuevasImagenes[index] = file;
+        setImagenesPasosFiles(nuevasImagenes);
+    };
     
     
 
@@ -725,6 +758,23 @@ const Inicio = () => {
         .replace(/\s+/g, '-')
         .replace(/[^\w-]/g, '');
 
+
+    const manejarImagenPaso = (index, file) => {
+        if (!file) return;
+
+        const preview = URL.createObjectURL(file);
+
+        setImagenesPasosFiles(prev => {
+            const copia = [...prev];
+
+            copia[index] = {
+                file,
+                preview
+            };
+
+            return copia;
+        });
+    };
     
     return (
         <div>
@@ -1013,6 +1063,28 @@ const Inicio = () => {
                                                                     onChange={(e) => handlePasoChange(index, e.target.value)}
                                                                     onInput={autoResize}
                                                                 />
+
+                                                                <label htmlFor={`filePaso${index}`} className="btn-subir-imagen">
+                                                                    📷 Agregar imagen
+                                                                    </label>
+
+                                                                    <input
+                                                                    id={`filePaso${index}`}
+                                                                    type="file"
+                                                                    accept="image/*"
+                                                                    className="input-file-oculto"
+                                                                    onChange={(e) => manejarImagenPaso(index, e.target.files[0])}
+                                                                />
+
+                                                                {imagenesPasosFiles[index]?.preview && (
+                                                                <img
+                                                                    src={imagenesPasosFiles[index].preview}
+                                                                    alt="preview"
+                                                                    className="preview-imagen-paso"
+                                                                />
+                                                                )}
+
+
                                                             </div>
                                                         ))}
                                                     </div>

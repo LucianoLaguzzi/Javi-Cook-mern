@@ -352,12 +352,12 @@ const DetalleReceta = () => {
   };
 
   const limpiarPreviews = () => {
-  imagenesPasosFiles.forEach(img => {
-    if (img?.preview && img.file) {
-      URL.revokeObjectURL(img.preview);
-    }
-  });
-};
+    imagenesPasosFiles.forEach(img => {
+      if (img?.preview && img.file) {
+        URL.revokeObjectURL(img.preview);
+      }
+    });
+  };
 
 
   // Agregar comentario
