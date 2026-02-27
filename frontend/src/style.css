@@ -1164,7 +1164,12 @@ img.img-cerrar-sesion:hover {
 
 .imagen-contenedor {
     position: relative; /* Establece la posición relativa para el contenedor de la imagen */
+
 }
+
+
+
+
 
 .tarjeta-receta {
     text-align: left;
@@ -1600,27 +1605,7 @@ img.img-cerrar-sesion:hover {
 }
 
 
-@media (max-width: 1400px) {
-    .text-area-pasos {
-        min-height: 40px;
-        height: 40px;
-        font-size: 16px;
-        padding: 4px;
-    }
-}
-
-
-
 @media (max-width: 800px) {
-    .text-area-pasos {
-        height: 35px;
-        min-height: 35px;
-        font-size: 14px;
-        padding: 4px;
-    }
-}
-
-@media (max-width: 700px) {
     .text-area-pasos {
         font-size: 12px;
         padding: 6px;
@@ -1630,6 +1615,7 @@ img.img-cerrar-sesion:hover {
 @media (max-width: 400px) {
     .text-area-pasos {
         font-size: 11px;
+        padding: 4px;
     }
 }
 
@@ -1637,12 +1623,17 @@ img.img-cerrar-sesion:hover {
 
 .btn-agregar-paso{
     background-color: #28a745;
-    color: white;
     border: none;
-    cursor: pointer;
     border-radius: 10px;
-    padding: 8px;
+    color: #fff;
+    cursor: pointer;
     margin-bottom: 20px;
+    padding: 8px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 @media (max-width: 1000px) {
@@ -1652,7 +1643,9 @@ img.img-cerrar-sesion:hover {
 }
 
 .btn-agregar-paso:hover{
-    background-color: #168e1a;
+    background-color: #1f7e34;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
 
@@ -1681,6 +1674,8 @@ img.img-cerrar-sesion:hover {
     display: flex;
     gap: 20px;
     margin-top: 15px;
+    width: 100%;
+    display: flex;
 }
 
 .paso {
@@ -5804,3 +5799,64 @@ i.fas.fa-undo {
 .link-imagen:active {
     opacity: .6;
 }
+
+/* CONTENEDOR DE IMAGEN + ACCIONES */
+.paso-media {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* FILA DE BOTONES */
+.paso-acciones {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-eliminar-imagen {
+    background: transparent;
+    border: 1px dashed #bfb6a4;
+    color: #7b6f5c;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+@media (max-width: 700px) {
+    .btn-eliminar-imagen {
+        font-size: 10px;
+    }
+}
+
+.btn-eliminar-imagen:hover {
+    background: #efe6d6;
+    border-color: #a9997a;
+}
+
+.btn-eliminar-paso {
+    background: #812626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all .2s ease;
+}
+
+@media (max-width: 700px) {
+    .btn-eliminar-paso {
+        font-size: 10px;
+    }
+}
+
+.btn-eliminar-paso:hover {
+    background: #000;
+}
+

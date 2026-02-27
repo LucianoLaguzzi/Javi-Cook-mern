@@ -53,6 +53,16 @@ router.post('/', upload.none(), async (req, res) => {
     try {
         const { titulo, ingredientesCantidades, pasos, imagen, dificultad, categoria, tiempoPreparacion, ingredientes, usuario,imagenesPasos } = req.body;
 
+        // ✅ convertir los pasos que vienen como string en array real
+        let pasosArray = [];
+
+        if (typeof pasos === 'string') {
+            pasosArray = pasos
+                .split(/\r?\n/)      // separa por saltos de línea (Windows o Unix)
+                .map(p => p.trim()); // limpia espacios
+        } else if (Array.isArray(pasos)) {
+            pasosArray = pasos;
+        }
 
         // 👇👇👇 AGREGAR ESTO
         let imagenesPasosArray = [];
@@ -80,7 +90,7 @@ router.post('/', upload.none(), async (req, res) => {
         const nuevaReceta = new Receta({
             titulo,
             ingredientesCantidades,
-            pasos,
+            pasos: pasosArray,
             imagen, // Si se ha subido una imagen
             dificultad,
             categoria,
@@ -179,12 +189,20 @@ router.put('/:id/pasos', async (req, res) => {
     let imagenesLimpias = [];
 
     if (Array.isArray(imagenesPasos)) {
-      imagenesLimpias = imagenesPasos.filter(img => img); 
-      // elimina undefined/null automáticamente
+    imagenesLimpias = imagenesPasos.map(img => img || null);
     }
 
     // 💾 3. Guardar receta
-    receta.pasos = pasos;
+    // 🧠 Normalizar pasos para que SIEMPRE sea array
+    let pasosNormalizados = [];
+
+    if (Array.isArray(pasos)) {
+        pasosNormalizados = pasos;
+        } else if (typeof pasos === 'string') {
+        pasosNormalizados = pasos.split('\n').map(p => p.trim());
+    }
+
+    receta.pasos = pasosNormalizados;
     receta.imagenesPasos = imagenesLimpias;
 
     await receta.save();

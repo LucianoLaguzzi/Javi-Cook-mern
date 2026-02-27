@@ -10,7 +10,7 @@ import { API_BASE_URL } from '../config/api';
 
 const Perfil = () => {
     const navigate = useNavigate();
-        const location = useLocation();
+    const location = useLocation();
 
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
 
@@ -300,6 +300,13 @@ const Perfil = () => {
         });
     };
 
+    const generarSlug = (texto) =>
+        texto
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]/g, '');
+
 
 
     return (        
@@ -512,7 +519,7 @@ const Perfil = () => {
                                                     <a
                                                         href="#"
                                                         className="receta-etiqueta"
-                                                        onClick={() => navigate(`/detalle-receta/${receta._id}`)}
+                                                        onClick={() => navigate(`/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`)}
                                                     >
                                                         {capitalizarPrimeraLetra(receta.titulo)}
                                                     </a>

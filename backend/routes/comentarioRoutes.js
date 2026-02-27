@@ -38,12 +38,19 @@ router.get('/:id', async (req, res) => {
 });
 
 
+const generarSlug = (texto) =>
+  texto
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]/g, '');
 
 
 // Ruta para agregar un comentario o respuesta a una receta
 router.post('/:id/comentarios', async (req, res) => {
     const { id } = req.params; // ID de la receta
     const { comentario, usuario, parentCommentId } = req.body; // Datos del comentario y respuesta
+    
 
     try {
         // Buscar la receta por su ID
@@ -51,6 +58,8 @@ router.post('/:id/comentarios', async (req, res) => {
         if (!receta) {
             return res.status(404).json({ message: 'Receta no encontrada' });
         }
+
+        const slug = generarSlug(receta.titulo);
 
         // Crear un nuevo comentario (respuesta si hay parentCommentId)
         const nuevoComentario = new Comentario({
@@ -76,7 +85,7 @@ router.post('/:id/comentarios', async (req, res) => {
             const nuevaNotificacion = new Notificacion({
               usuarioDestino: comentarioPadre.usuario,
               mensaje: `@${usuarioEmisor.nombre} respondió a tu comentario en la receta "${receta.titulo}"`,
-              enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${receta._id}`,
+              enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${slug}/${receta._id}`,
               leida: false
             });
             await nuevaNotificacion.save();
@@ -87,7 +96,7 @@ router.post('/:id/comentarios', async (req, res) => {
             const nuevaNotificacion = new Notificacion({
               usuarioDestino: receta.usuario,
               mensaje: `@${usuarioEmisor.nombre} comentó en tu receta "${receta.titulo}"`,
-              enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${receta._id}`,
+              enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${slug}/${receta._id}`,
               leida: false
             });
             await nuevaNotificacion.save();
