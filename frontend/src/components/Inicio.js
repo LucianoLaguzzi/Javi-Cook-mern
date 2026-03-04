@@ -1046,7 +1046,7 @@ const Inicio = () => {
                                                 </div>
                                                 <div className="modal-error-ingredientes-cantidades"  style={{height:'20px'}}>
                                                     {errorIngredientesCantidades && <div id="modalErrorIngredientesCantidades" > {errorIngredientesCantidades} </div>}
-                                            </div>
+                                                </div>
 
                                                 {/* Campos de los pasos */}
                                                 <div className="div-pasos-receta">
@@ -1103,7 +1103,7 @@ const Inicio = () => {
                                                         </button>
                                                     </div>
                                                 </div>
-                                            
+                                                
 
                                                 {/* Imagen */}
                                                 <div className="div-imagen">

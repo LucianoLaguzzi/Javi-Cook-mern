@@ -2679,6 +2679,8 @@ span.fecha-subida{
     border-radius: 40px;
     outline: 1px solid white;
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
 }
 
 .div-detalles-titulo{
@@ -3988,17 +3990,15 @@ i.fas.fa-undo {
 }
 
 .boton-guardar-imagen {
-    display: block;
-    margin-top: 10px;
     background-color: #4CAF50;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 22px;
     color: white;
     cursor: pointer;
     border-radius: 18px;
-    font-size: 18px;
-    transition: background-color 0.3s ease;
-    align-self: center;
+    font-size: 16px;
+    transition: all .25s ease;
+    margin-bottom: 20px;
 }
 
 .boton-guardar-imagen.visible {
@@ -5858,5 +5858,33 @@ i.fas.fa-undo {
 
 .btn-eliminar-paso:hover {
     background: #000;
+}
+
+
+.overlay-cambiar-imagen {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 20px;
+  border-radius: 40px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.imagen-contenedor:hover .overlay-cambiar-imagen {
+  opacity: 1;
+}
+
+.imagen-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 

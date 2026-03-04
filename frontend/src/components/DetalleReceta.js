@@ -60,11 +60,13 @@ const DetalleReceta = () => {
   const [imagenesPasosFiles, setImagenesPasosFiles] = useState([]);
   const [imagenesOriginales, setImagenesOriginales] = useState([]);
   const [imagenActiva, setImagenActiva] = useState(null);
-
   const [imagenesAEliminar, setImagenesAEliminar] = useState([]);
-
   const [imagenesEditadas, setImagenesEditadas] = useState([]);
 
+ const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+const [mostrarGuardarImagen, setMostrarGuardarImagen] = useState(false);
+
+  
 
 
 
@@ -968,7 +970,66 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
   };
 
 
+  const manejarCambioImagenPrincipal = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
+    setImagenSeleccionada(file);
+
+    // preview sin tocar backend
+    const preview = URL.createObjectURL(file);
+    document.getElementById('imagen-receta-preview').src = preview;
+
+    setMostrarGuardarImagen(true);
+  };
+
+
+  const guardarNuevaImagenPrincipal = async () => {
+    if (!imagenSeleccionada) return;
+
+    try {
+      // 🔤 mismo slug que usás al crear
+      const nombreReceta = receta.titulo || 'receta';
+
+      const slug = nombreReceta
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]/g, '');
+
+      const nombreArchivo = `${slug}-${Date.now()}`;
+
+      // 📤 subir a Cloudinary CONTROLANDO el public_id
+      const formData = new FormData();
+      formData.append('file', imagenSeleccionada);
+      formData.append('upload_preset', 'recipe_images');
+      formData.append('folder', 'recetas');
+      formData.append('public_id', nombreArchivo); // ⭐ ESTO FALTABA
+
+      const subida = await axios.post(
+        'https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload',
+        formData
+      );
+
+      const nuevaUrl = subida.data.secure_url;
+
+      // avisar backend que reemplace
+      await axios.put(`${API_BASE_URL}/api/recetas/${id}/imagen`, {
+        nuevaImagen: nuevaUrl
+      });
+
+      setReceta(prev => ({
+        ...prev,
+        imagen: nuevaUrl
+      }));
+
+      setMostrarGuardarImagen(false);
+      setImagenSeleccionada(null);
+
+    } catch (error) {
+      console.error('Error cambiando imagen:', error);
+    }
+  };
 
 
 
@@ -1088,12 +1149,42 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                 )}
               </div>
   
-              <div className="imagen-contenedor">
-                <img src={imageUrl} alt={receta.titulo} className="panel-img" />
-                <div className="detalles-usuario-fecha">
-                  <span>{receta.usuario?.nombre}</span>
-                  <span>{new Date(receta.fecha).toLocaleDateString()}</span>
+              <div className="imagen-wrapper">
+                <div className="imagen-contenedor">
+                  <img
+                    id="imagen-receta-preview"
+                    src={receta.imagen}
+                    alt={receta.titulo}
+                    className="panel-img"
+                  />
+
+                  <div className="detalles-usuario-fecha">
+                    <span>{receta.usuario?.nombre}</span>
+                    <span>{new Date(receta.fecha).toLocaleDateString()}</span>
+                  </div>
+
+                  {esPropietario && (
+                    <label className="overlay-cambiar-imagen"  title="Cambiar imagen de la receta" aria-label="Cambiar imagen de la receta">
+                      <i className="fa fa-camera"></i>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={manejarCambioImagenPrincipal}
+                        hidden
+                      />
+                    </label>
+                  )}
                 </div>
+
+                {/* ⬇️ AHORA ESTÁ FUERA */}
+                {esPropietario && mostrarGuardarImagen && (
+                  <button
+                    className="boton-guardar-imagen"
+                    onClick={guardarNuevaImagenPrincipal}
+                  >
+                    Guardar nueva imagen
+                  </button>
+                )}
               </div>
   
               <p className="detalles-tiempo-dificultad">

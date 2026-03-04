@@ -348,6 +348,49 @@ router.get('/random/:categoria', async (req, res) => {
 });
 
 
+// Reemplazar imagen principal de una receta
+router.put('/:id/imagen', async (req, res) => {
+  try {
+    const { nuevaImagen } = req.body;
+
+    if (!nuevaImagen) {
+      return res.status(400).json({ mensaje: 'No se envió nueva imagen' });
+    }
+
+    const receta = await Receta.findById(req.params.id);
+    if (!receta) {
+      return res.status(404).json({ mensaje: 'Receta no encontrada' });
+    }
+
+    // 🔴 BORRAR imagen anterior de Cloudinary
+    if (receta.imagen) {
+      try {
+        const url = receta.imagen;
+
+        // obtener public_id desde la URL guardada
+        const partes = url.split('/upload/')[1]; 
+        const sinVersion = partes.replace(/^v\d+\//, '');
+        const publicId = sinVersion.split('.')[0];
+
+        await cloudinary.v2.uploader.destroy(publicId);
+      } catch (err) {
+        console.log('No se pudo borrar imagen anterior:', err.message);
+      }
+    }
+
+    // 🟢 Guardar nueva URL
+    receta.imagen = nuevaImagen;
+    await receta.save();
+
+    res.json({ imagen: receta.imagen });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error actualizando imagen' });
+  }
+});
+
+
 
 
 export default router;
