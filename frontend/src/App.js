@@ -9,6 +9,7 @@ import Perfil from './components/Perfil';
 import RecuperarContrasenia from './components/RecuperarConsetania';
 import CambiarContrasenia from './components/CambiarContrasenia';
 import LoadingScreen from './components/LoadingScreen';
+import CrearReceta from './components/CrearReceta';
 import { Helmet } from 'react-helmet';
 
 
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/perfil/:id" element={<Perfil />} />
                     <Route path="/recuperar" element={<RecuperarContrasenia />} />
                     <Route path="/recuperar/:token" element={<CambiarContrasenia />} />
+                    <Route path="/crear-receta" element={<CrearReceta />} />
 
                     <Route
                         path="*"
