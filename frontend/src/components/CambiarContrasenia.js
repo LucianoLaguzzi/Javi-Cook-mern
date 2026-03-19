@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet';
+import { API_BASE_URL } from '../config/api';
 
 const CambiarContrasenia = () => {
     const { token } = useParams(); // Obtener el token de la URL
@@ -27,7 +28,7 @@ const CambiarContrasenia = () => {
         }
 
         try {
-            const response = await axios.post('${API_BASE_URL}/api/usuarios/cambiar-contrasenia', // Ruta relativa
+            const response = await axios.post(`${API_BASE_URL}/api/usuarios/cambiar-contrasenia`, // Ruta relativa
                 { token, nuevaContrasenia },
                 { headers: { 'Content-Type': 'application/json' } }
             );

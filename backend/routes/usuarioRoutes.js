@@ -10,16 +10,16 @@ import Token from '../models/Token.js'; // el modelo de token que creaste
 import nodemailer from 'nodemailer'; // usar para enviar el correo
 import { randomBytes } from 'crypto'; // Importa randomBytes aquí
 import cloudinary from 'cloudinary';
-import sgMail from '@sendgrid/mail';
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import SibApiV3Sdk from 'sib-api-v3-sdk';
+
+
 
 
 const router = express.Router();
 
 // Ruta para crear un nuevo usuario (registrar)
 router.post('/registrar', async (req, res) => {
-  console.log('Datos recibidos:', req.body); // Imprime los datos que llegan
   try {
     const { nombre, contrasenia, email } = req.body;
     
@@ -128,7 +128,6 @@ const upload = multer({ storage });
 // Ruta para subir imagen de perfil
 router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (req, res) => {
   try {
-      console.log("Archivo recibido:", req.file); // Agrega un log para ver si el archivo se recibe correctamente
 
       if (!req.file) {
           return res.status(400).json({ mensaje: 'No se ha enviado ningún archivo.' });
@@ -140,8 +139,6 @@ router.put('/imagen-perfil/:usuarioId', upload.single('imagenPerfil'), async (re
           public_id: `${req.params.usuarioId}-profile`,
           overwrite: true,
       });
-
-      console.log("Resultado de Cloudinary:", resultado); // Log para ver si la subida es exitosa
 
       // Actualizar la URL de la imagen en la base de datos
       const usuario = await Usuario.findByIdAndUpdate(
@@ -183,48 +180,60 @@ router.get('/:id/favoritos', async (req, res) => {
 });
 
 
+const generarSlug = (texto) =>
+  texto
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]/g, '');
+
 
 // Añadir una receta a favoritos
 router.post('/:id/favoritos', async (req, res) => {
   const { id } = req.params;
   const { recetaId } = req.body;
 
-  try {
-      const usuario = await Usuario.findById(id);
-      if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    try {
+        const usuario = await Usuario.findById(id);
+        if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
 
-      if (!usuario.recetasFavoritas.includes(recetaId)) {
-          usuario.recetasFavoritas.push(recetaId);
-          await usuario.save();
+        if (!usuario.recetasFavoritas.includes(recetaId)) {
+            usuario.recetasFavoritas.push(recetaId);
+            await usuario.save();
 
-           // Buscar la receta para obtener datos (autor y título)
-           const receta = await Receta.findById(recetaId);
-           if (!receta) {
-               console.error("Receta no encontrada");
-           } else {
-               // No notificar si el usuario agregó su propia receta a favoritos
-               if (receta.usuario.toString() !== usuario._id.toString()) {
-                   // Obtener el nombre del usuario que agregó a favoritos
-                   const usuarioEmisor = await Usuario.findById(id).select('nombre');
- 
-                   // Crear la notificación para el autor de la receta
-                   const nuevaNotificacion = new Notificacion({
-                       usuarioDestino: receta.usuario,
-                       mensaje: `@${usuarioEmisor.nombre} ha agregado a favoritos tu receta "${receta.titulo}"`,
-                       enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${receta._id}`,
-                       leida: false
-                   });
-                   await nuevaNotificacion.save();
-               }
-           }
+            
 
-          res.status(200).json({ mensaje: 'Receta añadida a favoritos' });
-      } else {
-          res.status(400).json({ mensaje: 'La receta ya está en favoritos' });
-      }
-  } catch (error) {
-      res.status(500).json({ mensaje: 'Error al agregar a favoritos' });
-  }
+            // Buscar la receta para obtener datos (autor y título)
+            const receta = await Receta.findById(recetaId);
+            if (!receta) {
+                console.error("Receta no encontrada");
+            } else {
+                // No notificar si el usuario agregó su propia receta a favoritos
+                if (receta.usuario.toString() !== usuario._id.toString()) {
+                    // Obtener el nombre del usuario que agregó a favoritos
+                    const usuarioEmisor = await Usuario.findById(id).select('nombre');
+
+                    const slug = generarSlug(receta.titulo);
+    
+                    // Crear la notificación para el autor de la receta
+                    const nuevaNotificacion = new Notificacion({
+                        usuarioDestino: receta.usuario,
+                        mensaje: `@${usuarioEmisor.nombre} ha agregado a favoritos tu receta "${receta.titulo}"`,
+                        enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${slug}/${receta._id}`,
+                        leida: false
+                    });
+                    await nuevaNotificacion.save();
+                }
+            }
+
+            res.status(200).json({ mensaje: 'Receta añadida a favoritos' });
+        } else {
+            res.status(400).json({ mensaje: 'La receta ya está en favoritos' });
+        }
+    } catch (error) {
+        console.error("ERROR FAVORITOS:", error);
+        res.status(500).json({ mensaje: 'Error al agregar a favoritos' });
+    }
 });
 
 
@@ -250,6 +259,7 @@ router.delete('/:id/favoritos', async (req, res) => {
 
 // Ruta para solicitar recuperación de contraseña
 router.post('/recuperar', async (req, res) => {
+
     const { usuario } = req.body;
 
     try {
@@ -272,33 +282,41 @@ router.post('/recuperar', async (req, res) => {
         // Crear el enlace de recuperación
         const enlace =  `${process.env.FRONTEND_URL}/recuperar/${token.token}`;
 
-        // Enviar email con SendGrid (API, NO SMTP)
-        await sgMail.send({
-            to: user.email,
-            from: {
+        // 👉 CONFIGURAR ACA (IMPORTANTE)
+        const client = SibApiV3Sdk.ApiClient.instance;
+        client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+
+        const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+        await apiInstance.sendTransacEmail({
+            sender: {
                 email: process.env.EMAIL_USER,
-                name: 'JaviCook'
+                name: "JaviCook"
             },
-            subject: 'Recuperación de contraseña',
-            html: `
-            <div style="font-family: Arial, sans-serif; color: #333; text-align: center;">
-                <h1 style="color: #3498db;">JaviCook</h1>
-                <p>Hola ${user.nombre || 'usuario'},</p>
-                <p>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el botón de abajo para cambiarla:</p>
-                <a href="${enlace}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #3498db; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                    Cambiar contraseña
-                </a>
-                <p>O copia y pega el siguiente enlace en tu navegador:</p>
-                <p style="color: #3498db;">${enlace}</p>
-                <p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
-                <br>
-                <p>Saludos,<br>Equipo de Javicook</p>
-                <p style="color: #ccc;">© ${new Date().getFullYear()} Javicook. Todos los derechos reservados.</p>
-            </div>
+            to: [
+                {
+                    email: user.email,
+                    name: user.nombre || "Usuario"
+                }
+            ],
+            subject: "Recuperación de contraseña",
+            htmlContent: `
+                <div style="font-family: Arial, sans-serif; color: #333; text-align: center;">
+                    <h1 style="color: #3498db;">JaviCook</h1>
+                    <p>Hola ${user.nombre || 'usuario'},</p>
+                    <p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
+                    <a href="${enlace}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #3498db; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                        Cambiar contraseña
+                    </a>
+                    <p>O copia y pega el siguiente enlace:</p>
+                    <p style="color: #3498db;">${enlace}</p>
+                    <br>
+                    <p>Equipo JaviCook</p>
+                </div>
             `
         });
 
-        res.status(200).json({ mensaje: "Revisa tu email para cambiar la contraseña" });
+                res.status(200).json({ mensaje: "Revisa tu email para cambiar la contraseña" });
 
     } catch (error) {
         console.error("Error en recuperación de contraseña", error);
@@ -312,7 +330,6 @@ router.post('/cambiar-contrasenia', async (req, res) => {
   const { token, nuevaContrasenia } = req.body;
 
   try {
-    console.log("Token recibido:", token);
       // Verificar el token
       const tokenRegistro = await Token.findOne({ token });
       if (!tokenRegistro) {
@@ -333,7 +350,6 @@ router.post('/cambiar-contrasenia', async (req, res) => {
       // Actualizar la contraseña del usuario
       usuario.contrasenia = contraseniaEncriptada;
       await usuario.save(); // Guardar el usuario con la nueva contraseña
-      console.log("Contraseña actualizada para el usuario:", usuario.email);
      
 
       // Eliminar el token después de usarlo

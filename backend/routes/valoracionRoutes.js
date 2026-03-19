@@ -8,10 +8,19 @@ import Notificacion from '../models/Notificacion.js';
 const router = express.Router();
 
 
+const generarSlug = (texto) =>
+  texto
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]/g, '');
+
 
 // Ruta para valorar una receta
 router.post('/', async (req, res) => {
   const { recetaId, usuarioId, valor } = req.body;
+
+
 
   try {
     // Verificar si el usuario ya valoró esta receta
@@ -42,6 +51,8 @@ router.post('/', async (req, res) => {
 
 
 
+      const slug = generarSlug(receta.titulo);
+
     // Crear la notificación para el autor de la receta
     // Poblar el usuario para obtener su nombre
     // Crear la notificación para el autor de la receta
@@ -55,7 +66,7 @@ router.post('/', async (req, res) => {
               const nuevaNotificacion = new Notificacion({
                   usuarioDestino: receta.usuario,  
                   mensaje: `@${usuarioEmisor.nombre} valoró tu receta "${receta.titulo}"`,
-                  enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${receta._id}`,
+                  enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${slug}/${receta._id}`,
                   leida: false
               });
               await nuevaNotificacion.save();

@@ -50,16 +50,13 @@ const CrearReceta = () => {
 
     /* ------------------ PASOS ------------------ */
 
-    // Función para manejar el cambio en cada textarea
-    const hiddenInput = document.getElementById("inputOculto");
+    
 
     const handlePasoChange = (index, value) => {
         const nuevosPasos = [...pasos];
         nuevosPasos[index] = value;
         setPasos(nuevosPasos);
-
-        document.getElementById("inputOculto").value = nuevosPasos.join("\r\n");
-  };
+    };
 
     const agregarPaso = (e) => {
         e.preventDefault();
@@ -71,14 +68,10 @@ const CrearReceta = () => {
         e.preventDefault();
 
         if (pasos.length > 1) {
-            const nuevosPasos = pasos.slice(0, -1);
             setPasos((prev) => prev.slice(0, -1));
             setImagenesPasosFiles((prev) => prev.slice(0, -1));
-
-            document.getElementById("inputOculto").value = nuevosPasos.join("\r\n");
         }
     };
-
   /* ------------------ IMAGEN PRINCIPAL ------------------ */
 
   const previewImage = (event) => {
@@ -179,7 +172,7 @@ const CrearReceta = () => {
             cantidadIngredienteRef.current.focus();
             hasError = true;
         } 
-        if (pasos[0] === ''){
+       if (!pasos.some(p => p.trim() !== "")) {
             setErrorPasos("Por favor, ingrese pasos de la receta.");
             pasosRef.current.focus();
             hasError = true;
@@ -216,7 +209,7 @@ const CrearReceta = () => {
         const nuevaReceta = {
             titulo,
             cantidadIngrediente,
-            pasos: hiddenInput.value,
+            pasos: pasos.join("\n"),
             dificultad,
             categoria,
             tiempoPreparacion,
@@ -430,7 +423,7 @@ const CrearReceta = () => {
                             <div className="modal-error-paso" style={{height:'20px'}}>
                                 {errorPasos && <div id="modalErrorPasos" > {errorPasos} </div>}
                             </div>
-                            <input type="hidden" id="inputOculto" name="pasos" />
+                            
 
                             <div className="div-agregar-quitar-pasos">
                                 <button id="btnAgregarPaso" className="btn-agregar-paso" title="Agregar paso" onClick={agregarPaso}>

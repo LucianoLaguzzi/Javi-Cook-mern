@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { API_BASE_URL } from '../config/api';
 
 
+
 const RecuperarContrasenia = () => {
     const [usuario, setUsuario] = useState('');
     const [mensaje, setMensaje] = useState('');
@@ -12,7 +13,6 @@ const RecuperarContrasenia = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Enviando solicitud de recuperación:", usuario); // Para depuración
 
          // Muestra el SweetAlert de carga al enviar
          Swal.fire({

@@ -63,10 +63,10 @@ const DetalleReceta = () => {
   const [imagenesAEliminar, setImagenesAEliminar] = useState([]);
   const [imagenesEditadas, setImagenesEditadas] = useState([]);
 
- const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
-const [mostrarGuardarImagen, setMostrarGuardarImagen] = useState(false);
+  const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+  const [mostrarGuardarImagen, setMostrarGuardarImagen] = useState(false);
 
-  
+  const textareaRef = useRef(null);
 
 
 
@@ -164,7 +164,7 @@ const [mostrarGuardarImagen, setMostrarGuardarImagen] = useState(false);
           if (botonRef.current) botonRef.current.classList.add("fin");
 
           // Reproducir alarma
-          const sonido = new Audio("../sounds/timer-alert.mp3");
+          const sonido = new Audio("/sounds/timer-alert.mp3");
           sonido.play();
 
           Swal.fire({
@@ -804,6 +804,14 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
     }
   };
 
+  
+  useEffect(() => {
+      if (ingredientesEditable && textareaRef.current) {
+          const textarea = textareaRef.current;
+          textarea.style.height = '0px';
+          textarea.style.height = textarea.scrollHeight + 'px';
+      }
+  }, [ingredientesEditable]);
 
 
 
@@ -1205,8 +1213,15 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                             {ingredientesCantidades.split('\n').map((ingrediente, index) => { //Separa cada linea con una "," como un elemento nuevo.
                                 const partes = ingrediente.split(':'); //Separa cada ingrediente con su cantidad , ingrediente:cantidad por cada linea.
                                 if (partes.length === 2) { //Ejemplo: partes = ["Harina", "200g"]
-                                    const ingredienteFormateado = `${partes[0].trim()}: ${partes[1].trim()}`;
-                                    return <div key={index}>{ingredienteFormateado}</div>;
+                                    return (
+                                    <div key={index}>
+                                      {capitalizarPrimeraLetra(partes[0].trim())}
+                                      : 
+                                      <span className="cantidad-ingrediente">
+                                        {partes[1].trim()}
+                                      </span>
+                                    </div>
+                                  );
                                 }
                                 return <div key={index}>{ingrediente}</div>; 
                             })}
@@ -1220,9 +1235,11 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                 ) : (
                     <>
                         <textarea
+                            ref={textareaRef}
                             className='text-area-ingredientes'
                             value={ingredientesCantidades}
                             onChange={(e) => setIngredientesCantidades(e.target.value)}
+                            onInput={autoResize}
                         />
                         <div className='cancel-ok-ingredientes'>
                             <a className='btn-cancelar-ingredientes' onClick={cancelarIngredientes}>
@@ -1236,7 +1253,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                 )}
               </div>
               
-              <hr className='divider'></hr>
+              
   
               <div className="detalles-pasos">
                 <p>Pasos</p>

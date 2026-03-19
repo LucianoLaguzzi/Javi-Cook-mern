@@ -715,17 +715,24 @@ img.img-cerrar-sesion:hover {
     text-transform: uppercase;
     letter-spacing: 1px;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: 35px;
+}
+
+@media (max-width: 1400px) {
+    .modal-content > h2 {
+        font-size: 30px;
+    }
 }
 
 @media (max-width: 1000px) {
     .modal-content > h2 {
-        font-size: 18px;
+        font-size: 25px;
     }
 }
 
 @media (max-width: 700px) {
     .modal-content > h2 {
-        font-size: 16px !important;
+        font-size: 20px !important;
     }
 }
 
@@ -1069,22 +1076,37 @@ img.img-cerrar-sesion:hover {
 
 
 .text-area-ingredientes{
-    padding: 10px;
-    width: 50%;
-    border: 2px solid lemonchiffon;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    outline: none;
-    border-radius: 10px;
-    min-height: 50px;
-    max-height: 200px;
-    font-size: 17px;
-    text-overflow: ellipsis;
-    letter-spacing: 1px;
+    padding:14px 18px;
+    width:100%;
+    border:2px solid #e7c781;
+    border-radius:10px;
+    min-height:70px;
+    max-height:200px;
+
+    font-size:16px;
+    line-height:1.7;
+    font-family:"Courier New", monospace;
+    letter-spacing:0.3px;
+
+    background:#f7e3b0;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,0.2),
+        0 2px 5px rgba(0,0,0,0.2);
+
+    resize:vertical;
+}
+
+.text-area-ingredientes:focus{
+    border-color:#ffd27f;
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,0.2),
+        0 0 8px rgba(255,210,127,0.6);
+    background:#fff4d6;
 }
 
 @media (max-width: 700px) {
     .text-area-ingredientes {
-        width: auto;
         height: 10em;
     }
 }
@@ -1309,24 +1331,6 @@ img.img-cerrar-sesion:hover {
     background: #2b3a42;
 }
 
-@media (max-width: 1200px) {
-    .modal-content {
-        margin: 22% auto
-    }
-}
-
-@media (max-width: 950px) {
-    .modal-content {
-        margin: 30% auto;
-    }
-}
-
-@media (max-width: 800px) {
-    .modal-content {
-        margin: 40% auto;
-    }
-}
-
 
 .close{
     color: #aaa;
@@ -1334,6 +1338,7 @@ img.img-cerrar-sesion:hover {
     font-size: 28px;
     cursor: pointer;
     z-index: 5;
+    bottom:10px;
 }
 
 .close:hover,
@@ -1353,38 +1358,36 @@ img.img-cerrar-sesion:hover {
 }
 
 .div-titulo-receta{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    gap:6px;
+    align-items:center;
 }
 
 .label-titulo-receta{
-    font-size: 17px;
-    font-family: 'Montserrat';
-    padding: 10px;
-    width: 20%;
-    font-weight: 500;
+    color: #fed5aa;
+    font-family: Montserrat;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
 }
 
 @media (max-width: 1400px) {
     .label-titulo-receta {
         font-size: 16px;
-        width: 25%
     }
 }
 
 @media (max-width: 800px) {
     .label-titulo-receta {
         font-size: 14px;
-        width: 35%;
     }
 }
 
 @media (max-width: 700px) {
     .label-titulo-receta {
         font-size: 13px;
-        width: 32%;
     }
 }
 
@@ -1395,20 +1398,24 @@ img.img-cerrar-sesion:hover {
 }
 
 .receta-titulo{
-    width: 75%;
-    height: 45px;
-    padding: 10px;
+    width: 100%;
+    height: 48px;
+    background: #9aabb263;
+    border: 1px solid #4f646c;
     border-radius: 10px;
-    border: 2px solid lemonchiffon;
-    outline: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    padding: 10px 14px;
     font-size: 20px;
-    letter-spacing: 1px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    text-align: center;
+    outline: none;
+    transition:.2s ease, border-color .2s ease;
+    color: #bfb3b3;
+    
 }
 
 @media (max-width: 1400px) {
     .receta-titulo {
-        width: 70%;
         height: 40px;
         font-size: 16px;
     }
@@ -1416,7 +1423,6 @@ img.img-cerrar-sesion:hover {
 
 @media (max-width: 800px) {
     .receta-titulo {
-        width: 55%;
         height: 35px;
         font-size: 14px;
         text-overflow: ellipsis;
@@ -1425,7 +1431,6 @@ img.img-cerrar-sesion:hover {
 
 @media (max-width: 700px) {
     .receta-titulo {
-        width: 85%;
         height: 30px;
         font-size: 12px;
     }
@@ -1438,10 +1443,18 @@ img.img-cerrar-sesion:hover {
     }
 }
 
-
+.receta-titulo:focus {
+    background: #9aabb263;
+    border-color: #5d5e5b;
+    text-align: left;
+}
 
 .receta-titulo::placeholder{
-    color: #d2c6c6;
+    color: #a3a3a3c2 ;
+}
+
+.receta-titulo:focus::placeholder {
+    opacity: 0;
 }
 
 .receta-titulo:-webkit-autofill {
@@ -1553,6 +1566,7 @@ img.img-cerrar-sesion:hover {
     font-family: 'Montserrat';
     font-weight: 600;
     font-size: 14px;
+    color: #fed5aa;
 }
 
 @media (max-width: 1400px) {
@@ -1590,18 +1604,22 @@ img.img-cerrar-sesion:hover {
 }
 
 
-.text-area-pasos{
-    letter-spacing: 1px;
+.text-area-pasos {
+    background: rgba(211, 205, 193, 0.12);
+    color: #f1e7d0;
+    font-family: 'Quicksand', 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(254, 213, 170, 0.2);
+    border-radius: 12px;
+    padding: 14px;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
-    min-height: 75px;
+    min-height: 85px;
     resize: vertical;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    padding: 8px;
-    font-size: 14px;
-    background: #aca8a0a1;
-    font-weight: bold;
-    max-height: 200px;
 }
 
 
@@ -1619,6 +1637,17 @@ img.img-cerrar-sesion:hover {
     }
 }
 
+.text-area-pasos:focus {
+    background: rgba(211, 205, 193, 0.2);
+    border-color: #fed5aa;
+    box-shadow: 0 0 0 4px rgba(254, 213, 170, 0.15);
+    color: #ffffff;
+}
+
+.text-area-pasos::placeholder {
+    color: rgba(241, 231, 208, 0.4);
+    font-weight: 400;
+}
 
 
 .btn-agregar-paso{
@@ -1689,9 +1718,6 @@ img.img-cerrar-sesion:hover {
     align-items: center;
 }
 
-.text-area-pasos::placeholder{
-    color: #d2c6c6;
-}
 
 .modal-error-paso {
     color: red;
@@ -1735,6 +1761,7 @@ img.img-cerrar-sesion:hover {
     font-size: 20px;
     font-family: 'Montserrat';
     font-style: italic;
+    color: #fed5aa;
 }
 
 @media (max-width: 1400px) {
@@ -1863,6 +1890,7 @@ img.img-cerrar-sesion:hover {
     padding: 10px;
     font-family: 'Montserrat';
     font-weight: 500;
+    color: #fed5aa;
 }
 
 @media (max-width: 1400px) {
@@ -1887,13 +1915,15 @@ img.img-cerrar-sesion:hover {
 }
 
 .menu-dificultad{
-    font-size: 18px;
-    width: 20%;
     border-radius: 10px;
-    padding: 3px;
-    border: 2px solid lemonchiffon;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px #0000004d;
+    font-size: 18px;
     outline: none;
+    padding: 3px;
+    width: 20%;
+    background: #9aabb263;
+    color: #bfb3b3;
+    border-bottom-color: rgb(217 185 123);
 }
 
 @media (max-width: 1400px) {
@@ -1936,7 +1966,15 @@ img.img-cerrar-sesion:hover {
     }
 }
 
+.menu-dificultad option {
+    background: #5c6366cc;
+    color: #d1cdcd;
+}
 
+.menu-dificultad option:checked {
+    background: #373c3dcc;
+    color: white;
+}
 
 .modal-error-dificultad {
     color: red;
@@ -1985,6 +2023,7 @@ img.img-cerrar-sesion:hover {
     padding: 10px;
     font-family: 'Montserrat';
     font-weight: 500;
+    color: #fed5aa;
 }
 
 @media (max-width: 1400px) {
@@ -2009,13 +2048,15 @@ img.img-cerrar-sesion:hover {
 }
 
 .menu-categoria{
-    font-size: 18px;
-    width: 20%;
+    background: #9aabb263;
+    border-bottom-color: #d9b97b;
     border-radius: 10px;
-    padding: 3px;
-    border: 2px solid lemonchiffon;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px #0000004d;
+    color: #bfb3b3;
+    font-size: 18px;
     outline: none;
+    padding: 3px;
+    width: 20%;
 }
 
 @media (max-width: 1400px) {
@@ -2059,6 +2100,17 @@ img.img-cerrar-sesion:hover {
     }
 }
 
+
+.menu-categoria option {
+    background: #5c6366cc;
+    color: #d1cdcd;
+}
+
+.menu-categoria option:checked {
+    background: #373c3dcc;
+    color: white;
+}
+
 .modal-error-categoria{
     color: red;
     font-size: 14px;
@@ -2097,6 +2149,7 @@ img.img-cerrar-sesion:hover {
     padding: 10px;
     font-family: 'Montserrat';
     font-weight: 500;
+    color: #fed5aa;
 }
 
 @media (max-width: 1650px) {
@@ -2127,14 +2180,15 @@ img.img-cerrar-sesion:hover {
     }
 }
 
-.input-tiempo-preparacion{
+.input-tiempo-preparacion {
+    box-shadow: 0 2px 5px #0000004d;
     font-size: 18px;
-    width: 8%;
-    padding: 3px;
-    border: 2px solid lemonchiffon;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     outline: none;
+    padding: 3px;
     text-align: center;
+    width: 8%;
+    background: #9aabb263;
+    color: #d9b97b;
 }
 
 @media (max-width: 1400px) {
@@ -2171,63 +2225,79 @@ img.img-cerrar-sesion:hover {
 
 
 .input-tiempo-preparacion:-webkit-autofill {
-    -webkit-text-fill-color: #000000 !important; /* Color del texto */
+    -webkit-text-fill-color: #d9b97b !important; /* Color del texto */
 }
 
 .btn-agregar-tiempo{
     background-color: #28a745;
-    color: white;
     border: none;
+    border-radius: 0 10px 10px 0;
+    color: #fff;
     cursor: pointer;
-    border-radius: 0px 10px 10px 0px;
+    font-size: 14px;
     padding: 7px;
-    font-size: 17px;
+    transition: all 0.1s ease-in-out;
+    box-shadow: 0 3px 0 #1f5e30;
+    color: #d9b97b;
 }
 
 @media (max-width: 1400px) {
     .btn-agregar-tiempo{
-        font-size: 16px;
+        font-size: 12px;
     }
 }
 
 @media (max-width: 1000px) {
     .btn-agregar-tiempo{
-        font-size: 13px;
+        font-size: 9px;
     }
 }
 
 @media (max-width: 700px) {
     .btn-agregar-tiempo{
-        font-size: 11px;
+        font-size: 7px;
     }
+}
+
+.btn-agregar-tiempo:active {
+    transform: translateY(2px); /* baja 2px */
+    box-shadow: 0 1px 0 #1f5e30; /* sombra más pequeña */
 }
 
 .btn-quitar-tiempo{
-    background-color: #28a745;
-    color: white;
+   background-color: #28a745;
     border: none;
+    border-radius: 10px 0px 0px 10px;
+    color: #fff;
     cursor: pointer;
-    border-radius: 10px 0px 0px 10px;;
+    font-size: 14px;
     padding: 7px;
-    font-size: 17px;
+    transition: all 0.1s ease-in-out;
+    box-shadow: 0 3px 0 #1f5e30;
+    color: #d9b97b;
 }
 
 @media (max-width: 1400px) {
     .btn-quitar-tiempo{
-        font-size: 16px;
+        font-size: 12px;
     }
 }
 
 @media (max-width: 1000px) {
     .btn-quitar-tiempo{
-        font-size: 13px;
+        font-size: 9px;
     }
 }
 
 @media (max-width: 700px) {
     .btn-quitar-tiempo{
-        font-size: 11px;
+        font-size: 7px;
     }
+}
+
+.btn-quitar-tiempo:active {
+    transform: translateY(2px); /* baja 2px */
+    box-shadow: 0 1px 0 #1f5e30; /* sombra más pequeña */
 }
 
 .modal-error-tiempo-preparacion{
@@ -2265,6 +2335,7 @@ img.img-cerrar-sesion:hover {
     font-family: 'Montserrat';
     font-size: 17px;
     font-weight: 500;
+    color: #fed5aa;
 }
 
 @media (max-width: 1400px) {
@@ -2296,18 +2367,19 @@ img.img-cerrar-sesion:hover {
 }
 
 .input-ingredientes{
-    padding: 10px;
-    width: 65%;
-    height: 50px;
-    border: 2px solid lemonchiffon;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    outline: none;
-    border-radius: 10px;
-    min-height: 50px;
-    max-height: 200px;
+        border-radius: 10px;
+    box-shadow: 0 2px 5px #0000004d;
     font-size: 17px;
-    text-overflow: ellipsis;
+    height: 50px;
     letter-spacing: 1px;
+    max-height: 200px;
+    min-height: 50px;
+    outline: none;
+    padding: 10px;
+    text-overflow: ellipsis;
+    width: 65%;
+    color: #bfb3b3;
+    background: #9aabb263;
 }
 
 @media (max-width: 1400px) {
@@ -2343,7 +2415,7 @@ img.img-cerrar-sesion:hover {
 }
 
 .input-ingredientes::placeholder{
-    color: #d2c6c6;
+    color: #a3a3a3c2 ;
 }
 
 .input-ingredientes:-webkit-autofill {
@@ -2400,6 +2472,12 @@ img.img-cerrar-sesion:hover {
     border-color: red;
 }
 
+.cantidad-ingrediente{
+    font-weight:600;
+    color:#ffd27f;
+    white-space:nowrap;
+}
+
 
 .div-cantidad-ingredientes-receta{
     display: flex;
@@ -2411,12 +2489,14 @@ img.img-cerrar-sesion:hover {
 }
 
 .label-cantidad-ingrediente{
-    font-size: 18px;
-    width: 100%;
     padding: 10px;
-    font-family: 'Montserrat';
-    font-weight: 500;
+    width: 100%;
+    color: #fed5aa;
+    font-family: Montserrat;
+    font-size: 18px;
+    font-weight: 600;
     text-align: center;
+
 }
 
 @media (max-width: 1400px) {
@@ -2432,16 +2512,20 @@ img.img-cerrar-sesion:hover {
 }
 
 
-.text-area-cantidad-ingrediente{
-    width: 40%;
+.text-area-cantidad-ingrediente {
     height: 150px;
-    border: 2px solid lemonchiffon;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    outline: none;
+    width: 40%;
+    background: #9aabb263;
+    border: 1px solid #4f646c;
     border-radius: 10px;
-    font-size: 17px;
-    resize: vertical;
-    letter-spacing: 1px;
+    color: #bfb3b3;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    outline: none;
+    padding: 10px 14px;
+    text-align: left;
+    transition: .2s ease, border-color .2s ease;
 }
 
 @media (max-width: 1400px) {
@@ -2476,7 +2560,7 @@ img.img-cerrar-sesion:hover {
 
 
 .text-area-cantidad-ingrediente::placeholder{
-    color: #d2c6c6;
+    color: #a3a3a3c2 ;
 }
 
 
@@ -2928,14 +3012,31 @@ margin-left: 20px;
     gap: 5px;
     font-size: 20px;
     margin-top: 10px;
+    margin-bottom: 60px;
 }
 
 .detalles-cantidades p{
-    color: #fed5aa;
-    font-size: 23px !important;
+     color:#fed5aa;
+    font-size:24px !important;
+    font-weight:600;
+    letter-spacing:0.5px;
+    border-bottom:1px solid rgba(255,255,255,0.15);
+    padding-bottom:6px;
+    width:100%;
 }
-.valores-cantidad{
-    margin-left: 15px;
+.valores-cantidad div{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    padding:6px 10px 6px 18px;
+    position:relative;
+}
+
+.valores-cantidad div::before{
+    content:"•";
+    position:absolute;
+    left:5px;
+    color:#fed5aa;
 }
 
 .detalles-pasos{
@@ -2947,9 +3048,13 @@ margin-left: 20px;
 
 
 .detalles-pasos p{
+    border-bottom: 1px solid #ffffff26;
     color: #fed5aa;
-    font-size: 23px !important;
-    margin-bottom: 10px;
+    font-size: 24px !important;
+    font-weight: 600;
+    letter-spacing: .5px;
+    padding-bottom: 6px;
+    width: 100%;
 }
 
 .numero-paso {
@@ -2982,6 +3087,8 @@ margin-left: 20px;
 .texto-paso {
     line-height: 1.6;
     max-width: 85%;
+    white-space: pre-line;
+    overflow-wrap: break-word;
 }
 
 .paso-texto{
@@ -5886,5 +5993,64 @@ i.fas.fa-undo {
   align-items: center;
   gap: 12px;
   width: 100%;
+}
+
+
+
+.acceso-requerido-container{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(
+        180deg,
+        #1a1a1a,
+        #2b2b2b
+    );
+}
+
+.acceso-requerido{
+    width:90%;
+    max-width:400px;
+    background:#2f2f2f;
+    border-radius:12px;
+    padding:30px 25px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.5);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:15px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,0.1);
+}
+
+.acceso-requerido h2{
+    color:#ffd27f;
+    font-size:24px;
+    margin:0;
+}
+
+.acceso-requerido p{
+    color:#ccc;
+    font-size:16px;
+    line-height:1.5;
+    margin:0;
+}
+
+.btn-login{
+    margin-top:10px;
+    background:#ffd27f;
+    color:#222;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    transition:all .2s ease;
+}
+
+.btn-login:hover{
+    background:#ffbf4d;
+    transform:scale(1.05);
 }
 
