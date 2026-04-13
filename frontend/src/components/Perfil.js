@@ -509,7 +509,7 @@ const Perfil = () => {
                         </div>
 
                         <div className="div-recetas-usuario">
-                            <a href="#" className="link" onClick={toggleRecetas}>Ver recetas del usuario</a>
+                            <a href="#" className="link-lista-recetas" onClick={toggleRecetas}>Ver recetas del usuario</a>
                             {mostrarRecetas && (
                                 <div className="recetas-del-usuario">
                                     {recetas.length > 0 ? (

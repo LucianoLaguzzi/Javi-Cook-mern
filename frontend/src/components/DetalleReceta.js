@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../config/api';
+import Cropper from "react-easy-crop";
 
 
 
@@ -62,17 +63,27 @@ const DetalleReceta = () => {
   const [imagenActiva, setImagenActiva] = useState(null);
   const [imagenesAEliminar, setImagenesAEliminar] = useState([]);
   const [imagenesEditadas, setImagenesEditadas] = useState([]);
-
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
   const [mostrarGuardarImagen, setMostrarGuardarImagen] = useState(false);
+  const [imagenOriginal, setImagenOriginal] = useState(null);
+
+
+
+  const [previewImagen, setPreviewImagen] = useState(null);
+  const [mostrarCropper, setMostrarCropper] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+
+
+
+
 
   const textareaRef = useRef(null);
-
-
-
   const botonRef = useRef(null);
   const inputRef = useRef(null);
-
+  const inputFileRef = useRef(null);
   
 
   useEffect(() => {
@@ -982,15 +993,85 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setImagenSeleccionada(file);
-
-    // preview sin tocar backend
     const preview = URL.createObjectURL(file);
-    document.getElementById('imagen-receta-preview').src = preview;
 
+    console.log("preview:", preview);
+    setImagenOriginal(receta.imagen);
+
+    setImagenSeleccionada(file);
+    setPreviewImagen(preview);
+
+    setMostrarCropper(true);
+  };
+
+  const handleCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+
+  const getCroppedImg = async () => {
+    if (!previewImagen || !croppedAreaPixels) return null;
+
+    const image = await fetch(previewImagen).then((res) => res.blob());
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const img = await createImageBitmap(image);
+
+    canvas.width = croppedAreaPixels.width;
+    canvas.height = croppedAreaPixels.height;
+
+    ctx.drawImage(
+      img,
+      croppedAreaPixels.x,
+      croppedAreaPixels.y,
+      croppedAreaPixels.width,
+      croppedAreaPixels.height,
+      0,
+      0,
+      croppedAreaPixels.width,
+      croppedAreaPixels.height
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, "image/jpeg");
+    });
+  };
+
+
+  const aplicarRecorte = async () => {
+    const croppedBlob = await getCroppedImg();
+    if (!croppedBlob) return;
+
+    const preview = URL.createObjectURL(croppedBlob);
+
+    document.getElementById("imagen-receta-preview").src = preview;
+
+    setImagenSeleccionada(croppedBlob);
+
+    setMostrarCropper(false);
     setMostrarGuardarImagen(true);
   };
 
+
+  const cancelarCambioImagen = () => {
+
+    if (imagenOriginal) {
+      document.getElementById("imagen-receta-preview").src = imagenOriginal;
+    }
+
+    setImagenSeleccionada(null);
+    setPreviewImagen(null);
+    setMostrarCropper(false);
+    setMostrarGuardarImagen(false);
+
+    if (inputFileRef.current) {
+      inputFileRef.current.value = "";
+    }
+  };
 
   const guardarNuevaImagenPrincipal = async () => {
     if (!imagenSeleccionada) return;
@@ -1041,7 +1122,6 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
 
 
-  const imageUrl = receta.imagen;
 
   return (
     <div>
@@ -1114,51 +1194,16 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
               {/* Mostrar un cartel de carga hasta q se traigan los datos */}
               {isLoading && (
-                    <div className="loading-container-eliminar">
+                  <div className="loading-container-eliminar">
                     <div className="spinner-eliminar"></div>
                     <p className="loading-message-eliminar">Creando receta...</p>
                   </div>
                 )}
 
-              <div className="div-detalles-titulo">
-                {!tituloEditable ? (
-                  <>
-                    <p className='detalles-titulo'>
-                      {receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}
-                    </p>
-
-                    {!esPropietario && (
-                      <a className="btn-editar-titulo"  style={{opacity : 0, cursor: 'default'}}>
-                        <i className="fas fa-pencil-alt"></i>
-                      </a>
-                    )}
-                    {esPropietario && (
-                      <a className="btn-editar-titulo" onClick={cambiarTitulo}>
-                        <i className="fas fa-pencil-alt" title='Editar titulo'></i>
-                      </a>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <input className='nuevo-titulo'
-                      value= {receta.titulo}
-                      onChange={(e) => setReceta({ ...receta, titulo: e.target.value })}
-                    />
-
-                    <div className='cancel-ok-titulo'>
-                      <a className='btn-cancelar-titulo' onClick={cancelarTitulo}>
-                        <i className="fas fa-times-circle"></i>
-                      </a>
-                      <a className='btn-guardar-titulo' onClick={guardarTitulo}>
-                        <i className="fas fa-check-circle"></i>
-                      </a>
-                    </div>
-                  </>
-                )}
-              </div>
-  
               <div className="imagen-wrapper">
-                <div className="imagen-contenedor">
+
+                <div className={`imagen-contenedor ${esPropietario ? "editable" : ""}`}>
+
                   <img
                     id="imagen-receta-preview"
                     src={receta.imagen}
@@ -1166,15 +1211,62 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                     className="panel-img"
                   />
 
-                  <div className="detalles-usuario-fecha">
-                    <span>{receta.usuario?.nombre}</span>
-                    <span>{new Date(receta.fecha).toLocaleDateString()}</span>
+                  <div className="overlay-imagen">
+
+                    {/* TITULO */}
+                    <div className="div-detalles-titulo">
+
+                      {!tituloEditable ? (
+                        <>
+                          <p className="detalles-titulo">
+                            {receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}
+                          </p>
+
+                          {esPropietario && (
+                            <a className="btn-editar-titulo" onClick={cambiarTitulo}>
+                              <i className="fas fa-pencil-alt" title="Editar titulo"></i>
+                            </a>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            className="nuevo-titulo"
+                            value={receta.titulo}
+                            onChange={(e) =>
+                              setReceta({ ...receta, titulo: e.target.value })
+                            }
+                          />
+
+                          <div className="cancel-ok-titulo">
+                            <a className="btn-cancelar-titulo" onClick={cancelarTitulo}>
+                              <i className="fas fa-times-circle"></i>
+                            </a>
+                            <a className="btn-guardar-titulo" onClick={guardarTitulo}>
+                              <i className="fas fa-check-circle"></i>
+                            </a>
+                          </div>
+                        </>
+                      )}
+
+                    </div>
+
+                    {/* USUARIO Y FECHA */}
+                    <div className="detalles-usuario-fecha">
+                      <span>{receta.usuario?.nombre}</span>
+                      <span>{new Date(receta.fecha).toLocaleDateString()}</span>
+                    </div>
+
                   </div>
 
                   {esPropietario && (
-                    <label className="overlay-cambiar-imagen"  title="Cambiar imagen de la receta" aria-label="Cambiar imagen de la receta">
+                    <label
+                      className="overlay-cambiar-imagen"
+                      title="Cambiar imagen de la receta"
+                    >
                       <i className="fa fa-camera"></i>
                       <input
+                        ref={inputFileRef}
                         type="file"
                         accept="image/*"
                         onChange={manejarCambioImagenPrincipal}
@@ -1182,17 +1274,86 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                       />
                     </label>
                   )}
+
                 </div>
 
-                {/* ⬇️ AHORA ESTÁ FUERA */}
-                {esPropietario && mostrarGuardarImagen && (
-                  <button
-                    className="boton-guardar-imagen"
-                    onClick={guardarNuevaImagenPrincipal}
-                  >
-                    Guardar nueva imagen
-                  </button>
+                {/* 👇 CROP ABAJO DE LA IMAGEN */}
+                {mostrarCropper && previewImagen && (
+                  <div className="modal-cropper">
+
+                    <div className="cropper-contenido">
+
+                      <Cropper
+                        image={previewImagen}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={16 / 9}
+                        onCropChange={setCrop}
+                        onZoomChange={setZoom}
+                        onCropComplete={handleCropComplete}
+                      />
+
+                      <div className="controles-cropper">
+
+
+                        <label className="label-zoom">
+                          Zoom
+                        </label>
+
+                        <input
+                          type="range"
+                          min={1}
+                          max={3}
+                          step={0.1}
+                          value={zoom}
+                          onChange={(e) => setZoom(e.target.value)}
+                        />
+
+                        <div className="acciones-cropper">
+
+                          <button
+                            className="btn-crop-cancelar"
+                            onClick={cancelarCambioImagen}
+                          >
+                            Cancelar
+                          </button>
+
+                          <button
+                            className="btn-crop-aplicar"
+                            onClick={aplicarRecorte}
+                          >
+                            Aplicar recorte
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
                 )}
+
+                {esPropietario && mostrarGuardarImagen && (
+                  <div className="acciones-imagen">
+
+                    <button
+                      className="boton-guardar-imagen"
+                      onClick={guardarNuevaImagenPrincipal}
+                    >
+                      Guardar nueva imagen
+                    </button>
+
+                    <button
+                      className="boton-cancelar-imagen"
+                      onClick={cancelarCambioImagen}
+                    >
+                      Cancelar
+                    </button>
+
+                  </div>
+                )}
+
               </div>
   
               <p className="detalles-tiempo-dificultad">

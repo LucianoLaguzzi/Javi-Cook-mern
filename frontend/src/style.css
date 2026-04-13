@@ -968,20 +968,17 @@ img.img-cerrar-sesion:hover {
 
 
 .nuevo-titulo{
-    color: #ffae72;
-    width: 60%;
-    height: 40px;
-    font-family: Montserrat;
-    font-weight: 600;
-    margin-left: auto;
-    margin-right: 5%;
-    background: #2d2727;
+   background: rgb(0 0 0 / 57%);
     border: none;
-    outline: 1px solid #a18888;
-    border-radius: 15px;
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 20px;
+    border-radius: 10px;
+    color: #c2bbb6;
+    font-family: Montserrat;
+    font-size: 28px;
+    font-weight: 600;
+    padding: 6px 12px;
+    outline: none;
+    width: auto;
+    max-width: 80%;
 }
 
 
@@ -1184,9 +1181,12 @@ img.img-cerrar-sesion:hover {
     }
 }
 
-.imagen-contenedor {
-    position: relative; /* Establece la posición relativa para el contenedor de la imagen */
-
+.imagen-contenedor{
+    position: relative;
+    width: 100%;
+    border-radius: 25px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
 }
 
 
@@ -2758,31 +2758,34 @@ span.fecha-subida{
 
 .panel-img{
     width: 100%;
-    height: auto;
-    max-width: 1000px;
-    border-radius: 40px;
-    outline: 1px solid white;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-    aspect-ratio: 4 / 3;
+    height: 100%;
     object-fit: cover;
+    display: block;
+}
+
+.overlay-imagen{
+      position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);
 }
 
 .div-detalles-titulo{
-    margin-bottom: 10px;
-    width: 100%;
-    text-align: center;
-    display: flex;
     align-items: center;
+    display: flex;
+    gap: 10px;
 }
 
 .detalles-titulo{
-    color: #ffffff;
-    font-size: 35px;
-    font-family: Montserrat;
+    color: #fdc79d;
+    font-size: 32px;
     font-weight: 600;
-    margin-left: auto;
-    text-shadow: 2px 2px 4px #000000;
-    margin-right: 7px;
+    text-shadow: 2px 2px 6px #000000b3;
 }
 
 @media (max-width: 800px) {
@@ -2792,10 +2795,15 @@ span.fecha-subida{
 }
 
 .btn-editar-titulo{
-    margin-left: auto;
+    margin-left: 30px;
     cursor: pointer;
     color: #a7a89e;
 }
+
+.btn-editar-titulo:hover{
+   color: orange
+}
+
 
 @media (max-width: 800px) {
     .btn-editar-titulo {
@@ -2804,14 +2812,9 @@ span.fecha-subida{
 }
 
 .detalles-usuario-fecha{
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    width: 100%;
-    text-align: center;
     display: flex;
-    justify-content: center;
-    gap: 55%;
+    justify-content: space-between;
+    width: 100%;
 }
 
 @media (max-width: 700px) {
@@ -2826,7 +2829,6 @@ span.fecha-subida{
     display: block;
     color: white;
     padding: 5px;
-    width: 100%;
     font-weight: bold;
     font-family: 'Poppins';
     text-shadow: 2px 2px 2px #000000;
@@ -3747,29 +3749,27 @@ i.fas.fa-undo {
 
   
 .perfil-form {
-    position: relative;
-    padding: 30px;
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
+    height: 100%;
+    padding: 30px;
+    width: 100%;
 }
 
 .perfil-section{
-    display: flex;
-    left: 38%;
-    min-height: 430px;
-    height: auto;
-    width: 500px;
-    max-width: 700px;
-    position: relative;
-    background-color: rgb(0 0 0 / 40%);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    opacity: 0.95;
-    border: 1px solid rgb(255 255 255 / 40%);
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
-    flex-direction: column;
+    background-color: #0006;
+    border: 1px solid #fff6;
+    box-shadow: 0 2px 5px #0000004d;
+    height: auto;
+    left: 38%;
+    max-width: 700px;
+    min-height: 430px;
+    opacity: .95;
     overflow: hidden;
+    width: 500px;
 }
 
 @media (max-width: 1200px) {
@@ -3796,12 +3796,12 @@ i.fas.fa-undo {
 
 
 .perfil-form > h1 {
-    color: white;
-    text-align: center;
-    margin: 15px;
+    color: #fff;
     font-family: Montserrat;
-    text-shadow: 2px 2px 4px #000000;
     letter-spacing: 1px;
+    margin: 15px;
+    text-align: center;
+    text-shadow: 2px 2px 4px #000;
 }
 
 
@@ -3828,16 +3828,31 @@ i.fas.fa-undo {
 }
 
 .perfil-usuario{
-    margin-bottom: 10px;
-    color: white;
-    display: flex;
-    margin-left: 10px;
-    width: 100%;
+    position: relative;
+    padding: 10px 10px 10px 18px;
+    margin: 14px 0;
+    background: transparent;
+    border-radius: 0;
+}
+
+.perfil-usuario:hover, .perfil-email:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.perfil-usuario::before, .perfil-email::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 5px;
+    bottom: 5px;
+    width: 3px;
+    background: linear-gradient(to bottom, #ffd27f, #ff9f1c);
+    border-radius: 3px;
 }
 
 .perfil-inputs{
     width: 100%;
-    display: flex;
+    
     /*text-align: center;*/
 }
 
@@ -3852,17 +3867,20 @@ i.fas.fa-undo {
     width: 25%;
 }
 
-.input-nuevo-nombre{
-    display: block;
-    background: #00000012;
+.input-nuevo-nombre, .input-nuevo-email {
+    transition: 0.25s;
+    margin-top: 6px;
+    width: 100%;
+    background: transparent;
     border: none;
-    outline: 1px solid #6c6c6c;
-    border-radius: 10px;
-    color: white;
-    /*padding: 5px 10px 5px 10px;*/
-    width: 70%;
-    margin-left: 15px;
-    padding-left: 8px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+    padding: 4px 2px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+    outline: none;
+    transition: 0.25s;
 }
 
 @media (max-width: 700px) {
@@ -3872,19 +3890,36 @@ i.fas.fa-undo {
 }
 
 .output-nombre-usuario{
-    width: 63%;
+    overflow: hidden;
     text-align: left;
     text-overflow: ellipsis;
-    overflow: hidden;
+}
+
+.output-nombre-usuario-texto, .output-email-usuario-texto {
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    display: block;
+    margin-top: 4px;
+    font-size: 19px;
+    font-weight: 500;
+    background: linear-gradient(90deg, #ffffff, #ffd27f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.6px;
 }
 
 .btn-editar-user{
     cursor: pointer;
-    display: flex;
-    align-items: center;
     position: absolute;
-    right: 0;
-    color: #a7a89e;
+    top: 5px;
+    right: 5px;
+    color: #aaa;
+    transition: 0.2s;
+}
+
+.btn-editar-user:hover, .btn-editar-email:hover {
+    color: #ffd27f;
+    transform: scale(1.2);
 }
 
 @media (max-width: 700px) {
@@ -3894,36 +3929,27 @@ i.fas.fa-undo {
 }
 
 .output-email-usuario{
-    width: 63%;
+    overflow: hidden;
     text-align: left;
     text-overflow: ellipsis;
-    overflow: hidden;
 }
 
 .perfil-email{
-    margin-bottom: 15px;
-    color: white;
-    display: flex;
-    margin-left: 10px;
-    width: 100%;
+    position: relative;
+    padding: 10px 10px 10px 18px;
+    margin: 14px 0;
+    background: transparent;
+    border-radius: 0;
 }
 
 .perfil-label-usuario{
     margin-right: 10px;
+    font-size: 12px;
+    color: #ffd27f;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.input-nuevo-email{
-    display: block;
-    background: #00000012;
-    border: none;
-    outline: 1px solid #6c6c6c;
-    border-radius: 10px;
-    color: white;
-    /*padding: 5px 10px 5px 10px;*/
-    width: 70%;
-    margin-left: 15px;
-    padding-left: 8px;
-}
 
 @media (max-width: 700px) {
     .input-nuevo-email{
@@ -3933,17 +3959,19 @@ i.fas.fa-undo {
 
 
 .perfil-label-email{
-    margin-right: 10px;
-    width: 25%;
+    font-size: 12px;
+    color: #ffd27f;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .btn-editar-email{
     cursor: pointer;
-    display: flex;
-    align-items: center;
     position: absolute;
-    right: 0;
-    color: #a7a89e;
+    top: 5px;
+    right: 5px;
+    color: #aaa;
+    transition: 0.2s;
 }
 
 @media (max-width: 700px) {
@@ -3955,9 +3983,8 @@ i.fas.fa-undo {
 .cancel-ok{
     display: flex;
     flex-direction: row-reverse;
-    padding-left: 25px;
     gap: 25px;
-    font-size: 16px;
+    margin-top: 6px;
 }
 
 @media (max-width: 700px) {
@@ -4017,15 +4044,24 @@ i.fas.fa-undo {
 }
 
 .recetas-del-usuario {
-    overflow-y: auto;
-    max-height: 250px;
-    background-color: rgb(255 255 255 / 10%);
-    border-radius: 11px;
-    padding: 10px 10px 10px 15px;
-    margin-top: 15px;
-    height: 220px;
-    overflow-x: auto;
+    background-color: #ffffff1a;
     text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(4px);
+}
+
+.recetas-del-usuario::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recetas-del-usuario::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
 }
 
 .tarjeta-receta2 {
@@ -4036,16 +4072,19 @@ i.fas.fa-undo {
 }
 
 .receta-etiqueta {
-    text-decoration: underline;
-    color: burlywood;
     display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: #ffd27f;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.03);
+    transition: 0.2s;
 }
 
-.receta-etiqueta:hover{
-    color: rgb(255 144 0);
+
+.receta-etiqueta:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
 }
 
 .perfil-imagen {
@@ -5970,22 +6009,57 @@ i.fas.fa-undo {
 
 .overlay-cambiar-imagen {
   position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 20px;
-  border-radius: 40px;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity .2s ease;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .2s ease;
+    pointer-events: none;
+    bottom: 40px;
 }
 
-.imagen-contenedor:hover .overlay-cambiar-imagen {
-  opacity: 1;
+.overlay-cambiar-imagen i {
+    font-size: 36px;
+    color: #d3c3c3;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 50%;
+    padding: 20px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform .15s ease;
 }
+
+@media (max-width: 1400px) {
+    .overlay-cambiar-imagen i {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .overlay-cambiar-imagen i {
+        font-size: 23px;
+    }
+}
+
+@media (max-width: 80px) {
+    .overlay-cambiar-imagen i {
+        font-size: 15px;
+    }
+}
+
+.overlay-cambiar-imagen i:hover {
+    transform: scale(1.2);
+}
+
+.imagen-contenedor.editable:hover .overlay-cambiar-imagen{
+    opacity:1;
+}
+
+.imagen-contenedor:has(.overlay-cambiar-imagen i:hover) .panel-img{
+    filter: brightness(.65);
+}
+
 
 .imagen-wrapper {
   display: flex;
@@ -6054,3 +6128,168 @@ i.fas.fa-undo {
     transform:scale(1.05);
 }
 
+.link-lista-recetas{
+    color: #ffd27f;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.link-lista-recetas:after {
+    background-color: #dbdb0d;
+    bottom: 0;
+    height: 3px;
+    left: 0;
+    position: absolute;
+    transform: scaleX(0);
+    transform-origin: bottom left;
+    transition: transform .3s ease;
+    width: 100%;
+}
+
+
+.modal-cropper{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.cropper-contenido{
+    width:600px;
+    max-width:90%;
+    height:450px;
+    position:relative;
+    background:#111;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.controles-cropper{
+    position:absolute;
+    bottom:10px;
+    left:0;
+    width:100%;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.controles-cropper input[type="range"]{
+    width:100%;
+    appearance:none;
+    height:6px;
+    border-radius:10px;
+    background:#444;
+    outline:none;
+}
+
+/* barra llena */
+.controles-cropper input[type="range"]::-webkit-slider-runnable-track{
+    height:6px;
+    border-radius:10px;
+}
+
+/* circulito */
+.controles-cropper input[type="range"]::-webkit-slider-thumb{
+    appearance:none;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#4caf50;
+    cursor:pointer;
+    margin-top:-6px;
+    transition:transform .15s ease;
+}
+
+.controles-cropper input[type="range"]::-webkit-slider-thumb:hover{
+    transform:scale(1.15);
+}
+
+
+.cropper-detalle{
+    position: relative;
+    width: 100%;
+    height: 350px;
+    margin-top: 15px;
+    background: #111;
+}
+
+.acciones-cropper{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+}
+
+.btn-crop-cancelar{
+    background:#666;
+    border:none;
+    border-radius:18px;
+    color:white;
+    padding:10px 20px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.btn-crop-cancelar:hover{
+    background:#555;
+}
+
+.btn-crop-aplicar{
+    background:#4caf50;
+    border:none;
+    border-radius:18px;
+    color:white;
+    padding:10px 20px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.btn-crop-aplicar:hover{
+    background:#43a047;
+}
+
+.acciones-imagen{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.boton-cancelar-imagen{
+    background:#777;
+    border:none;
+    border-radius:18px;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    padding:10px 22px;
+    transition:all .25s ease;
+    margin-bottom: 20px;
+}
+
+.boton-cancelar-imagen:hover{
+    background:#555;
+}
+
+.reactEasyCrop_CropArea{
+    cursor: grab;
+}
+
+.label-zoom{
+    font-size:14px;
+    color:#ddd;
+    text-align:center;
+}
+
+.cropper-zoom{
+  margin-top:10px;
+  width:100%;
+}
+
+.cropper-zoom input{
+  width:100%;
+}
