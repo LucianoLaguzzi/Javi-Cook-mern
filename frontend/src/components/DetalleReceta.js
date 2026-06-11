@@ -15,7 +15,7 @@ const DetalleReceta = () => {
   //Para ver si hay un usuario logueado en la sesion
   const isLogged = Boolean(usuarioEnSesion);
 
-  const { id } = useParams(); // Para obtener el id de la receta desde la URL
+  const { id, slug } = useParams(); // Para obtener el id de la receta desde la URL
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -99,6 +99,13 @@ const DetalleReceta = () => {
         const recetaData = response.data;
         setReceta(recetaData);
 
+        const slugCorrecto = generarSlug(recetaData.titulo);
+
+        if (slug !== slugCorrecto) {
+          navigate(`/detalle-receta/${slugCorrecto}/${id}`, { replace: true });
+          return;
+        }
+
         setImagenesPasos(recetaData.imagenesPasos || []);
 
         // 2️⃣ Ingredientes y pasos (SIEMPRE)
@@ -144,6 +151,9 @@ const DetalleReceta = () => {
         }
       } catch (error) {
         console.error('Error al cargar la receta', error);
+
+         navigate("/not-found");
+         return;
       } finally {
         setIsLoading(false);
       }
@@ -152,7 +162,12 @@ const DetalleReceta = () => {
     obtenerReceta();
   }, [id]);
 
-
+  const generarSlug = (texto) =>
+    texto
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]/g, '');
   
   // Temporizador
   useEffect(() => {

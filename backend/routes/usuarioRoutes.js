@@ -1,14 +1,14 @@
 import express from 'express';
-import bcrypt from 'bcryptjs'; // Importa bcrypt
+import bcrypt from 'bcryptjs'; 
 import Usuario from '../models/Usuario.js';
 import Notificacion from '../models/Notificacion.js'
 import Receta from '../models/Receta.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import Token from '../models/Token.js'; // el modelo de token que creaste
-import nodemailer from 'nodemailer'; // usar para enviar el correo
-import { randomBytes } from 'crypto'; // Importa randomBytes aquí
+import Token from '../models/Token.js'; 
+import nodemailer from 'nodemailer'; 
+import { randomBytes } from 'crypto'; 
 import cloudinary from 'cloudinary';
 
 import SibApiV3Sdk from 'sib-api-v3-sdk';

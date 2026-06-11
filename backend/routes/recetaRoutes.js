@@ -53,7 +53,7 @@ router.post('/', upload.none(), async (req, res) => {
     try {
         const { titulo, ingredientesCantidades, pasos, imagen, dificultad, categoria, tiempoPreparacion, ingredientes, usuario,imagenesPasos } = req.body;
 
-        // ✅ convertir los pasos que vienen como string en array real
+        //convertir los pasos que vienen como string en array real
         let pasosArray = [];
 
         if (typeof pasos === 'string') {
@@ -64,7 +64,6 @@ router.post('/', upload.none(), async (req, res) => {
             pasosArray = pasos;
         }
 
-        // 👇👇👇 AGREGAR ESTO
         let imagenesPasosArray = [];
 
         if (imagenesPasos) {
@@ -91,7 +90,7 @@ router.post('/', upload.none(), async (req, res) => {
             titulo,
             ingredientesCantidades,
             pasos: pasosArray,
-            imagen, // Si se ha subido una imagen
+            imagen,
             dificultad,
             categoria,
             tiempoPreparacion,
@@ -176,7 +175,7 @@ router.put('/:id/pasos', async (req, res) => {
       return res.status(404).json({ message: 'Receta no encontrada' });
     }
 
-    // 🧹 1. Eliminar imágenes viejas SOLO si existen
+    // 1. Eliminar imágenes viejas SOLO si existen
     if (imagenesAEliminar && imagenesAEliminar.length > 0) {
       for (const url of imagenesAEliminar) {
         if (url) { // 🔥 importante para no romper Cloudinary
@@ -185,15 +184,15 @@ router.put('/:id/pasos', async (req, res) => {
       }
     }
 
-    // 🧼 2. Limpiar array de imágenes (Mongo NO quiere undefined)
+    // 2. Limpiar array de imágenes (Mongo NO quiere undefined)
     let imagenesLimpias = [];
 
     if (Array.isArray(imagenesPasos)) {
     imagenesLimpias = imagenesPasos.map(img => img || null);
     }
 
-    // 💾 3. Guardar receta
-    // 🧠 Normalizar pasos para que SIEMPRE sea array
+    // 3. Guardar receta
+    //  Normalizar pasos para que SIEMPRE sea array
     let pasosNormalizados = [];
 
     if (Array.isArray(pasos)) {
@@ -246,13 +245,13 @@ router.delete('/:recetaId', async (req, res) => {
         );
       
         // Eliminar la imagen asociada a la receta si existe
-       // 🖼️ Eliminar imagen principal
+       // Eliminar imagen principal
         if (receta.imagen) {
             console.log('Eliminando imagen principal:', receta.imagen);
             await eliminarImagenCloudinary(receta.imagen);
         }
 
-        // 🖼️ Eliminar imágenes de los pasos
+        // Eliminar imágenes de los pasos
         if (receta.imagenesPasos && receta.imagenesPasos.length > 0) {
             console.log('Eliminando imágenes de pasos...');
 
@@ -362,7 +361,7 @@ router.put('/:id/imagen', async (req, res) => {
       return res.status(404).json({ mensaje: 'Receta no encontrada' });
     }
 
-    // 🔴 BORRAR imagen anterior de Cloudinary
+    // BORRAR imagen anterior de Cloudinary
     if (receta.imagen) {
       try {
         const url = receta.imagen;
@@ -378,7 +377,7 @@ router.put('/:id/imagen', async (req, res) => {
       }
     }
 
-    // 🟢 Guardar nueva URL
+    // Guardar nueva URL
     receta.imagen = nuevaImagen;
     await receta.save();
 

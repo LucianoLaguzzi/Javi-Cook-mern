@@ -25,5 +25,8 @@
     "react-helmet": "^6.1.0",
     "sib-api-v3-sdk": "^8.5.0",
     "sweetalert2": "^11.14.3"
+  },
+  "devDependencies": {
+    "cypress": "^15.13.1"
   }
 }
