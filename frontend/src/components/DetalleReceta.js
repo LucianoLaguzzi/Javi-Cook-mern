@@ -91,7 +91,7 @@ const DetalleReceta = () => {
       try {
         setIsLoading(true);
 
-        // 1️⃣ Obtener receta (SIEMPRE)
+        // 1. Obtener receta (SIEMPRE)
         const response = await axios.get(
           `${API_BASE_URL}/api/detalles/${id}`
         );
@@ -108,13 +108,13 @@ const DetalleReceta = () => {
 
         setImagenesPasos(recetaData.imagenesPasos || []);
 
-        // 2️⃣ Ingredientes y pasos (SIEMPRE)
+        // 2. Ingredientes y pasos (SIEMPRE)
         setIngredientesCantidades(
           recetaData.ingredientesCantidades.join('\r\n')
         );
         setPasos(recetaData.pasos || []);
 
-        // 3️⃣ Comentarios (SIEMPRE - solo lectura si es guest)
+        // 3. Comentarios (SIEMPRE - solo lectura si es guest)
         const comentariosConRespuestas = recetaData.comentarios.map(
           (comentario) => ({
             ...comentario,
@@ -123,7 +123,7 @@ const DetalleReceta = () => {
         );
         setComentarios(comentariosConRespuestas);
 
-        // 4️⃣ SOLO si hay usuario logueado
+        // 4. SOLO si hay usuario logueado
         if (usuarioEnSesion) {
           // 👉 verificar propietario
           if (recetaData.usuario._id === usuarioEnSesion._id) {
@@ -144,7 +144,7 @@ const DetalleReceta = () => {
             setYaValorado(false);
           }
         } else {
-          // 5️⃣ Guest → limpiar estados sensibles
+          // 5. Guest → limpiar estados sensibles
           setEsPropietario(false);
           setYaValorado(false);
           setValoracionUsuario(null);

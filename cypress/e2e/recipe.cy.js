@@ -645,6 +645,101 @@ describe("Flujo de recetas", () => {
     });
 
 
+    it("Deberia permitir editar una receta desde el detalle", () => {
+
+        const usuarioMock = {
+            _id: "123456789",
+            nombre: "test",
+            email: "test@test.com",
+        };
+
+        // Mock GET detalle inicial
+        cy.intercept("GET", "**/api/detalles/id1", {
+            statusCode: 200,
+            body: {
+                _id: "id1",
+                titulo: "Receta 1",
+                categoria: "Postre",
+                dificultad: "Intermedio",
+                ingredientes: ["harina", "agua"],
+                pasos: ["Paso 1"],
+                ingredientesCantidades: ["harina: 100g"],
+                usuario: { 
+                    _id: usuarioMock._id,
+                    nombre: usuarioMock.nombre,
+                    email: usuarioMock.email,
+                },
+                valoracion: 0,
+                comentarios: [],
+                imagen: "/images/default-imagen-perfil.jpg",
+                fecha: "2026-06-16T20:05:32.558+00:00",
+                 createdAt: "2026-06-16T20:05:32.558+00:00",
+                 updatedAt: "2026-06-16T20:05:32.558+00:00",
+            }
+        }).as("getDetalleReceta");
+
+        // Mock PUT edición
+        cy.intercept("PUT", "**/api/recetas/id1/titulo", {
+            statusCode: 200,
+            body: {
+                ok: true,
+                receta: {
+                    _id: "id1",
+                    titulo: "Receta Editada"
+                }
+            }
+        }).as("updateReceta");
+
+        // Mock valoraciones
+        cy.intercept("GET", "**/api/valoraciones/**", {
+            statusCode: 200,
+            body: { valoracionUsuario: 0 }
+        }).as("getValoracion");
+
+        // Simular login
+        cy.visit("/inicio", {
+            onBeforeLoad(win) {
+                win.localStorage.setItem("usuario", JSON.stringify(usuarioMock));
+            }
+        });
+
+        // Ir al detalle
+        cy.visit("/detalle-receta/receta-1/id1");
+
+        cy.wait("@getDetalleReceta");
+
+        // Activar modo edición en el titulo de la receta
+        cy.get(".btn-editar-titulo").should("be.visible").click();
+
+        // Editar título
+        cy.get(".nuevo-titulo").clear().type("Receta Editada");
+
+        // Guardar cambios
+        cy.get(".btn-guardar-titulo").click();
+
+        // Verificar request PUT
+        cy.wait("@updateReceta").then((interception) => {
+            expect(interception.response.statusCode).to.eq(200);
+
+            const body = interception.request.body;
+             
+            //ver que body sea un json y no un string
+            //console.log("El body es", body);
+
+            //como es un json, verificar que tenga la propiedad titulo con el valor "Receta Editada"
+            expect(body).to.have.property("titulo", "Receta Editada");
+
+
+        });
+
+        // Verificar UI actualizada
+        cy.contains("Receta Editada").should("be.visible");
+    });
+
+
+
+
+
 
 });
 

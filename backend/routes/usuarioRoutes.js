@@ -78,6 +78,7 @@ router.post('/login', async (req, res) => {
 // Ruta para actualizar el perfil del usuario
 router.put('/actualizarPerfil/:id', async (req, res) => {
   try {
+      //Asigna en la variable nombre y email los valores que vienen en el body de la request llamados nombre y email (el objeto).    
       const { nombre, email } = req.body;
       const usuarioId = req.params.id;
 

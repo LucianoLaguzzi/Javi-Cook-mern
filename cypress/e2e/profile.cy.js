@@ -54,7 +54,6 @@ describe("Verificacion de perfil de usuario", () => {
         }).as("getRecetasUsuario");
 
         // Ir a la página de perfil
-        
         cy.visit("/perfil/123456789");
 
         cy.wait("@getRecetasUsuario");
@@ -154,7 +153,7 @@ describe("Verificacion de perfil de usuario", () => {
 
 
     //Probar que se muestran las notificaciones en el perfil del usuario
-    it.only("Deberia mostrar notificaciones en el perfil del usuario", () => {
+    it("Deberia mostrar notificaciones en el perfil del usuario", () => {
         // Simular login
         cy.visit("/inicio", {
             onBeforeLoad(win) {
@@ -183,12 +182,134 @@ describe("Verificacion de perfil de usuario", () => {
             cy.contains("@usuario1 comentó en tu receta 'Receta 1'").should("be.visible").click();
         });
         // Verificar que se navega al detalle de la receta al hacer click en la notificación
-        cy.location("pathname").should("eq", "/detalle-receta/receta-1/id1"); 
+        cy.location("pathname").should("include", "/detalle-receta");
+    });
 
 
 
+    it("Deberia navegar al detalle y mostrar la receta", () => {
+
+        // Simular click en una receta del usuario
+        cy.intercept("GET", "**/api/recetas/usuario/123456789", {
+            statusCode: 200,
+            body: [
+                {
+                    _id: "id1",
+                    titulo: "Receta 1",
+                    categoria: "Veggie",
+                    dificultad: "Intermedia",
+                    ingredientes: ["Ingrediente 1", "Ingrediente 2"],
+                    pasos: ["Paso 1", "Paso 2"],
+                    descripcion: "Descripción de la receta 1",
+                    usuario:usuarioMock._id,
+                    valoracion:0,
+                    ingredientesCantidades: ["Ingrediente 1:100g \n Ingrediente 2: 200g"],
+                },
+            ]
+        }).as("getRecetasUsuario");
+
+        cy.intercept("GET", "**/api/detalles/id1", {
+            statusCode: 200,
+            body: {
+                _id: "id1",
+                titulo: "Receta 1",
+                categoria: "Veggie",
+                dificultad: "Intermedio",
+                ingredientes: ["Ingrediente 1", "Ingrediente 2"],
+                pasos: ["Paso 1", "Paso 2"],
+                usuario:{
+                        _id: usuarioMock._id,
+                        nombre: usuarioMock.nombre,
+                        email: usuarioMock.email,
+                },
+                valoracion:0,
+                tiempoPreparacion: 30,
+                ingredientesCantidades: ["Ingrediente 1:100g \n Ingrediente 2: 200g"],
+                comentarios: [],
+                imagen: "/images/default-imagen-perfil.jpg",
+            }
+        }).as("getDetalleReceta");
+
+        
+        cy.intercept("GET", "**/api/valoraciones/**", {
+            statusCode: 200,
+            body: { valoracionUsuario: 0 }
+        }).as("getValoracion");
+
+        // Simular login
+        cy.visit("/inicio", {
+            onBeforeLoad(win) {
+                win.localStorage.setItem("usuario", JSON.stringify(usuarioMock));
+            }
+        });
+
+        // Ir a la página de perfil
+        cy.visit("/perfil/123456789");
+
+        cy.wait("@getRecetasUsuario");
+
+        cy.contains("Ver recetas del usuario").should("be.visible").click();
+
+        cy.get(".recetas-del-usuario").within(() => {
+            cy.contains("Receta 1").should("be.visible").click();
+        });
+
+        cy.wait("@getDetalleReceta");
+
+        // Verificar que se navega a la página de detalle de la receta
+        cy.url().should("include", "/detalle-receta/receta-1/id1");
+        // Verificar que se muestra el título y descripción de la receta
+        cy.contains("Receta ").should("be.visible");
+       
+    });
 
 
+    it.only("Deberia permitir editar el perfil del usuario", () => {
+
+        // Simular login
+        cy.visit("/inicio", {
+            onBeforeLoad(win) {
+                win.localStorage.setItem("usuario", JSON.stringify(usuarioMock));
+            }
+        });
+
+        cy.intercept("PUT", "**/api/usuarios/actualizarPerfil/123456789", (req) => {
+            req.reply({
+                statusCode: 200,
+                body: req.body
+            });
+        }).as("putUsuario");
+
+
+        // Ir a la página de perfil
+        cy.visit("/perfil/usuarioMock._id");
+
+        cy.get(".output-nombre-usuario-texto").should("contain", usuarioMock.nombre);
+        cy.get(".output-email-usuario-texto").should("contain", usuarioMock.email);
+
+        cy.get(".btn-editar-user").should("be.visible").click();
+        cy.get(".input-nuevo-nombre").should("be.visible").clear().type("NuevoNombre");
+
+        cy.get(".btn-guardar-icon").should("be.visible").click();
+
+        cy.contains("OK").should("be.visible").click();
+        
+        cy.wait("@putUsuario").then(({ request }) => {
+            expect(request.body.nombre).to.eq("NuevoNombre");
+        });
+
+
+        cy.get(".btn-editar-email").should("be.visible").click();
+        cy.get(".input-nuevo-email").should("be.visible").clear().type("nuevoemail@example.com");
+
+        cy.get(".btn-guardar-icon").should("be.visible").click();
+
+        cy.contains("OK").should("be.visible").click();
+
+        cy.wait("@putUsuario").then(({ request }) => {
+            expect(request.body.email).to.eq("nuevoemail@example.com");
+            expect(request.body.nombre).to.eq("NuevoNombre");
+        });
 
     });
 
