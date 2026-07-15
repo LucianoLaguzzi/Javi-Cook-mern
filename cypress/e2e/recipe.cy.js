@@ -455,6 +455,7 @@ describe("Flujo de recetas", () => {
                     nombre: "test",
                 },
                 fecha:"2026-02-20T20:05:32.558+00:00",
+                comentarios: [],
         
             }
         }).as("getDetalles");
