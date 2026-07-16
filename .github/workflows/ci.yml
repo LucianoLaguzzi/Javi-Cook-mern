@@ -23,6 +23,12 @@ jobs:
         working-directory: frontend
         run: npm install
 
+      - name: Compilar frontend
+        working-directory: frontend
+        run: npm run build
+      
+      
+
         
 
       
