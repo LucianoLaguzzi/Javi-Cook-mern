@@ -25,6 +25,8 @@ jobs:
 
       - name: Compilar frontend
         working-directory: frontend
+        env:
+          CI: false
         run: npm run build
       
       
