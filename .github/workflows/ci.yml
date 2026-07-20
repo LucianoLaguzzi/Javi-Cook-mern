@@ -28,6 +28,11 @@ jobs:
         env:
           CI: false
         run: npm run build
+
+      - name: Levantar backend
+        run: npm start &
+
+
       
       
 
