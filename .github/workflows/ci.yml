@@ -35,7 +35,9 @@ jobs:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: npm start &
 
-
+      - name: Levantar frontend
+        working-directory: frontend
+        run: npm start &
 
 
 
