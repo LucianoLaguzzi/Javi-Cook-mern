@@ -29,8 +29,14 @@ jobs:
           CI: false
         run: npm run build
 
+# ver si anda el secret de github actions para mongodb
       - name: Levantar backend
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: npm start &
+
+
+
 
 
       
