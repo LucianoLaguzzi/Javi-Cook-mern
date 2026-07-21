@@ -29,7 +29,7 @@ jobs:
           CI: false
         run: npm run build
 
-# ver si anda el secret de github actions para mongodb
+    # ver si anda el secret de github actions para mongodb
       - name: Levantar backend
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
@@ -39,8 +39,13 @@ jobs:
         working-directory: frontend
         run: npm start &
 
+    # esperar que la aplicación inicie para asegurarse de que los tests de Cypress puedan ejecutarse correctamente
       - name: Esperar que la aplicación inicie
         run: sleep 10
+
+    # ejecutar los tests de Cypress
+      - name: Ejecutar Cypress
+        run: npm run cypress:run
 
         
 
