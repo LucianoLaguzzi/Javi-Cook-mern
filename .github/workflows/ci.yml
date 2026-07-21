@@ -39,7 +39,10 @@ jobs:
         working-directory: frontend
         run: npm start &
 
+      - name: Esperar que la aplicación inicie
+        run: sleep 10
 
+        
 
       
       
