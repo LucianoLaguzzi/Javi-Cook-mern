@@ -90,7 +90,7 @@ describe("Flujo de recetas", () => {
 
 
     it("Muestra correctamente los detalles de una receta", () => {
-         cy.visit("/inicio");
+        cy.visit("/inicio");
 
         cy.get("#recetas .tarjeta-receta")
             .first()

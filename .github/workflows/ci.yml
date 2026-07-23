@@ -48,10 +48,3 @@ jobs:
         run: npm run cypress:run
 
         
-
-      
-      
-
-        
-
-      

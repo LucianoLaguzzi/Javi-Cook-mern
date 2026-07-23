@@ -74,6 +74,32 @@ describe("Verificacion de perfil de usuario", () => {
 
     it("Navegacion a detalle de receta desde el panel de recetas en el perfil del usuario", () => {
 
+        //Intercept necesario para mostrar el detalle de la receta al hacer click en la receta mockeada
+        cy.intercept("GET", "/api/detalles/id1", {
+            statusCode: 200,
+            body: {
+                _id: "id1",
+                titulo: "Receta 1",
+                ingredientesCantidades: [],
+                pasos: [],
+                comentarios: [],
+                usuario: {
+                    _id: usuarioMock._id,
+                    nombre: usuarioMock.nombre,
+                    email: usuarioMock.email,
+                }
+            }
+        }).as("getDetalleReceta");
+
+        cy.intercept("GET", "**/api/valoraciones/**", {
+            statusCode: 200,
+            body: {
+                valoracionUsuario: 0
+            }
+        }).as("getValoracion");
+
+
+
         // Simular login
         cy.visit("/inicio", {
             onBeforeLoad(win) {
@@ -103,6 +129,8 @@ describe("Verificacion de perfil de usuario", () => {
         cy.get(".recetas-del-usuario").within(() => {
             cy.contains("Receta 1").should("be.visible").click();
         });
+
+        cy.wait("@getDetalleReceta");
 
         // Verificar que se navega a la página de detalle de la receta
         cy.url().should("include", "/detalle-receta/receta-1/id1");
@@ -264,7 +292,7 @@ describe("Verificacion de perfil de usuario", () => {
     });
 
 
-    it.only("Deberia permitir editar el perfil del usuario", () => {
+    it("Deberia permitir editar el perfil del usuario", () => {
 
         // Simular login
         cy.visit("/inicio", {
