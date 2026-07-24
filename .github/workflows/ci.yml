@@ -47,4 +47,13 @@ jobs:
       - name: Ejecutar Cypress
         run: npm run cypress:run
 
+        # subir los screenshots de Cypress como artifact de GitHub Actions
+      - name: Subir screenshots de Cypress
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
         
+
