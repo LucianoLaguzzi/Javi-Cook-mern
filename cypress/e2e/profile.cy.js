@@ -188,6 +188,7 @@ describe("Verificacion de perfil de usuario", () => {
                 win.localStorage.setItem("usuario", JSON.stringify(usuarioMock));
             }
         });
+        
         cy.intercept("GET", "**/api/notificaciones/123456789", {
             statusCode: 200,
             body: [
@@ -201,14 +202,64 @@ describe("Verificacion de perfil de usuario", () => {
             ]
         }).as("getNotificacionesUsuario");
 
+
+        cy.intercept("PUT", "**/api/notificaciones/marcarLeida/notificacion1", {
+            statusCode: 200,
+            body: {}
+        }).as("marcarLeida");
+
+        cy.intercept("GET", "**/api/detalles/id1", {
+            statusCode: 200,
+            body: {
+            _id: "id1",
+            titulo: "Receta 1",
+            categoria: "Veggie",
+            dificultad: "Intermedio",
+            tiempoPreparacion: 30,
+            ingredientesCantidades: ["100g"],
+            pasos: ["Paso 1"],
+            comentarios: [],
+            usuario: {
+                _id: usuarioMock._id,
+                nombre: usuarioMock.nombre,
+                email: usuarioMock.email,
+            },
+            imagen: "/images/default-imagen-perfil.jpg",
+            }
+        }).as("detalle");
+
+        cy.intercept("GET", "**/api/recetas/usuario/**", {
+            statusCode: 200,
+            body: []
+        }).as("getRecetasUsuario");
+
+        cy.intercept("GET", "**/api/valoraciones/**", {
+            statusCode: 200,
+            body: {
+                valoracionUsuario: 0
+            }
+        }).as("getValoracion");
+
+        cy.intercept("GET", `**/api/usuarios/${usuarioMock._id}/favoritos`, {
+            statusCode: 200,
+            body: []
+        }).as("getFavoritos");
+
+
         // Ir a la página de perfil
-        cy.visit("/perfil/123456789");
+        cy.visit(`/perfil/${usuarioMock._id}`);
         cy.wait("@getNotificacionesUsuario");
         // Verificar que se muestra la notificación
         cy.get(".icono-notificaciones").should("be.visible").click();
         cy.get(".lista-notificaciones").within(() => {
             cy.contains("@usuario1 comentó en tu receta 'Receta 1'").should("be.visible").click();
         });
+
+        cy.wait("@detalle");
+        cy.wait("@getValoracion");
+        
+        
+
         // Verificar que se navega al detalle de la receta al hacer click en la notificación
         cy.location("pathname").should("include", "/detalle-receta");
     });
