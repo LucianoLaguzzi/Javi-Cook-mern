@@ -181,6 +181,7 @@ describe("Verificacion de perfil de usuario", () => {
 
 
     //Probar que se muestran las notificaciones en el perfil del usuario
+    //(Interceptar las rutas obligatorias usadas para que se muestren las notificaciones)
     it("Deberia mostrar notificaciones en el perfil del usuario", () => {
         // Simular login
         cy.visit("/inicio", {
