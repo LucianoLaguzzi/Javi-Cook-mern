@@ -125,14 +125,14 @@ const DetalleReceta = () => {
 
         // 4. SOLO si hay usuario logueado
         if (usuarioEnSesion) {
-          // 👉 verificar propietario
+          //verificar propietario
           if (recetaData.usuario._id === usuarioEnSesion._id) {
             setEsPropietario(true);
           } else {
             setEsPropietario(false);
           }
 
-          // 👉 obtener valoración del usuario
+          //obtener valoración del usuario
           const valoracionResponse = await axios.get(
             `${API_BASE_URL}/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`
           );
