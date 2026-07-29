@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-07-28T19:42:33.865Z",
+    "end": "2026-07-28T19:42:36.898Z",
+    "duration": 3033,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "4911e0fa-d1c9-42fb-bce2-3e6671b8b6e4",
+      "title": "",
+      "fullFile": "cypress\\e2e\\pagination.cy.js",
+      "file": "cypress\\e2e\\pagination.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "62339329-bbe2-474b-bcc8-1b69855d2460",
+          "title": "Paginación de recetas",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Muestra solo 6 recetas por página y permite navegar",
+              "fullTitle": "Paginación de recetas Muestra solo 6 recetas por página y permite navegar",
+              "timedOut": null,
+              "duration": 2249,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const recetasMock = Array.from({\n  length: 12\n}, (_, i) => ({\n  _id: `${i + 1}`,\n  titulo: `Receta ${i + 1}`,\n  ingredientes: [\"ingrediente\"],\n  imagen: \"https://res.cloudinary.com/dzaqvpxqk/image/upload/v1773853635/recetas/ux6fcesvzxl3scqe0hmy.jpg\",\n  usuario: {\n    _id: \"123\",\n    nombre: \"test\"\n  },\n  categoria: \"Postre\",\n  tiempoPreparacion: 10,\n  dificultad: \"Fácil\"\n}));\ncy.intercept(\"GET\", \"**/api/recetas\", {\n  statusCode: 200,\n  body: recetasMock\n}).as(\"getRecetas\");\ncy.visit(\"/inicio\");\ncy.wait(\"@getRecetas\");\n// Página 1\ncy.get(\"#recetas .tarjeta-receta\").should(\"have.length\", 6);\ncy.get(\"#recetas\").within(() => {\n  cy.contains(\"Receta 1\").should(\"be.visible\");\n  cy.contains(\"Receta 6\").should(\"be.visible\");\n  cy.contains(\"Receta 7\").should(\"not.exist\");\n});\n// Ir a página 2\ncy.contains(\"button\", \"Siguiente\").click();\n// Página 2\ncy.get(\"#recetas .tarjeta-receta\").should(\"have.length\", 6);\ncy.get(\"#recetas\").within(() => {\n  cy.contains(\"Receta 7\").should(\"be.visible\");\n  cy.contains(\"Receta 12\").should(\"be.visible\");\n  cy.contains(\"Receta 6\").should(\"not.exist\");\n});\ncy.contains(\"button\", \"Siguiente\").should(\"be.disabled\");\n// Volver a página 1\ncy.contains(\"button\", \"Anterior\").click();\ncy.get(\"#recetas .tarjeta-receta\").should(\"have.length\", 6);\ncy.get(\"#recetas\").within(() => {\n  cy.contains(\"Receta 1\").should(\"be.visible\");\n  cy.contains(\"Receta 6\").should(\"be.visible\");\n});\ncy.contains(\"Receta 7\").should(\"not.exist\");",
+              "err": {},
+              "uuid": "89b80dc0-0c49-4759-9d97-3cb4100fe1fb",
+              "parentUUID": "62339329-bbe2-474b-bcc8-1b69855d2460",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "89b80dc0-0c49-4759-9d97-3cb4100fe1fb"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 2249,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

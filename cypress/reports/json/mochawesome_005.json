@@ -1,0 +1,124 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-07-28T19:43:29.559Z",
+    "end": "2026-07-28T19:43:35.903Z",
+    "duration": 6344,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "3bfa5b54-35f6-48ea-aebd-09f2a8ac84e2",
+      "title": "",
+      "fullFile": "cypress\\e2e\\smoke.cy.js",
+      "file": "cypress\\e2e\\smoke.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "42b08bc1-78ce-400b-8eeb-225e4f47ce98",
+          "title": "Smoke test - Home",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Muestra pantalla de inicio de app",
+              "fullTitle": "Smoke test - Home Muestra pantalla de inicio de app",
+              "timedOut": null,
+              "duration": 5888,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"/\");\ncy.contains(\"Cargando...\").should(\"be.visible\");\ncy.location(\"pathname\", {\n  timeout: 10000\n}).should(\"eq\", \"/inicio\");\ncy.contains(\"Cargando...\").should(\"not.exist\");",
+              "err": {},
+              "uuid": "fbf33ee3-ef59-4f31-a7e6-0b4c1311e046",
+              "parentUUID": "42b08bc1-78ce-400b-8eeb-225e4f47ce98",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Llega al home y muestra bien la info",
+              "fullTitle": "Smoke test - Home Llega al home y muestra bien la info",
+              "timedOut": null,
+              "duration": 271,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"/inicio\");\ncy.contains(\"Inspírate con recetas exclusivas\").should(\"be.visible\");\ncy.contains(\"Recetas disponibles\").should(\"be.visible\");\ncy.get(\"img[alt='Logotipo']\").should(\"be.visible\");\ncy.contains(\"Iniciar sesión\").should(\"be.visible\");\ncy.contains(\"Registrarse\").should(\"be.visible\");",
+              "err": {},
+              "uuid": "8580f841-f326-42aa-ba9c-efa1faf61d8a",
+              "parentUUID": "42b08bc1-78ce-400b-8eeb-225e4f47ce98",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "fbf33ee3-ef59-4f31-a7e6-0b4c1311e046",
+            "8580f841-f326-42aa-ba9c-efa1faf61d8a"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 6159,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-07-28T19:42:55.301Z",
+    "end": "2026-07-28T19:42:56.328Z",
+    "duration": 1027,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "46ce3c9d-3050-4537-a88b-0d3bded0ff3f",
+      "title": "",
+      "fullFile": "cypress\\e2e\\protectedRoutes.cy.js",
+      "file": "cypress\\e2e\\protectedRoutes.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "956c0d6a-9068-4d26-b8e4-5fabdeab1802",
+          "title": "Verificar rutas protegidas",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "verifica que este restringida la ruta",
+              "fullTitle": "Verificar rutas protegidas verifica que este restringida la ruta",
+              "timedOut": null,
+              "duration": 363,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.clearLocalStorage();\ncy.visit(\"/crear-receta\");\ncy.contains(\"Acceso restringido\").should(\"be.visible\");\ncy.get(\".btn-login\").should(\"be.visible\");",
+              "err": {},
+              "uuid": "461f2977-85ee-43b7-81b5-ede4694e245b",
+              "parentUUID": "956c0d6a-9068-4d26-b8e4-5fabdeab1802",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "verificar que se muestra la pagina con un usuario logueado",
+              "fullTitle": "Verificar rutas protegidas verificar que se muestra la pagina con un usuario logueado",
+              "timedOut": null,
+              "duration": 574,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"/inicio\");\ncy.window().then(win => {\n  win.localStorage.setItem(\"usuario\", JSON.stringify({\n    id: 1,\n    nombre: \"testing\",\n    email: \"test@test.com\",\n    token: \"fake-token\"\n  }));\n});\ncy.visit(\"/crear-receta\");\ncy.contains(\"Agregar nueva receta\").should(\"be.visible\");",
+              "err": {},
+              "uuid": "f2c9141b-c28f-441d-96c9-5e16f208683b",
+              "parentUUID": "956c0d6a-9068-4d26-b8e4-5fabdeab1802",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "461f2977-85ee-43b7-81b5-ede4694e245b",
+            "f2c9141b-c28f-441d-96c9-5e16f208683b"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 937,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

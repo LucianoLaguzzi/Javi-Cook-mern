@@ -47,7 +47,23 @@ jobs:
       - name: Ejecutar Cypress
         run: npm run cypress:run
 
-        # subir los screenshots de Cypress como artifact de GitHub Actions
+    # generar el reporte de Cypress aunque algún test falle
+      - name: Generar reporte de Cypress
+        if: always()
+        run: |
+          npm run report:merge
+          npm run report:generate
+
+    # subir el reporte como artifact
+      - name: Subir reporte de Cypress
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-report
+          path: cypress/reports/html
+          if-no-files-found: ignore
+
+    # subir los screenshots como artifact
       - name: Subir screenshots de Cypress
         if: always()
         uses: actions/upload-artifact@v4
@@ -55,5 +71,4 @@ jobs:
           name: cypress-screenshots
           path: cypress/screenshots
           if-no-files-found: ignore
-        
 

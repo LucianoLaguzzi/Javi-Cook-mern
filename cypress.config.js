@@ -9,6 +9,16 @@ export default defineConfig({
     openMode: 0,
   },
 
+  reporter: "mochawesome",
+
+  reporterOptions: {
+    reportDir: "cypress/reports/json",
+    overwrite: false,
+    html: false,
+    json: true,
+  },
+
+
   e2e: {
     baseUrl,
     

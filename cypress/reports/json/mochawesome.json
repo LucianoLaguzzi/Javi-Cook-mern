@@ -1,0 +1,124 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-07-28T19:42:26.280Z",
+    "end": "2026-07-28T19:42:29.964Z",
+    "duration": 3684,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "044bf034-c658-4b5c-9ed2-8bd663dc4a1a",
+      "title": "",
+      "fullFile": "cypress\\e2e\\auth.cy.js",
+      "file": "cypress\\e2e\\auth.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "e86c6e85-57c5-4668-81ad-a2e3998477f4",
+          "title": "Login testing",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Login form",
+              "fullTitle": "Login testing Login form",
+              "timedOut": null,
+              "duration": 2508,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"/login\");\ncy.location(\"pathname\").should(\"eq\", \"/login\");\ncy.contains(\"Login\").should(\"be.visible\");\ncy.get(\"input[placeholder='Usuario']\").should(\"be.visible\").click().type(\"test\");\ncy.get(\"input[placeholder='Contraseña']\").should(\"be.visible\").click().type(\"test\");\ncy.get(\"button[type='submit']\").should(\"be.visible\").click();\ncy.location(\"pathname\").should(\"eq\", \"/inicio\");\ncy.contains(\"Bienvenido\");\ncy.window().then(win => {\n  const usuario = JSON.parse(win.localStorage.getItem(\"usuario\"));\n  expect(usuario).to.have.property(\"email\");\n  expect(usuario.email).to.eq(\"test@test.com\");\n});",
+              "err": {},
+              "uuid": "eb21ee94-bd9f-42db-b304-b11521be50ee",
+              "parentUUID": "e86c6e85-57c5-4668-81ad-a2e3998477f4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Login invalido",
+              "fullTitle": "Login testing Login invalido",
+              "timedOut": null,
+              "duration": 980,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(\"/login\");\ncy.location(\"pathname\").should(\"eq\", \"/login\");\ncy.contains(\"Login\").should(\"be.visible\");\ncy.get(\"input[placeholder='Usuario']\").should(\"be.visible\").click().type(\"error\");\ncy.get(\"input[placeholder='Contraseña']\").should(\"be.visible\").click().type(\"invalidPass\");\ncy.get(\"button[type='submit']\").should(\"be.visible\").click();\ncy.get(\".error-container\").should(\"be.visible\").and(\"contain\", \"Usuario o contraseña incorrectos\");",
+              "err": {},
+              "uuid": "ca10e593-51f8-4d18-bbb5-cb49fb193ccf",
+              "parentUUID": "e86c6e85-57c5-4668-81ad-a2e3998477f4",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "eb21ee94-bd9f-42db-b304-b11521be50ee",
+            "ca10e593-51f8-4d18-bbb5-cb49fb193ccf"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 3488,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}
