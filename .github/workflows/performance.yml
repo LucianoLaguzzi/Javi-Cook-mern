@@ -1,0 +1,36 @@
+name: Performance Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias del backend
+        run: npm install
+
+      - name: Levantar backend
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: npm start &
+
+      - name: Esperar que el backend inicie
+        run: sleep 10
+
+      - name: Instalar k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Ejecutar test de recetas
+        uses: grafana/run-k6-action@v1
+        with:
+          path: k6/recipes-load.js
