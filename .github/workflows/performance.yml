@@ -2,6 +2,18 @@ name: Performance Tests
 
 on:
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Seleccionar test de k6"
+        required: true
+        default: "recipes-load"
+        type: choice
+        options:
+          - smoke
+          - recipes-load
+          - login-load
+          - user-flow
+          - profile-flow
 
 jobs:
   performance:
@@ -30,7 +42,7 @@ jobs:
       - name: Instalar k6
         uses: grafana/setup-k6-action@v1
 
-      - name: Ejecutar test de recetas
+      - name: Ejecutar test de k6
         uses: grafana/run-k6-action@v1
         with:
-          path: k6/recipes-load.js
+          path: k6/${{ inputs.test }}.js
