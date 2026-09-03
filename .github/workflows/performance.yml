@@ -44,15 +44,14 @@ jobs:
         uses: grafana/setup-k6-action@v1
 
       - name: Ejecutar test de k6
-        uses: grafana/run-k6-action@v1
-        with:
-          path: k6/${{ inputs.test }}.js
-          flags: --summary-export=k6-results.json
+        run: |
+          k6 run k6/${{ inputs.test }}.js | tee k6-results.txt
 
       - name: Subir resultado de k6
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: k6-result-${{ inputs.test }}
-          path: k6-results.json
+          path: k6-results.txt
           if-no-files-found: error
+
