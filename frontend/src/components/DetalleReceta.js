@@ -1148,58 +1148,73 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
       <div className="body-detalles">
         <div className="encabezado">
           <div className="barra-navegacion">
-            <img 
-              src="/images/JaviCook_logo.png" 
-              alt="Logotipo" 
-              className="logo-principal"
-              onClick={handleLogoClick}
-              style={{ cursor: "pointer" }}
 
-            />
-
-            {/* Placeholder para mantener el layout */}
-              {!isLogged && (
-                <div className="nav-left-placeholder"></div>
-            )}
-
-            {isLogged && (
-              <span className="bienvenido-text">
-                Bienvenido, {usuarioEnSesion.nombre}!
-              </span>
-            )}
-
-            <span class="subtitulo-detalle-receta"> Detalles de la receta </span>
-
-
-            {isLogged ? (
+            <div className="nav-left">
               <img
-                  src="/images/cubiertos-cruzados.png"
-                  className="img-cerrar-sesion"
-                  title="Cerrar Sesión"
-                  onClick={() => {
-                      localStorage.removeItem('usuario');
-                      navigate('/inicio');
-                      window.scrollTo(0, 0);
-                  }}
-                  alt="Cerrar sesión"
+                  src="/images/JaviCook_logo.png"
+                  alt="Logotipo"
+                  className="logo-principal"
+                  onClick={handleLogoClick}
               />
-            ) : (
-              <div className="auth-links">
-                  <span
-                      className="auth-link"
-                      onClick={() => navigate('/login')}
-                  >
-                      Iniciar sesión
-                  </span>
-                  <span
-                      className="auth-link"
-                      onClick={() => navigate('/registro')}
-                  >
-                      Registrarse
-                  </span>
-              </div>
-            )}
 
+              {isLogged && (
+                  <div className="usuario-nav">
+                      <span className="bienvenido-text">
+                          Bienvenido,
+                      </span>
+
+                      <button
+                          className="link-al-perfil"
+                          title="Ir al perfil"
+                          onClick={() => navigate(`/perfil/${usuarioEnSesion._id}`)}
+                      >
+                          {usuarioEnSesion.nombre}
+                      </button>
+                  </div>
+              )}
+            </div>
+
+            <div className="nav-center">
+                <span className="subtitulo">
+                    Detalles de la receta
+                </span>
+            </div>
+
+            <div className="nav-right">
+              {isLogged ? (
+                  <button
+                      className="logout-button"
+                      title="Cerrar sesión"
+                      onClick={() => {
+                          localStorage.removeItem('usuario');
+                          navigate('/inicio');
+                          window.scrollTo(0, 0);
+                      }}
+                  >
+                      <img
+                          src="/images/cubiertos-cruzados.png"
+                          className="img-cerrar-sesion"
+                          alt="Cerrar sesión"
+                      />
+                  </button>
+              ) : (
+                  <div className="auth-links">
+                      <button
+                          className="auth-link"
+                          onClick={() => navigate('/login')}
+                      >
+                          Iniciar sesión
+                      </button>
+
+                      <button
+                          className="auth-link"
+                          onClick={() => navigate('/registro')}
+                      >
+                          Registrarse
+                      </button>
+                  </div>
+              )}
+            </div>
           </div>
         </div>
   
@@ -1215,218 +1230,238 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                   </div>
                 )}
 
-              <div className="imagen-wrapper">
+              <div className="hero-detalle-receta">
 
-                <div className={`imagen-contenedor ${esPropietario ? "editable" : ""}`}>
 
-                  <img
-                    id="imagen-receta-preview"
-                    src={receta.imagen}
-                    alt={receta.titulo}
-                    className="panel-img"
-                  />
+                <div className="imagen-wrapper">
 
-                  <div className="overlay-imagen">
+                  <div className={`imagen-contenedor ${esPropietario ? "editable" : ""}`}>
 
-                    {/* TITULO */}
-                    <div className="div-detalles-titulo">
+                    <img
+                      id="imagen-receta-preview"
+                      src={receta.imagen}
+                      alt={receta.titulo}
+                      className="panel-img"
+                    />
 
-                      {!tituloEditable ? (
-                        <>
-                          <p className="detalles-titulo">
-                            {receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}
-                          </p>
+                    <div className="overlay-imagen">
 
-                          {esPropietario && (
-                            <a className="btn-editar-titulo" onClick={cambiarTitulo}>
-                              <i className="fas fa-pencil-alt" title="Editar titulo"></i>
-                            </a>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <input
-                            className="nuevo-titulo"
-                            value={receta.titulo}
-                            onChange={(e) =>
-                              setReceta({ ...receta, titulo: e.target.value })
-                            }
-                          />
-
-                          <div className="cancel-ok-titulo">
-                            <a className="btn-cancelar-titulo" onClick={cancelarTitulo}>
-                              <i className="fas fa-times-circle"></i>
-                            </a>
-                            <a className="btn-guardar-titulo" onClick={guardarTitulo}>
-                              <i className="fas fa-check-circle"></i>
-                            </a>
-                          </div>
-                        </>
-                      )}
+                      {/* USUARIO Y FECHA */}
+                      <div className="detalles-usuario-fecha">
+                        <span>{receta.usuario?.nombre}</span>
+                        <span>{new Date(receta.fecha).toLocaleDateString()}</span>
+                      </div>
 
                     </div>
 
-                    {/* USUARIO Y FECHA */}
-                    <div className="detalles-usuario-fecha">
-                      <span>{receta.usuario?.nombre}</span>
-                      <span>{new Date(receta.fecha).toLocaleDateString()}</span>
-                    </div>
+                    {esPropietario && (
+                      <label
+                        className="overlay-cambiar-imagen"
+                        title="Cambiar imagen de la receta"
+                      >
+                        <i className="fa fa-camera"></i>
+                        <input
+                          ref={inputFileRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={manejarCambioImagenPrincipal}
+                          hidden
+                        />
+                      </label>
+                    )}
 
                   </div>
 
-                  {esPropietario && (
-                    <label
-                      className="overlay-cambiar-imagen"
-                      title="Cambiar imagen de la receta"
-                    >
-                      <i className="fa fa-camera"></i>
-                      <input
-                        ref={inputFileRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={manejarCambioImagenPrincipal}
-                        hidden
-                      />
-                    </label>
-                  )}
+                  {/* 👇 CROP ABAJO DE LA IMAGEN */}
+                  {mostrarCropper && previewImagen && (
+                    <div className="modal-cropper">
 
-                </div>
+                      <div className="cropper-contenido">
 
-                {/* 👇 CROP ABAJO DE LA IMAGEN */}
-                {mostrarCropper && previewImagen && (
-                  <div className="modal-cropper">
-
-                    <div className="cropper-contenido">
-
-                      <Cropper
-                        image={previewImagen}
-                        crop={crop}
-                        zoom={zoom}
-                        aspect={16 / 9}
-                        onCropChange={setCrop}
-                        onZoomChange={setZoom}
-                        onCropComplete={handleCropComplete}
-                      />
-
-                      <div className="controles-cropper">
-
-
-                        <label className="label-zoom">
-                          Zoom
-                        </label>
-
-                        <input
-                          type="range"
-                          min={1}
-                          max={3}
-                          step={0.1}
-                          value={zoom}
-                          onChange={(e) => setZoom(e.target.value)}
+                        <Cropper
+                          image={previewImagen}
+                          crop={crop}
+                          zoom={zoom}
+                          aspect={4 / 3}
+                          onCropChange={setCrop}
+                          onZoomChange={setZoom}
+                          onCropComplete={handleCropComplete}
                         />
 
-                        <div className="acciones-cropper">
+                        <div className="controles-cropper">
 
-                          <button
-                            className="btn-crop-cancelar"
-                            onClick={cancelarCambioImagen}
-                          >
-                            Cancelar
-                          </button>
 
-                          <button
-                            className="btn-crop-aplicar"
-                            onClick={aplicarRecorte}
-                          >
-                            Aplicar recorte
-                          </button>
+                          <label className="label-zoom">
+                            Zoom
+                          </label>
+
+                          <input
+                            type="range"
+                            min={1}
+                            max={3}
+                            step={0.1}
+                            value={zoom}
+                            onChange={(e) => setZoom(e.target.value)}
+                          />
+
+                          <div className="acciones-cropper">
+
+                            <button
+                              className="btn-crop-cancelar"
+                              onClick={cancelarCambioImagen}
+                            >
+                              Cancelar
+                            </button>
+
+                            <button
+                              className="btn-crop-aplicar"
+                              onClick={aplicarRecorte}
+                            >
+                              Aplicar recorte
+                            </button>
+
+                          </div>
 
                         </div>
 
                       </div>
 
                     </div>
+                  )}
 
-                  </div>
-                )}
+                  {esPropietario && mostrarGuardarImagen && (
+                    <div className="acciones-imagen">
 
-                {esPropietario && mostrarGuardarImagen && (
-                  <div className="acciones-imagen">
+                      <button
+                        className="boton-guardar-imagen"
+                        onClick={guardarNuevaImagenPrincipal}
+                      >
+                        Guardar nueva imagen
+                      </button>
 
-                    <button
-                      className="boton-guardar-imagen"
-                      onClick={guardarNuevaImagenPrincipal}
-                    >
-                      Guardar nueva imagen
-                    </button>
+                      <button
+                        className="boton-cancelar-imagen"
+                        onClick={cancelarCambioImagen}
+                      >
+                        Cancelar
+                      </button>
 
-                    <button
-                      className="boton-cancelar-imagen"
-                      onClick={cancelarCambioImagen}
-                    >
-                      Cancelar
-                    </button>
+                    </div>
+                  )}
 
-                  </div>
-                )}
+                </div>
 
-              </div>
-  
-              <p className="detalles-tiempo-dificultad">
-                <span>Tiempo de preparación: {receta.tiempoPreparacion}' <i class="far fa-clock"/></span>
-                <span className={`detalles-dificultad-${receta.dificultad?.toLowerCase()}`}>{receta.dificultad}</span>
-              </p>
-  
-              <div className="detalles-categoria">
-                <p>Categoría:</p>
-                <span>{receta.categoria}</span>
-              </div>
-  
-              <div className="detalles-cantidades">
-                <p>Ingredientes</p>
-                {!ingredientesEditable ? (
-                    <>
-                        <div className='valores-cantidad'>
-                            {ingredientesCantidades.split('\n').map((ingrediente, index) => { //Separa cada linea con una "," como un elemento nuevo.
-                                const partes = ingrediente.split(':'); //Separa cada ingrediente con su cantidad , ingrediente:cantidad por cada linea.
-                                if (partes.length === 2) { //Ejemplo: partes = ["Harina", "200g"]
-                                    return (
-                                    <div key={index}>
-                                      {capitalizarPrimeraLetra(partes[0].trim())}
-                                      : 
-                                      <span className="cantidad-ingrediente">
-                                        {partes[1].trim()}
-                                      </span>
-                                    </div>
-                                  );
-                                }
-                                return <div key={index}>{ingrediente}</div>; 
-                            })}
-                        </div>
+                <div className="info-hero-receta">
+
+                  {/* TITULO */}
+                  <div className="div-detalles-titulo">
+                    {!tituloEditable ? (
+                      <>
+                        <p className="detalles-titulo">
+                          {receta.titulo ? capitalizarPrimeraLetra(receta.titulo) : ''}
+                        </p>
+
                         {esPropietario && (
-                            <a className='btn-editar-ingredientes' onClick={cambiarIngredientes}>
-                                <i className="fas fa-pencil-alt" title='Editar ingredientes'></i>
-                            </a>
+                          <a className="btn-editar-titulo" onClick={cambiarTitulo}>
+                            <i className="fas fa-pencil-alt" title="Editar titulo"></i>
+                          </a>
                         )}
-                    </>
-                ) : (
-                    <>
-                        <textarea
-                            ref={textareaRef}
-                            className='text-area-ingredientes'
-                            value={ingredientesCantidades}
-                            onChange={(e) => setIngredientesCantidades(e.target.value)}
-                            onInput={autoResize}
+                      </>
+                    ) : (
+                      <>
+                        <input
+                          className="nuevo-titulo"
+                          value={receta.titulo}
+                          onChange={(e) =>
+                            setReceta({ ...receta, titulo: e.target.value })
+                          }
                         />
-                        <div className='cancel-ok-ingredientes'>
-                            <a className='btn-cancelar-ingredientes' onClick={cancelarIngredientes}>
-                                <i className="fas fa-times-circle"></i>
-                            </a>
-                            <a className='btn-guardar-ingredientes' onClick={guardarIngredientes}>
-                                <i className="fas fa-check-circle"></i>
-                            </a>
+
+                        <div className="cancel-ok-titulo">
+                          <a className="btn-cancelar-titulo" onClick={cancelarTitulo}>
+                            <i className="fas fa-times-circle"></i>
+                          </a>
+                          <a className="btn-guardar-titulo" onClick={guardarTitulo}>
+                            <i className="fas fa-check-circle"></i>
+                          </a>
                         </div>
-                    </>
-                )}
+                      </>
+                    )}
+
+                  </div>
+  
+                  <div className="meta-detalle-receta">
+
+                    <span className="meta-tiempo-detalle">
+                        <i className="far fa-clock"></i>
+
+                        <span className="meta-tiempo-texto">
+                            <small>Tiempo</small>
+                            <strong>{receta.tiempoPreparacion} min</strong>
+                        </span>
+                    </span>
+
+                    <span
+                        className={`meta-dificultad-detalle meta-dificultad-${receta.dificultad?.toLowerCase()}`}
+                    >
+                        {receta.dificultad}
+                    </span>
+
+                </div>
+      
+                  <div className="detalles-categoria">
+                    <p>Categoría:</p>
+                    <span>{receta.categoria}</span>
+                  </div>
+      
+                  <div className="detalles-cantidades">
+                    <p>Ingredientes</p>
+                    {!ingredientesEditable ? (
+                        <>
+                            <div className='valores-cantidad'>
+                                {ingredientesCantidades.split('\n').map((ingrediente, index) => { //Separa cada linea con una "," como un elemento nuevo.
+                                    const partes = ingrediente.split(':'); //Separa cada ingrediente con su cantidad , ingrediente:cantidad por cada linea.
+                                    if (partes.length === 2) { //Ejemplo: partes = ["Harina", "200g"]
+                                        return (
+                                        <div key={index}>
+                                          {capitalizarPrimeraLetra(partes[0].trim())}
+                                          : 
+                                          <span className="cantidad-ingrediente">
+                                            {partes[1].trim()}
+                                          </span>
+                                        </div>
+                                      );
+                                    }
+                                    return <div key={index}>{ingrediente}</div>; 
+                                })}
+                            </div>
+                            {esPropietario && (
+                                <a className='btn-editar-ingredientes' onClick={cambiarIngredientes}>
+                                    <i className="fas fa-pencil-alt" title='Editar ingredientes'></i>
+                                </a>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <textarea
+                                ref={textareaRef}
+                                className='text-area-ingredientes'
+                                value={ingredientesCantidades}
+                                onChange={(e) => setIngredientesCantidades(e.target.value)}
+                                onInput={autoResize}
+                            />
+                            <div className='cancel-ok-ingredientes'>
+                                <a className='btn-cancelar-ingredientes' onClick={cancelarIngredientes}>
+                                    <i className="fas fa-times-circle"></i>
+                                </a>
+                                <a className='btn-guardar-ingredientes' onClick={guardarIngredientes}>
+                                    <i className="fas fa-check-circle"></i>
+                                </a>
+                            </div>
+                        </>
+                    )}
+                  </div>
+                </div>
               </div>
               
               

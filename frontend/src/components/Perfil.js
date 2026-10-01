@@ -319,31 +319,45 @@ const Perfil = () => {
             <div className="body-pefil">
                 <div className="encabezado">
                     <div className="barra-navegacion">
-                        <img src="../images/JaviCook_logo.png" 
-                            alt="Logotipo" 
-                            className="logo-principal" 
-                            onClick={handleLogoClick}
-                            style={{ cursor: "pointer" }}
-                        />
 
-                        <div className="bienvenido-text">
-                            <span >Bienvenido, {usuarioEnSesion?.nombre}!</span>
+                        <div className="nav-left">
+                            <img
+                                src="../images/JaviCook_logo.png"
+                                alt="Logotipo"
+                                className="logo-principal"
+                                onClick={handleLogoClick}
+                            />
+
+                            <div className="usuario-nav">
+    <span className="nombre-usuario-nav">
+        {usuarioEnSesion?.nombre}
+    </span>
+</div>
                         </div>
 
-                        <div className="subtitulo-perfil">
-                            <span > Pefil del usuario </span>
+                        <div className="nav-center">
+                            <span className="subtitulo">
+                                Perfil del usuario
+                            </span>
                         </div>
 
-                        <img
-                            src="../images/cubiertos-cruzados.png"
-                            className="img-cerrar-sesion"
-                            alt="Cerrar Sesión"
-                            title="Cerrar sesión"
-                            onClick={() => {
-                                localStorage.removeItem('usuario');
-                                navigate('/inicio', { replace: true });
-                            }}
-                        />
+                        <div className="nav-right">
+                            <button
+                                className="logout-button"
+                                title="Cerrar sesión"
+                                onClick={() => {
+                                    localStorage.removeItem('usuario');
+                                    navigate('/inicio', { replace: true });
+                                }}
+                            >
+                                <img
+                                    src="../images/cubiertos-cruzados.png"
+                                    className="img-cerrar-sesion"
+                                    alt="Cerrar sesión"
+                                />
+                            </button>
+                        </div>
+
                     </div>
                 </div>
 

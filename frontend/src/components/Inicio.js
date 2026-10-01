@@ -29,12 +29,18 @@ const Inicio = () => {
     const [favoritos, setFavoritos] = useState([]);
     const [recetasFiltradas, setRecetasFiltradas] = useState([]); // Recetas después del filtrado
     const [paginaActual, setPaginaActual] = useState(1); // Página actual
-    const [recetasPorPagina] = useState(6); // Número de recetas a mostrar por página
+    const [recetasPorPagina, setRecetasPorPagina] = useState(6); // Número de recetas a mostrar por página
     const [menuVisible, setMenuVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // Estado de carga al seleccionar aleatoriamente
 
+    const [paginaFavoritos, setPaginaFavoritos] = useState(1); //Paginacion para favoritos
+
+
     const inputRef = useRef(null); // Referencia al campo de texto de búsqueda
 
+    const panelRecetasRef = useRef(null);
+
+    const favoritosSectionRef = useRef(null);
 
     //Calculos para mostrar bien las cantidades de recetas en la paginacion
     const indexOfLastReceta = paginaActual * recetasPorPagina; // Última receta en la página actual
@@ -43,12 +49,36 @@ const Inicio = () => {
 
     //Calculos para manejar la paginacion bien
     const totalRecetas = recetasFiltradas.length; // Total de recetas filtradas
-    const totalPaginas = Math.max(1, Math.ceil(totalRecetas / recetasPorPagina)); // Asegurar que sea al menos 1 // Calcular el total de páginas
+    const totalPaginas = Math.max(1,Math.ceil(totalRecetas / Math.max(1, recetasPorPagina))); // Asegurar que sea al menos 1 // Calcular el total de páginas
+
+
+    const recetasFavoritas = recetas.filter(receta =>
+        favoritos.includes(receta._id)
+    );
+
+    const indexOfLastFavorito =
+        paginaFavoritos * recetasPorPagina;
+
+    const indexOfFirstFavorito =
+        indexOfLastFavorito - recetasPorPagina;
+
+    const favoritosActuales = recetasFavoritas.slice(
+        indexOfFirstFavorito,
+        indexOfLastFavorito
+    );
+
+    const totalPaginasFavoritos = Math.max(
+        1,
+        Math.ceil(recetasFavoritas.length / recetasPorPagina)
+    );
+
+
+
+
 
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
 
-    // Llenar con placeholders si hay menos de 3 recetas
-    const tarjetasFaltantes = 3 - topRecetas.length;
+ 
 
     //Precargar sonidos:
     const sonidos = {
@@ -100,10 +130,130 @@ const Inicio = () => {
     }, []);
 
 
+
+    useEffect(() => {
+        const panel = panelRecetasRef.current;
+
+        if (!panel) return;
+
+        const actualizarCantidadPorPagina = () => {
+            const estilos = getComputedStyle(panel);
+
+            const columnas = estilos.gridTemplateColumns
+                .split(/\s+/)
+                .filter(valor => valor && valor !== 'none')
+                .length;
+
+            // Nunca permitir una medición inválida.
+            if (!Number.isFinite(columnas) || columnas < 1) {
+                return;
+            }
+
+            const nuevaCantidad =
+                columnas === 1
+                    ? 6
+                    : Math.min(columnas * 2, 12);
+
+            setRecetasPorPagina(prev =>
+                prev === nuevaCantidad ? prev : nuevaCantidad
+            );
+        };
+
+        actualizarCantidadPorPagina();
+
+        const observer = new ResizeObserver(() => {
+            actualizarCantidadPorPagina();
+        });
+
+        observer.observe(panel);
+
+        return () => observer.disconnect();
+    }, [
+        loading,
+        recetasFiltradas.length,
+        paginaActual,
+        recetasPorPagina
+    ]);
+
+
+    useEffect(() => {
+        setPaginaActual(pagina => {
+            if (pagina < 1) {
+                return 1;
+            }
+
+            if (pagina > totalPaginas) {
+                return totalPaginas;
+            }
+
+            return pagina;
+        });
+    }, [totalPaginas]);
+
+
+    useEffect(() => {
+        setPaginaFavoritos(pagina => {
+            if (pagina < 1) {
+                return 1;
+            }
+
+            if (pagina > totalPaginasFavoritos) {
+                return totalPaginasFavoritos;
+            }
+
+            return pagina;
+        });
+    }, [totalPaginasFavoritos]);
+
+
+
     // Efecto para mostrar bien la seccion de recetas al cambiar la pagina en paginacion
     useEffect(() => {
         window.scrollTo(0, 0); // Desplazar hacia la parte superior
     }, [paginaActual]);
+
+    
+
+
+    useEffect(() => {
+        const panel = panelRecetasRef.current;
+
+        if (!panel) return;
+
+        const actualizarCantidadPorPagina = () => {
+            const columnas = getComputedStyle(panel)
+                .gridTemplateColumns
+                .split(/\s+/)
+                .filter(Boolean)
+                .length;
+
+            let nuevaCantidad;
+
+            if (columnas === 1) {
+                // En celular mantenemos 6 para no obligar a pasar
+                // de página demasiado seguido.
+                nuevaCantidad = 6;
+            } else {
+                // Hasta dos filas por página.
+                nuevaCantidad = Math.min(columnas * 2, 12);
+            }
+
+            setRecetasPorPagina(prev =>
+                prev === nuevaCantidad ? prev : nuevaCantidad
+            );
+        };
+
+        actualizarCantidadPorPagina();
+
+        const observer = new ResizeObserver(actualizarCantidadPorPagina);
+        observer.observe(panel);
+
+        return () => observer.disconnect();
+    }, [loading, recetasFiltradas.length]);
+
+
+
+
 
 
     // Manejar el toggle de favoritos
@@ -348,25 +498,7 @@ const Inicio = () => {
         }
     };
 
-    // Función para generar tarjetas vacías si faltan recetas
-    const generarTarjetasPlaceholder = (num) => {
-    const placeholders = [];
-    for (let i = 0; i < num; i++) {
-        placeholders.push(
-            <div key={`placeholder-${i}`} className="tarjeta-receta">
-                <div className="imagen-contenedor">
-                    <img src="images/default-image.jpg" alt="Receta no valorada" />
-                </div>
-                <h2>Sin título</h2>
-                <p className="default-text">
-                No hay suficientes recetas valoradas para formar un Top 3 en este momento. 
-                Tu opinión ayuda a otros usuarios a encontrar recetas de calidad, aprovecha y valora las recetas que hayas probado para ser parte de nuestra comunidad y mejorar la experiencia de todos! 
-                </p>
-            </div>
-        );
-    }
-    return placeholders;
-    };
+    
 
 
     const handleLogoClick = () => {
@@ -380,6 +512,27 @@ const Inicio = () => {
             behavior: "smooth"
         });
     };
+
+
+    const cambiarPaginaFavoritos = (nuevaPagina) => {
+        setPaginaFavoritos(nuevaPagina);
+
+        setTimeout(() => {
+            if (!favoritosSectionRef.current) return;
+
+            const posicion =
+                favoritosSectionRef.current.getBoundingClientRect().top +
+                window.scrollY -
+                110;
+
+            window.scrollTo({
+                top: posicion,
+                behavior: 'smooth'
+            });
+        }, 50);
+    };
+
+
     
 
     const generarSlug = (texto) =>
@@ -399,66 +552,82 @@ const Inicio = () => {
 
             <div className="body-main">
                 <div className="main-content">
+
+
+
+
+
+
+ {/* CAMBIOS VAN A COMENZAR ACA*/}   
                     <div className="encabezado">
                         <div className="barra-navegacion">
-                            <img
-                                src="../images/JaviCook_logo.png"
-                                alt="Logotipo"
-                                className="logo-principal"
-                                onClick={handleLogoClick}
-                                style={{ cursor: "pointer" }}
-                            />
 
-                            {isLogged && (
-                                <>
-                                    <span className="bienvenido-text">Bienvenido, </span>
-                                    <button
-                                        className="link-al-perfil"
-                                        title="Ir al perfil"
-                                        onClick={() => navigate(`/perfil/${usuarioEnSesion._id}`)}
-                                    >
-                                        {usuario.nombre} !
-                                    </button>
-                                </>
-                            )}
-
-                            {/* Placeholder para mantener el layout si no se esta logueado */}
-                            {!isLogged && (
-                                <div className="nav-left-placeholder"></div>
-                            )}
-
-                            <span className="subtitulo">
-                                Inspírate con recetas exclusivas
-                            </span>
-
-                            {/* Zona derecha */}
-                            {isLogged ? (
+                            <div className="nav-left">
                                 <img
-                                    src="/images/cubiertos-cruzados.png"
-                                    className="img-cerrar-sesion"
-                                    title="Cerrar Sesión"
-                                    onClick={() => {
-                                        localStorage.removeItem('usuario');
-                                        navigate('/login');
-                                    }}
-                                    alt="Cerrar sesión"
+                                    src="../images/JaviCook_logo.png"
+                                    alt="Logotipo"
+                                    className="logo-principal"
+                                    onClick={handleLogoClick}
                                 />
-                            ) : (
-                                <div className="auth-links">
-                                    <span
-                                        className="auth-link"
-                                        onClick={() => navigate('/login')}
+
+                                {isLogged && (
+                                    <div className="usuario-nav">
+                                        <span className="bienvenido-text">
+                                            Bienvenido,
+                                        </span>
+
+                                        <button
+                                            className="link-al-perfil"
+                                            title="Ir al perfil"
+                                            onClick={() => navigate(`/perfil/${usuarioEnSesion._id}`)}
+                                        >
+                                            {usuario.nombre}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="nav-center">
+                                <span className="subtitulo">
+                                    Inspírate con recetas exclusivas
+                                </span>
+                            </div>
+
+                            <div className="nav-right">
+                                {isLogged ? (
+                                    <button
+                                        className="logout-button"
+                                        title="Cerrar sesión"
+                                        onClick={() => {
+                                            localStorage.removeItem('usuario');
+                                            navigate('/login');
+                                        }}
                                     >
-                                        Iniciar sesión
-                                    </span>
-                                    <span
-                                        className="auth-link"
-                                        onClick={() => navigate('/registro')}
-                                    >
-                                        Registrarse
-                                    </span>
-                                </div>
-                            )}
+                                        <img
+                                            src="/images/cubiertos-cruzados.png"
+                                            className="img-cerrar-sesion"
+                                            alt="Cerrar sesión"
+                                        />
+                                    </button>
+                                ) : (
+                                    <div className="auth-links">
+                                        <button
+                                            className="auth-link"
+                                            onClick={() => navigate('/login')}
+                                        >
+                                            Iniciar sesión
+                                        </button>
+
+                                        <button
+                                            className="auth-link"
+                                            onClick={() => navigate('/registro')}
+                                        >
+                                            Registrarse
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
                         </div>
                     </div>
 
@@ -487,6 +656,20 @@ const Inicio = () => {
                             )}
                         </div>
                     </div>
+
+
+
+  {/* CAMBIOS TERMINAN ACA*/}
+
+
+
+
+
+
+
+
+
+
 
                     <main className="principal">
 
@@ -520,7 +703,7 @@ const Inicio = () => {
                         {/* Sección de recetas disponibles */}
                         <section id='recetas' className="recetas">
                             <div className="titulo-section-recetas">
-                                <h2>Recetas disponibles</h2>
+                                <h2 className="titulo-seccion">Recetas disponibles</h2>
                             </div>
 
                             {loading ? (
@@ -533,9 +716,11 @@ const Inicio = () => {
                                     <span className='mensaje-no-recetas'>Aún no tienes recetas. ¡Empieza agregando una!</span>
                                 ) : (
                                     recetasActuales.length > 0 ? ( // Si hay recetas, y recetasActuales tiene coincidencias
-                                        <div className="panel-recetas">
+                                        <div className="panel-recetas panel-recetas-inicio"
+                                            ref={panelRecetasRef}
+                                        >
                                             {recetasActuales.map((receta) => (
-                                                <div key={receta.id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")} >
+                                                <div key={receta.id} className="tarjeta-receta tarjeta-inicio" onMouseEnter={() => reproducirSonido("card")} >
                                                     <div className="imagen-contenedor-chica">
                                                         <img src={receta.imagen} alt={receta.titulo} />
                                                         <div className="info-imagen">
@@ -553,19 +738,43 @@ const Inicio = () => {
                                                     </div>
                                                     <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
                                                     <p>Categoría: {receta.categoria}</p>
-                                                    <p>
-                                                        <span className="tiempo">Tiempo de preparación: {receta.tiempoPreparacion}'</span>
-                                                        <i className="far fa-clock"></i> 
-                                                        <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>{receta.dificultad}</span>
-                                                    </p>
+
+
+                                                    <div className="meta-receta">
+
+
+                                                       <span className="dato-tiempo">
+                                                            <i className="far fa-clock"></i>
+
+                                                            <span className="texto-tiempo">
+                                                                <small>Tiempo</small>
+                                                                <strong>{receta.tiempoPreparacion} min</strong>
+                                                            </span>
+                                                        </span>
+
+
+
+                                                        <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>
+                                                            {receta.dificultad}
+                                                        </span>
+                                                    </div>
+
+
+
+
+                                                    
                                                     <div className="valoracion">
-                                                        <p>Valoración Promedio</p>
                                                         <div className="estrellas">
                                                             {[...Array(5)].map((_, i) => (
-                                                                <i key={i} className={`fa${i < Math.round(receta.valoracion) ? 's' : 'r'} fa-star`}></i>
+                                                                <i
+                                                                    key={i}
+                                                                    className={`fa${i < Math.round(receta.valoracion) ? 's' : 'r'} fa-star`}
+                                                                ></i>
                                                             ))}
                                                         </div>
                                                     </div>
+
+
                                                     <a
                                                         className="ver-mas"
                                                         onClick={() =>
@@ -585,21 +794,23 @@ const Inicio = () => {
                             )}
 
                             {/* Controles de Paginación */}
-                            <div className="paginacion">
-                                <button 
-                                    onClick={() => setPaginaActual(paginaActual > 1 ? paginaActual - 1 : 1)}
-                                    disabled={paginaActual === 1}
-                                >
-                                    Anterior
-                                </button>
-                                <span className='texto-paginacion'>Página {paginaActual} de {totalPaginas}</span>
-                                <button 
-                                    onClick={() => setPaginaActual(paginaActual < totalPaginas ? paginaActual + 1 : totalPaginas)}
-                                    disabled={paginaActual === totalPaginas}
-                                >
-                                    Siguiente
-                                </button>
-                            </div>
+                            {totalPaginas > 1 && (
+                                <div className="paginacion">
+                                    <button 
+                                        onClick={() => setPaginaActual(paginaActual > 1 ? paginaActual - 1 : 1)}
+                                        disabled={paginaActual === 1}
+                                    >
+                                        Anterior
+                                    </button>
+                                    <span className='texto-paginacion'>Página {paginaActual} de {totalPaginas}</span>
+                                    <button 
+                                        onClick={() => setPaginaActual(paginaActual < totalPaginas ? paginaActual + 1 : totalPaginas)}
+                                        disabled={paginaActual === totalPaginas}
+                                    >
+                                        Siguiente
+                                    </button>
+                                </div>
+                            )}
 
 
                             {/* Botón para agregar una nueva receta si se esta logueado*/}
@@ -620,79 +831,153 @@ const Inicio = () => {
 
                         {/* Sección de Top 3 Recetas */}
                         <section id='top3' className="top3">
-                            <p className="top-recetas-titulo">Top 3 Recetas</p>
-                            <div className="panel-recetas">
-                                {topRecetas.map((receta) => (
-                                    <div key={receta.id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")}>
-                                        <div className="imagen-contenedor-chica">
-                                            <img src={receta.imagen} alt={receta.titulo} />
-                                            <div className="info-imagen">
-                                                <span className="nombre-usuario">{receta.usuario.nombre}</span>
-                                                <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString()}</span>
+                            <p className="titulo-seccion">Top 3 Recetas</p>
+
+
+                            {topRecetas.length > 0 ? (
+                                <div className="panel-recetas panel-recetas-inicio">
+                                    {topRecetas.map((receta) => (
+                                        <div
+                                            key={receta.id}
+                                            className="tarjeta-receta tarjeta-inicio"
+                                            onMouseEnter={() => reproducirSonido("card")}
+                                        >
+                                            <div className="imagen-contenedor-chica">
+                                                <img src={receta.imagen} alt={receta.titulo} />
+
+                                                <div className="info-imagen">
+                                                    <span className="nombre-usuario">
+                                                        {receta.usuario.nombre}
+                                                    </span>
+
+                                                    <span className="fecha-subida">
+                                                        {new Date(receta.fecha).toLocaleDateString('es-AR')}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
-                                        <p>Categoría: {receta.categoria}</p>
-                                        <p>
-                                            <span className="tiempo">Tiempo de preparación: {receta.tiempoPreparacion}'</span>
-                                            <i className="far fa-clock"></i>
-                                            <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>{receta.dificultad}</span>
-                                        </p>
-                                        <div className="valoracion">
-                                            <p>Valoración Promedio</p>
-                                            <div className="estrellas">
-                                                <i className={`fa${receta.valoracion >= 1 ? 's' : 'r'} fa-star`}></i>
-                                                <i className={`fa${receta.valoracion >= 2 ? 's' : 'r'} fa-star`}></i>
-                                                <i className={`fa${receta.valoracion >= 3 ? 's' : 'r'} fa-star`}></i>
-                                                <i className={`fa${receta.valoracion >= 4 ? 's' : 'r'} fa-star`}></i>
-                                                <i className={`fa${receta.valoracion >= 5 ? 's' : 'r'} fa-star`}></i>
+
+                                            <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
+
+                                            <p>Categoría: {receta.categoria}</p>
+
+                                            <div className="meta-receta">
+                                                <span className="dato-tiempo">
+                                                    <i className="far fa-clock"></i>
+
+                                                    <span className="texto-tiempo">
+                                                        <small>Tiempo</small>
+                                                        <strong>{receta.tiempoPreparacion} min</strong>
+                                                    </span>
+                                                </span>
+
+                                                <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>
+                                                    {receta.dificultad}
+                                                </span>
                                             </div>
-                                        </div>
-                                        <a
-                                            className="ver-mas"
-                                            onClick={() =>
-                                                navigate(`/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`)
-                                            }
+
+                                            <div className="valoracion">
+                                                <div className="estrellas">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <i
+                                                            key={i}
+                                                            className={`fa${i < Math.round(receta.valoracion) ? 's' : 'r'} fa-star`}
+                                                        ></i>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <a
+                                                className="ver-mas"
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`
+                                                    )
+                                                }
                                             >
-                                            Ver más
-                                        </a>
+                                                Ver más
+                                            </a>
+                                        </div>
+                                    ))}
+                                    
+                                </div>
+                            ) : (
+                                <div className="top3-vacio">
+                                    <div className="top3-vacio-icono">
+                                        <i className="fas fa-trophy"></i>
                                     </div>
-                                ))}
-                                {generarTarjetasPlaceholder(tarjetasFaltantes)}
-                            </div>
+
+                                    <h3>Todavía no hay un Top 3</h3>
+
+                                    <p>
+                                        A medida que las recetas reciban valoraciones,
+                                        acá aparecerán las mejor puntuadas.
+                                    </p>
+                                </div>
+                            )}
                         </section>
 
 
 
                         {isLogged && (            
-                            <section id="favoritos" className="favoritos">
-                                <p className="favoritos-titulo">Mis Recetas Favoritas</p>
+                            <section id="favoritos" className="favoritos" ref={favoritosSectionRef}>
+                                <p className="titulo-seccion">Mis Recetas Favoritas</p>
                                 {favoritos.length === 0 ? (
-                                    <span className="mensaje-no-recetas-favoritas">Aún no has agregado recetas a tu sección de favoritas. ¡Agrega las recetas que más te hayan gustado para encontrarlas más fácilmente!</span>
+                                    <div className="favoritos-vacio">
+                                        <div className="favoritos-vacio-icono">
+                                            <i className="fas fa-heart"></i>
+                                        </div>
+
+                                        <h3>Todavía no tenés recetas favoritas</h3>
+
+                                        <p>
+                                            Las recetas que guardes con el corazón aparecerán acá
+                                            para que puedas encontrarlas fácilmente.
+                                        </p>
+                                    </div>
                                 ) : (
-                                    <div className="panel-recetas">
-                                        {recetas.filter(receta => favoritos.map(fav => fav.toString()).includes(receta._id)).map(receta => (
-                                            <div key={receta._id} className="tarjeta-receta" onMouseEnter={() => reproducirSonido("card")}>
+                                    <div className="panel-recetas panel-recetas-inicio">
+                                        {favoritosActuales.map(receta => (
+                                            <div key={receta._id} className="tarjeta-receta tarjeta-inicio" onMouseEnter={() => reproducirSonido("card")}>
                                                 <div className="imagen-contenedor-chica">
                                                     <img src={receta.imagen} alt={receta.titulo} />
+
                                                     <div className="info-imagen">
-                                                        <span className="nombre-usuario">{receta.usuario.nombre}</span>
-                                                        <span className="fecha-subida">{new Date(receta.fecha).toLocaleDateString()}</span>
+                                                        <span className="nombre-usuario">
+                                                            {receta.usuario.nombre}
+                                                        </span>
+
+                                                        <span className="fecha-subida">
+                                                            {new Date(receta.fecha).toLocaleDateString()}
+                                                        </span>
                                                     </div>
                                                 </div>
+
                                                 <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
+
                                                 <p>Categoría: {receta.categoria}</p>
-                                                <p>
-                                                    <span className="tiempo">Tiempo de preparación: {receta.tiempoPreparacion}'</span>
-                                                    <i className="far fa-clock"></i>
-                                                    <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>{receta.dificultad}</span>
-                                                </p>
+
+                                                <div className="meta-receta">
+                                                    <span className="dato-tiempo">
+                                                        <i className="far fa-clock"></i>
+
+                                                        <span className="texto-tiempo">
+                                                            <small>Tiempo</small>
+                                                            <strong>{receta.tiempoPreparacion} min</strong>
+                                                        </span>
+                                                    </span>
+
+                                                    <span className={`dificultad-${receta.dificultad.toLowerCase()}`}>
+                                                        {receta.dificultad}
+                                                    </span>
+                                                </div>
 
                                                 <div className="valoracion">
-                                                    <p>Valoración Promedio</p>
                                                     <div className="estrellas">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <i key={i} className={`fa${i < receta.valoracion ? 's' : 'r'} fa-star`}></i>
+                                                            <i
+                                                                key={i}
+                                                                className={`fa${i < Math.round(receta.valoracion) ? 's' : 'r'} fa-star`}
+                                                            ></i>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -700,13 +985,54 @@ const Inicio = () => {
                                                 <a
                                                     className="ver-mas"
                                                     onClick={() =>
-                                                        navigate(`/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`)
+                                                        navigate(
+                                                            `/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`
+                                                        )
                                                     }
-                                                    >
+                                                >
                                                     Ver más
                                                 </a>
                                             </div>
                                         ))}
+                                    </div>
+                                )}
+
+
+                                {totalPaginasFavoritos > 1 && (
+                                    <div className="paginacion paginacion-favoritos">
+
+                                        <button
+                                            onClick={() =>
+                                                cambiarPaginaFavoritos(
+                                                    paginaFavoritos > 1
+                                                        ? paginaFavoritos - 1
+                                                        : 1
+                                                )
+                                            }
+                                            disabled={paginaFavoritos === 1}
+                                        >
+                                            Anterior
+                                        </button>
+
+                                        <span className="texto-paginacion">
+                                            Página {paginaFavoritos} de {totalPaginasFavoritos}
+                                        </span>
+
+                                        <button
+                                            onClick={() =>
+                                                cambiarPaginaFavoritos(
+                                                    paginaFavoritos < totalPaginasFavoritos
+                                                        ? paginaFavoritos + 1
+                                                        : totalPaginasFavoritos
+                                                )
+                                            }
+                                            disabled={
+                                                paginaFavoritos === totalPaginasFavoritos
+                                            }
+                                        >
+                                            Siguiente
+                                        </button>
+
                                     </div>
                                 )}
                             </section>
