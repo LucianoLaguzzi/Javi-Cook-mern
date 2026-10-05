@@ -737,7 +737,9 @@ const Inicio = () => {
 
                                                     </div>
                                                     <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
-                                                    <p>Categoría: {receta.categoria}</p>
+                                                    <p className="categoria-tarjeta-inicio">
+                                                        <span>Categoría:</span> {receta.categoria}
+                                                    </p>
 
 
                                                     <div className="meta-receta">
@@ -858,7 +860,9 @@ const Inicio = () => {
 
                                             <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
 
-                                            <p>Categoría: {receta.categoria}</p>
+                                            <p className="categoria-tarjeta-inicio">
+                                                <span>Categoría:</span> {receta.categoria}
+                                            </p>
 
                                             <div className="meta-receta">
                                                 <span className="dato-tiempo">
@@ -954,7 +958,9 @@ const Inicio = () => {
 
                                                 <h2>{capitalizarPrimeraLetra(receta.titulo)}</h2>
 
-                                                <p>Categoría: {receta.categoria}</p>
+                                                <p className="categoria-tarjeta-inicio">
+                                                    <span>Categoría:</span> {receta.categoria}
+                                                </p>
 
                                                 <div className="meta-receta">
                                                     <span className="dato-tiempo">

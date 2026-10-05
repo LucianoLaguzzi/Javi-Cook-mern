@@ -1422,15 +1422,17 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                 {ingredientesCantidades.split('\n').map((ingrediente, index) => { //Separa cada linea con una "," como un elemento nuevo.
                                     const partes = ingrediente.split(':'); //Separa cada ingrediente con su cantidad , ingrediente:cantidad por cada linea.
                                     if (partes.length === 2) { //Ejemplo: partes = ["Harina", "200g"]
-                                        return (
-                                        <div key={index}>
-                                          {capitalizarPrimeraLetra(partes[0].trim())}
-                                          : 
-                                          <span className="cantidad-ingrediente">
-                                            {partes[1].trim()}
-                                          </span>
-                                        </div>
-                                      );
+                                     return (
+    <div className="fila-ingrediente" key={index}>
+        <span className="nombre-ingrediente">
+            {capitalizarPrimeraLetra(partes[0].trim())}
+        </span>
+
+        <span className="cantidad-ingrediente">
+            {partes[1].trim()}
+        </span>
+    </div>
+);
                                     }
                                     return <div key={index}>{ingrediente}</div>; 
                                 })}
