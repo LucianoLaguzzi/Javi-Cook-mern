@@ -289,6 +289,21 @@ router.post('/recuperar', async (req, res) => {
 
         const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
+        const nombreSeguro = String(user.nombre || 'usuario').replace(
+            /[&<>"']/g,
+            caracter => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[caracter]
+        );
+
+
+
+
+
         await apiInstance.sendTransacEmail({
             sender: {
                 email: process.env.EMAIL_USER,
@@ -302,22 +317,83 @@ router.post('/recuperar', async (req, res) => {
             ],
             subject: "Recuperación de contraseña",
             htmlContent: `
-                <div style="font-family: Arial, sans-serif; color: #333; text-align: center;">
-                    <h1 style="color: #3498db;">JaviCook</h1>
-                    <p>Hola ${user.nombre || 'usuario'},</p>
-                    <p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
-                    <a href="${enlace}" style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #3498db; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                        Cambiar contraseña
-                    </a>
-                    <p>O copia y pega el siguiente enlace:</p>
-                    <p style="color: #3498db;">${enlace}</p>
-                    <br>
-                    <p>Equipo JaviCook</p>
+                <div style="margin:0;padding:0;background-color:#f5eee5;font-family:Arial,Helvetica,sans-serif;color:#342a22;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:#f5eee5;">
+                        <tr>
+                            <td align="center" style="padding:36px 16px;">
+                                <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#fffaf4;border:1px solid #e4d2bc;border-radius:14px;overflow:hidden;">
+
+                                    <tr>
+                                        <td align="center" style="padding:27px 24px;background-color:#342a22;border-bottom:3px solid #deb887;">
+                                            <h1 style="margin:0;color:#f0d3a0;font-size:30px;line-height:1.2;font-weight:700;letter-spacing:0.3px;">
+                                                JaviCook
+                                            </h1>
+                                            <p style="margin:8px 0 0;color:#d5c5b3;font-size:13px;line-height:1.5;">
+                                                Recuperación de contraseña
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="padding:32px 28px 20px;">
+                                            <p style="margin:0 0 18px;color:#342a22;font-size:16px;line-height:1.6;">
+                                                ¡Hola ${nombreSeguro}!
+                                            </p>
+
+                                            <h2 style="margin:0 0 14px;color:#342a22;font-size:22px;line-height:1.35;">
+                                                Recuperá el acceso a tu cuenta
+                                            </h2>
+
+                                            <p style="margin:0 0 24px;color:#68594b;font-size:15px;line-height:1.75;">
+                                                Recibimos una solicitud para restablecer tu contraseña de JaviCook. Para elegir una nueva, hacé clic en el siguiente botón.
+                                            </p>
+
+                                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 24px;">
+                                                <tr>
+                                                    <td align="center" bgcolor="#ea6e12" style="border-radius:9px;">
+                                                        <a href="${enlace}" target="_blank" style="display:inline-block;padding:14px 28px;border:1px solid #ea6e12;border-radius:9px;color:#ffffff;font-size:15px;font-weight:bold;line-height:1.3;text-decoration:none;">
+                                                            Cambiar contraseña
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <p style="margin:0 0 10px;color:#68594b;font-size:13px;line-height:1.6;">
+                                                Si el botón no funciona, copiá y pegá este enlace en tu navegador:
+                                            </p>
+
+                                            <p style="margin:0 0 24px;padding:12px;background-color:#f5eee5;border:1px solid #e4d2bc;border-radius:7px;font-size:12px;line-height:1.7;overflow-wrap:anywhere;word-break:break-word;">
+                                                <a href="${enlace}" target="_blank" style="color:#9b5b1d;text-decoration:underline;overflow-wrap:anywhere;word-break:break-word;">
+                                                    ${enlace}
+                                                </a>
+                                            </p>
+
+                                            <p style="margin:0;color:#68594b;font-size:13px;line-height:1.7;">
+                                                Si no solicitaste este cambio, podés ignorar este correo. Tu contraseña actual no cambiará por recibirlo.
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="center" style="padding:20px 24px;background-color:#f0e5d8;border-top:1px solid #e4d2bc;">
+                                            <p style="margin:0 0 5px;color:#68594b;font-size:13px;line-height:1.5;">
+                                                Equipo JaviCook
+                                            </p>
+                                            <p style="margin:0;color:#8b7a69;font-size:11px;line-height:1.5;">
+                                                Este es un correo automático. Por favor, no respondas a este mensaje.
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             `
         });
 
-                res.status(200).json({ mensaje: "Revisa tu email para cambiar la contraseña" });
+        res.status(200).json({ mensaje: "Revisa tu email para cambiar la contraseña" });
 
     } catch (error) {
         console.error("Error en recuperación de contraseña", error);

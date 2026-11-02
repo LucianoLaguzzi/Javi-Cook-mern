@@ -63,9 +63,10 @@ const RecuperarContrasenia = () => {
                 <title>Recuperar contraseña</title>
                 <link rel="icon" href="/favicon-login.png" />
             </Helmet>
-            <body className='recuperar-contrasenia'>
-                <header className="titulo-registrar">
-                    <h1> Recuperación de contraseña</h1>
+            <div className="recuperar-contrasenia">
+                <header className="titulo-recuperar">
+                    <h1>Recuperación de contraseña</h1>
+                    <p>Recuperá el acceso a tu cuenta de JaviCook.</p>
                 </header>
                 <section className="recuperar-section">
                     <h2 className="titulo-recuperar-pass">Recuperar Contraseña</h2>
@@ -97,7 +98,7 @@ const RecuperarContrasenia = () => {
                 </section>
 
                 {mensaje && <p className="mensaje-exito">{mensaje}</p>}
-            </body>
+            </div>
         </div>
     );
 };

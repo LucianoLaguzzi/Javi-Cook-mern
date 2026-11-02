@@ -66,7 +66,8 @@ const Registro = () => {
         )}
 
         <header className="titulo-registrar">
-          <h1>Registrar nuevo usuario</h1>
+          <h1>Creá tu cuenta en JaviCook</h1>
+          <p>Un espacio para tus recetas favoritas.</p>
         </header>
 
         <section className="new-user-section">
@@ -114,7 +115,7 @@ const Registro = () => {
 
             <div className="panel-links">
               <span className="mensaje-ir-login">
-                ¿Ya tenés usuario? <a href="/login" className="link">Iniciar sesión</a>
+                ¿Ya tenés usuario? <Link to="/login" className="link">Iniciar sesión</Link>
               </span>
             </div>
           </form>

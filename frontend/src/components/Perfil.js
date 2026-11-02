@@ -114,15 +114,26 @@ const Perfil = () => {
 
 
     // Manejar la selección de la imagen
-    const manejarImagen = (event) => {  
-        const archivo = event.target.files[0];
+    const manejarImagen = (event) => {
+        const archivo = event.target.files?.[0];
+
+        if (!archivo) return;
+
+        if (!archivo.type.startsWith('image/')) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Archivo no válido',
+                text: 'Seleccioná un archivo de imagen.'
+            });
+            event.target.value = '';
+            return;
+        }
+
         setImagenPerfil(archivo);
-        
-        // Crear una URL temporal para mostrar una vista previa de la imagen
+
         const vistaPrevia = URL.createObjectURL(archivo);
         document.getElementById('imagePreview').src = vistaPrevia;
-        
-        // Mostrar el botón de "Guardar" al seleccionar una nueva imagen
+
         setMostrandoBotonGuardar(true);
     };
 
@@ -154,6 +165,20 @@ const Perfil = () => {
     };
 
     
+    const cancelarImagen = () => {
+        setImagenPerfil(null);
+        setMostrandoBotonGuardar(false);
+
+        const vista = document.getElementById('imagePreview');
+        if (vista) {
+            vista.src = usuario?.imagenPerfil || '/default-imagen-perfil.jpg';
+        }
+
+        const input = document.getElementById('imagen');
+        if (input) {
+            input.value = '';
+        }
+    };
     
 
 
@@ -329,10 +354,10 @@ const Perfil = () => {
                             />
 
                             <div className="usuario-nav">
-    <span className="nombre-usuario-nav">
-        {usuarioEnSesion?.nombre}
-    </span>
-</div>
+                                <span className="nombre-usuario-nav">
+                                    {usuarioEnSesion?.nombre}
+                                </span>
+                            </div>
                         </div>
 
                         <div className="nav-center">
@@ -366,7 +391,7 @@ const Perfil = () => {
 
 
                 <div className='notifica'>
-                    <div className="icono-notificaciones">
+                    <div className="icono-notificaciones perfil-notificaciones">
                     <i  className={`fas fa-bell campana ${mostrarNotificaciones ? 'campana-activa' : 'campana-inactiva'}`} 
                         onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}>
                     </i>
@@ -384,7 +409,7 @@ const Perfil = () => {
                                         >
                                             <p>{formatearMensaje(notif.mensaje)}</p>
                                             <button className="btn-eliminar" title='Eliminar notificación' onClick={(e) => eliminarNotificacion(e, notif._id)}>
-                                                <i class="fas fa-trash"></i>
+                                                <i className="fas fa-trash"></i>
                                             </button>
                                         </div>
                                     ))
@@ -403,156 +428,246 @@ const Perfil = () => {
 
                 
 
-                <section class="perfil-section">
+                <section className="perfil-section">
                     <div className="perfil-form">
-                        <h1>Perfil del usuario</h1>
 
-                        <div className="perfil-imagen">
-                            <div className="image-container">
-                                <img
-                                    id="imagePreview"
-                                    src={usuario && usuario.imagenPerfil ? `${usuario.imagenPerfil}` : '/default-imagen-perfil.jpg'}
-                                    alt="Imagen de Perfil"
-                                    className="imagen-perfil"
+                        <div className="perfil-presentacion">
+                            <div className="perfil-imagen">
+                                <div className="image-container">
+                                    <img
+                                        id="imagePreview"
+                                        src={usuario?.imagenPerfil || '/default-imagen-perfil.jpg'}
+                                        alt="Imagen de perfil"
+                                        className="imagen-perfil"
+                                    />
+                                    <label htmlFor="imagen" className="edit-icon">
+                                        <i className="fa fa-camera" title="Editar imagen"></i>
+                                    </label>
+                                </div>
+
+                                <input
+                                    type="file"
+                                    id="imagen"
+                                    accept="image/*"
+                                    onChange={manejarImagen}
+                                    className="input-imagen2"
                                 />
-                                <label htmlFor="imagen" className="edit-icon">
-                                    <i className="fa fa-camera" title="Editar imagen"></i>
-                                </label>
+
+                                {mostrandoBotonGuardar && (
+                                    <div className="perfil-acciones-imagen">
+                                        <button
+                                            type="button"
+                                            onClick={guardarImagen}
+                                            className="boton-guardar-imagen"
+                                        >
+                                            Guardar foto
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={cancelarImagen}
+                                            className="boton-cancelar-imagen"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                )}
+
                             </div>
-                            <input
-                                type="file"
-                                id="imagen"
-                                accept="image/*"
-                                onChange={manejarImagen}
-                                className="input-imagen2"
-                            />
-                            {mostrandoBotonGuardar && (
-                                <button onClick={guardarImagen} className="boton-guardar-imagen">
-                                    Guardar
-                                </button>
-                            )}
+
+                            <div className="perfil-presentacion-texto">
+                                <span className="perfil-eyebrow">MI CUENTA</span>
+                                <h1>{usuario?.nombre || 'Cargando perfil...'}</h1>
+                                <p>Tu espacio personal en JaviCook.</p>
+                            </div>
                         </div>
 
-                        <div className='inputs-perfil'>
-                            <div className="perfil-usuario">
-                                {/* Sección del nombre de usuario */}
-                                <div className="perfil-inputs">
-                                    <div className="div-label-perfil">
-                                        <label className="perfil-label-usuario">Usuario:</label>
-                                    </div>
-
-                                    {/* Muestra el nombre o el input de edición */}
-                                    {editandoNombre ? (
-                                        <input
-                                            type="text"
-                                            value={nuevoNombre}
-                                            onChange={(e) => setNuevoNombre(e.target.value)}
-                                            className="input-nuevo-nombre"
-                                        />
-                                    ) : (<div className='output-nombre-usuario'>
-                                            <span className="output-nombre-usuario-texto">{usuario ? usuario.nombre : 'Cargando...'}</span>
-                                        </div>
-                                    )}
-
-                                </div> 
-
-                                    {/* Botón para editar nombre */}
-                                    {!editandoNombre && (
-                                        <a className="btn-editar-user" title="Editar Usuario" onClick={() => setEditandoNombre(true)}>
-                                            <i className="fas fa-pencil-alt"></i>
-                                        </a>
-                                    )}
-                                
-
-                                {/* Botones de cancelar y guardar solo si está editando */}
-                                {editandoNombre && (
-                                    <div className="cancel-ok">
-                                        <a className="btn-cancelar-user" title="Cancelar" onClick={cancelarNombre}>
-                                            <i className="fas fa-times-circle"></i>
-                                        </a>
-                                        <a className="btn-guardar-icon" title="Guardar" onClick={guardarNombre}>
-                                            <i className="fas fa-check-circle"></i>
-                                        </a>
-                                    </div>
-                                )}
+                        <div className="perfil-datos">
+                            <div className="perfil-datos-titulo">
+                                <h2>Mis datos</h2>
+                                <p>Podés actualizar tu nombre y correo electrónico.</p>
                             </div>
 
-                            <div className='perfil-email'>
-                                {/* Sección del email del usuario */}
-                                <div className="perfil-inputs">
-                                    <div className="div-label-perfil">
-                                        <label className="perfil-label-email">Email:</label>
+                            <div className="inputs-perfil">
+                                <div className="perfil-usuario">
+                                    <div className="perfil-inputs">
+                                        <div className="div-label-perfil">
+                                            <label className="perfil-label-usuario">
+                                                Nombre de usuario
+                                            </label>
+                                        </div>
+
+                                        {editandoNombre ? (
+                                            <input
+                                                type="text"
+                                                value={nuevoNombre}
+                                                onChange={(e) => setNuevoNombre(e.target.value)}
+                                                className="input-nuevo-nombre"
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <div className="output-nombre-usuario">
+                                                <span className="output-nombre-usuario-texto">
+                                                    {usuario?.nombre || 'Cargando...'}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Muestra el email o el input de edición */}
-                                    {editandoEmail ? (
-                                        <input
-                                            type="text"
-                                            value={nuevoEmail}
-                                            onChange={(e) => setNuevoEmail(e.target.value)}
-                                            className="input-nuevo-email"
-                                        />
-                                    ) : (
-                                        <div className='output-email-usuario'>
-                                            <span className="output-email-usuario-texto">{usuario ? usuario.email : 'Cargando...'}</span>
+                                    {!editandoNombre && (
+                                        <button
+                                            type="button"
+                                            className="btn-editar-user"
+                                            title="Editar nombre"
+                                            aria-label="Editar nombre de usuario"
+                                            onClick={() => setEditandoNombre(true)}
+                                        >
+                                            <i className="fas fa-pencil-alt"></i>
+                                        </button>
+                                    )}
+
+                                    {editandoNombre && (
+                                        <div className="cancel-ok">
+                                            <button
+                                                type="button"
+                                                className="btn-cancelar-user"
+                                                title="Cancelar"
+                                                aria-label="Cancelar edición del nombre"
+                                                onClick={cancelarNombre}
+                                            >
+                                                <i className="fas fa-times-circle"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn-guardar-icon"
+                                                title="Guardar"
+                                                aria-label="Guardar nombre"
+                                                onClick={guardarNombre}
+                                            >
+                                                <i className="fas fa-check-circle"></i>
+                                            </button>
                                         </div>
                                     )}
-                                    
+                                </div>
+
+                                <div className="perfil-email">
+                                    <div className="perfil-inputs">
+                                        <div className="div-label-perfil">
+                                            <label className="perfil-label-email">
+                                                Correo electrónico
+                                            </label>
+                                        </div>
+
+                                        {editandoEmail ? (
+                                            <input
+                                                type="email"
+                                                value={nuevoEmail}
+                                                onChange={(e) => setNuevoEmail(e.target.value)}
+                                                className="input-nuevo-email"
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <div className="output-email-usuario">
+                                                <span className="output-email-usuario-texto">
+                                                    {usuario?.email || 'Cargando...'}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Botón para editar email */}
                                     {!editandoEmail && (
-                                        <a className="btn-editar-email" title="Editar Email" onClick={() => setEditandoEmail(true)}>
+                                        <button
+                                            type="button"
+                                            className="btn-editar-email"
+                                            title="Editar correo"
+                                            aria-label="Editar correo electrónico"
+                                            onClick={() => setEditandoEmail(true)}
+                                        >
                                             <i className="fas fa-pencil-alt"></i>
-                                        </a>
+                                        </button>
                                     )}
-                                
 
-                                {/* Botones de cancelar y guardar solo si está editando */}
-                                {editandoEmail && (
-                                    <div className="cancel-ok">
-                                        <a className="btn-cancelar-email" title="Cancelar" onClick={cancelarEmail}>
-                                            <i className="fas fa-times-circle"></i>
-                                        </a>
-                                        <a className="btn-guardar-icon" title="Guardar" onClick={guardarEmail}>
-                                            <i className="fas fa-check-circle"></i>
-                                        </a>
-                                    </div>
-                                )}
+                                    {editandoEmail && (
+                                        <div className="cancel-ok">
+                                            <button
+                                                type="button"
+                                                className="btn-cancelar-email"
+                                                title="Cancelar"
+                                                aria-label="Cancelar edición del correo"
+                                                onClick={cancelarEmail}
+                                            >
+                                                <i className="fas fa-times-circle"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn-guardar-icon-email"
+                                                title="Guardar"
+                                                aria-label="Guardar correo"
+                                                onClick={guardarEmail}
+                                            >
+                                                <i className="fas fa-check-circle"></i>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
                         <div className="div-recetas-usuario">
-                            <a href="#" className="link-lista-recetas" onClick={toggleRecetas}>Ver recetas del usuario</a>
+                            <button
+                                type="button"
+                                className="link-lista-recetas"
+                                aria-expanded={mostrarRecetas}
+                                onClick={toggleRecetas}
+                            >
+                                <span>Mis recetas</span>
+                                <span className="perfil-recetas-accion">
+                                    {mostrarRecetas ? 'Ocultar' : 'Ver recetas'}
+                                    <i className={`fas ${mostrarRecetas ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+                                </span>
+                            </button>
+
                             {mostrarRecetas && (
                                 <div className="recetas-del-usuario">
                                     {recetas.length > 0 ? (
                                         <ul>
                                             {recetas.map((receta) => (
                                                 <li key={receta._id} className="tarjeta-receta2">
-                                                    <a
-                                                        href="#"
+                                                    <button
+                                                        type="button"
                                                         className="receta-etiqueta"
-                                                        onClick={() => navigate(`/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`)}
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `/detalle-receta/${generarSlug(receta.titulo)}/${receta._id}`
+                                                            )
+                                                        }
                                                     >
-                                                        {capitalizarPrimeraLetra(receta.titulo)}
-                                                    </a>
+                                                        <span>{capitalizarPrimeraLetra(receta.titulo)}</span>
+                                                        <i className="fas fa-chevron-right"></i>
+                                                    </button>
                                                 </li>
                                             ))}
                                         </ul>
-                                    ) : (   
-                                        <p>No tienes recetas subidas aún.</p>
+                                    ) : (
+                                        <p className="perfil-sin-recetas">
+                                            Todavía no subiste recetas. ¡Cuando publiques la primera, va a aparecer acá!
+                                        </p>
                                     )}
                                 </div>
                             )}
                         </div>
 
-
                         <div className="perfil-link-index">
-                            <span className="mensaje-ir-index">
-                                <a onClick={() => {navigate('/inicio');}} className="link"> Volver a las recetas</a>
-                            </span>
+                            <button
+                                type="button"
+                                onClick={() => navigate('/inicio')}
+                                className="perfil-volver-recetas"
+                            >
+                                <i className="fas fa-utensils"></i>
+                                Ver todas las recetas
+                            </button>
                         </div>
+
                     </div>
                 </section>
             </div>

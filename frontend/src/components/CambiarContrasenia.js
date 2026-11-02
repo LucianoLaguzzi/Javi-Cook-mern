@@ -73,9 +73,10 @@ const CambiarContrasenia = () => {
                 <title>Cambiar contraseña</title>
                 <link rel="icon" href="/favicon-login.png" />
             </Helmet>
-            <body className='recuperar-contrasenia'>
-                <header className="titulo-registrar">
-                    <h1> Cambiar contraseña</h1>
+            <div className="recuperar-contrasenia">
+                <header className="titulo-recuperar">
+                    <h1>Cambiar contraseña</h1>
+                    <p>Ya falta poco para recuperar tu cuenta de JaviCook.</p>
                 </header>
 
                 <section className="cambiar-section">
@@ -111,7 +112,7 @@ const CambiarContrasenia = () => {
     
                     </form>
                 </section>
-            </body>
+            </div>
         </div>
     );
 };

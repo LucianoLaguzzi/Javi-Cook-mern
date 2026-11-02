@@ -58,14 +58,10 @@ function Login() {
                 <p>Por favor, inicia sesión para continuar.</p>
             </header>
             <section className="login-container">
-                {mostrarError && (
-                    <div className="error-container">
-                        <p>{error}</p>
-                    </div>
-                )}
+               
 
                 <form className="login-form" onSubmit={handleLogin}>
-                    <h2 className="login-title">Login</h2>
+                    <h2 className="login-title">Iniciar sesión</h2>
 
                     <div className="entrada">
                         <input type="text"
@@ -90,6 +86,15 @@ function Login() {
                     </div>
 
 
+                    <div
+                        className={`error-container ${mostrarError ? 'visible' : ''}`}
+                        role="alert"
+                        aria-hidden={!mostrarError}
+                    >
+                        <i className="fas fa-exclamation-circle"></i>
+                        <p>{error}</p>
+                    </div>
+
                     <button
                         type="submit"
                         className={`boton-iniciar-sesion ${isLoading ? 'boton-disabled' : ''}`}
@@ -100,7 +105,7 @@ function Login() {
 
                     <div className="panel-links">
                         <span className="mensaje-ir-registrar">
-                            ¿No tenés usuario? <Link to="/registro" className="link">Registrarse</Link>
+                            ¿No tenés usuario? <Link to="/registro" className="link">Registrate</Link>
                         </span>
                     </div>
 
