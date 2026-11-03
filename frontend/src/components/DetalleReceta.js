@@ -1325,7 +1325,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
               {isLoading && (
                   <div className="loading-container-eliminar">
                     <div className="spinner-eliminar"></div>
-                    <p className="loading-message-eliminar">Creando receta...</p>
+                    <p className="loading-message-eliminar">Cargando receta...</p>
                   </div>
                 )}
 
@@ -2383,8 +2383,16 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
           </button>
         </div>
       )}
-    </div>
 
+
+      {loading && (
+        <div className="loading-new-recipe">
+            <div className="spinner"></div>
+            <p className="loading-message">Eliminando receta...</p>
+        </div>
+      )}
+
+    </div>
     
   );
 };

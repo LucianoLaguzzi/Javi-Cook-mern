@@ -554,11 +554,6 @@ const Inicio = () => {
                 <div className="main-content">
 
 
-
-
-
-
- {/* CAMBIOS VAN A COMENZAR ACA*/}   
                     <div className="encabezado">
                         <div className="barra-navegacion">
 
@@ -657,20 +652,6 @@ const Inicio = () => {
                         </div>
                     </div>
 
-
-
-  {/* CAMBIOS TERMINAN ACA*/}
-
-
-
-
-
-
-
-
-
-
-
                     <main className="principal">
 
                         {/* Mostrar un cartel de carga hasta q se traigan los datos o vuelva de inactividad */}
@@ -713,7 +694,13 @@ const Inicio = () => {
                                 </div>
                             ) : (
                                 recetas.length === 0 ? ( // Si no hay recetas en absoluto
-                                    <span className='mensaje-no-recetas'>Aún no tienes recetas. ¡Empieza agregando una!</span>
+                                    <div className="mensaje-no-recetas">
+                                        <div className="mensaje-no-recetas-icono">
+                                            <i className="fas fa-utensils"></i>
+                                        </div>
+                                        <h3>Todavía no hay recetas</h3>
+                                        <p>¡Sé el primero en agregar una y compartí tu creación con todos!</p>
+                                    </div>
                                 ) : (
                                     recetasActuales.length > 0 ? ( // Si hay recetas, y recetasActuales tiene coincidencias
                                         <div className="panel-recetas panel-recetas-inicio"
@@ -790,7 +777,13 @@ const Inicio = () => {
                                             ))}
                                         </div>
                                     ) : ( // Si hay recetas, pero recetasActuales está vacío (filtro sin coincidencias)
-                                        <span className='mensaje-no-recetas'>No se encontraron recetas con esos ingredientes.</span>
+                                        <div className="mensaje-no-recetas">
+                                            <div className="mensaje-no-recetas-icono">
+                                                <i className="fas fa-search"></i>
+                                            </div>
+                                            <h3>No encontramos coincidencias</h3>
+                                            <p>Probá con otros ingredientes o con un término de búsqueda diferente.</p>
+                                        </div>
                                     )
                                 )
                             )}
