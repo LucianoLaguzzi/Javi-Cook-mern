@@ -11,9 +11,7 @@ import { API_BASE_URL } from '../config/api';
 const Perfil = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
     const usuarioEnSesion = JSON.parse(localStorage.getItem('usuario'));
-
 
     const [usuario, setUsuario] = useState(null);
     const [recetas, setRecetas] = useState([]);
@@ -26,6 +24,9 @@ const Perfil = () => {
     const [mostrandoBotonGuardar, setMostrandoBotonGuardar] = useState(false);
     const [notificaciones, setNotificaciones] = useState([]);
     const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+    const [errorNombre, setErrorNombre] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
+    const [errorImagen, setErrorImagen] = useState('');
 
     useEffect(() => {
         if (usuarioEnSesion) {
@@ -118,6 +119,7 @@ const Perfil = () => {
         const archivo = event.target.files?.[0];
 
         if (!archivo) return;
+        setErrorImagen('');
 
         if (!archivo.type.startsWith('image/')) {
             Swal.fire({
@@ -138,8 +140,12 @@ const Perfil = () => {
     };
 
   
-   // Función para guardar la imagen de perfil
+    // Función para guardar la imagen de perfil
     const guardarImagen = async () => {
+        if (!imagenPerfil) return;
+
+        setErrorImagen('');
+
         const formData = new FormData();
         formData.append('imagenPerfil', imagenPerfil);
 
@@ -150,17 +156,29 @@ const Perfil = () => {
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
 
-            console.log('Imagen de perfil actualizada:', response.data);
+            const usuarioActualizado = {
+                ...usuario,
+                imagenPerfil: response.data.imagenPerfil
+            };
 
-            // Actualizar el estado y el localStorage
-            const usuarioActualizado = { ...usuario, imagenPerfil: response.data.imagenPerfil };
             setUsuario(usuarioActualizado);
             localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
 
-
+            setImagenPerfil(null);
             setMostrandoBotonGuardar(false);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Foto actualizada',
+                text: 'Tu imagen de perfil se actualizó correctamente.'
+            });
+
         } catch (error) {
-            console.error('Error al guardar la imagen:', error.response ? error.response.data : error);
+            console.error('Error al guardar la imagen:', error.response || error);
+
+            setErrorImagen(
+                'No pudimos actualizar tu imagen de perfil. Intentá nuevamente.'
+            );
         }
     };
 
@@ -202,70 +220,83 @@ const Perfil = () => {
               });
             
         } catch (error) {
-            
-            // Si la respuesta tiene un mensaje de error lo usamos para SweetAlert
-            if (error.response && error.response.data && error.response.data.error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al actualizar',
-                    text: error.response.data.error,
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error inesperado',
-                    text: 'Hubo un error al actualizar el perfil, inténtelo de nuevo más tarde.',
-                });
-            }
-            // Lanza el error para que la función que llamó a actualizarUsuario pueda manejarlo
+
             throw error;
         }
     };
 
     // Función para guardar el nuevo nombre
     const guardarNombre = async () => {
-        if (nuevoNombre !== usuario.nombre) {
-            try {
-                await actualizarUsuario({ ...usuario, nombre: nuevoNombre });
-                // Si se actualizó correctamente, terminamos la edición
-                setEditandoNombre(false);
-            } catch (error) { 
-            // Si hay error (por ejemplo, nombre duplicado), revertimos el valor del input
-            setNuevoNombre(usuario.nombre)
-            setEditandoNombre(false);
-            }
-        } else {
-            setEditandoNombre(false);
+        const nombre = nuevoNombre.trim();
+
+        if (!nombre) {
+            setErrorNombre('El nombre de usuario es obligatorio.');
+            return;
         }
-        
+
+        setErrorNombre('');
+
+        if (nombre === usuario.nombre) {
+            setEditandoNombre(false);
+            return;
+        }
+
+        try {
+            await actualizarUsuario({ ...usuario, nombre });
+            setNuevoNombre(nombre);
+            setEditandoNombre(false);
+        } catch (error) {
+            setErrorNombre(
+                error.response?.data?.error || 'No se pudo actualizar el nombre de usuario.'
+            );
+        }
     };
 
     // Función para guardar el nuevo email
     const guardarEmail = async () => {
-        if (nuevoEmail !== usuario.email) {
-          try {
-            await actualizarUsuario({ ...usuario, email: nuevoEmail });
-            // Si se actualizó correctamente, terminamos la edición
-            setEditandoEmail(false);
-          } catch (error) {
-            // Si hay error (por ejemplo, email duplicado), revertimos el valor del input
-            setNuevoEmail(usuario.email);
-            setEditandoEmail(false);
-          }
-        } else {
-          setEditandoEmail(false);
+        const email = nuevoEmail.trim();
+
+        if (!email) {
+            setErrorEmail('El correo electrónico es obligatorio.');
+            return;
         }
-      };
+
+        const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+        if (!emailValido) {
+            setErrorEmail('Ingresá un correo electrónico válido.');
+            return;
+        }
+
+        setErrorEmail('');
+
+        if (email === usuario.email) {
+            setEditandoEmail(false);
+            return;
+        }
+
+        try {
+            await actualizarUsuario({ ...usuario, email });
+            setNuevoEmail(email);
+            setEditandoEmail(false);
+        } catch (error) {
+            setErrorEmail(
+                error.response?.data?.error || 'No se pudo actualizar el correo electrónico.'
+            );
+        }
+    };
 
     // Función para cancelar la edición de nombre
     const cancelarNombre = () => {
         setNuevoNombre(usuario.nombre);
+        setErrorNombre('');
         setEditandoNombre(false);
     };
 
     // Función para cancelar la edición de email
     const cancelarEmail = () => {
         setNuevoEmail(usuario.email);
+        setErrorEmail('');
         setEditandoEmail(false);
     };
 
@@ -473,6 +504,13 @@ const Perfil = () => {
                                     </div>
                                 )}
 
+                                {errorImagen && (
+                                    <div className="error-container visible" role="alert">
+                                        <i className="fas fa-exclamation-circle"></i>
+                                        <p>{errorImagen}</p>
+                                    </div>
+                                )}
+
                             </div>
 
                             <div className="perfil-presentacion-texto">
@@ -512,7 +550,16 @@ const Perfil = () => {
                                                 </span>
                                             </div>
                                         )}
+
+                                        {errorNombre && (
+                                            <div className="error-container visible" role="alert">
+                                                <i className="fas fa-exclamation-circle"></i>
+                                                <p>{errorNombre}</p>
+                                            </div>
+                                        )}
+
                                     </div>
+
 
                                     {!editandoNombre && (
                                         <button
@@ -520,7 +567,10 @@ const Perfil = () => {
                                             className="btn-editar-user"
                                             title="Editar nombre"
                                             aria-label="Editar nombre de usuario"
-                                            onClick={() => setEditandoNombre(true)}
+                                            onClick={() => {
+                                                setErrorNombre('');
+                                                setEditandoNombre(true);
+                                            }}
                                         >
                                             <i className="fas fa-pencil-alt"></i>
                                         </button>
@@ -573,6 +623,14 @@ const Perfil = () => {
                                                 </span>
                                             </div>
                                         )}
+
+                                        {errorEmail && (
+                                            <div className="error-container visible" role="alert">
+                                                <i className="fas fa-exclamation-circle"></i>
+                                                <p>{errorEmail}</p>
+                                            </div>
+                                        )}
+
                                     </div>
 
                                     {!editandoEmail && (
@@ -581,7 +639,10 @@ const Perfil = () => {
                                             className="btn-editar-email"
                                             title="Editar correo"
                                             aria-label="Editar correo electrónico"
-                                            onClick={() => setEditandoEmail(true)}
+                                            onClick={() => {
+                                                setErrorEmail('');
+                                                setEditandoEmail(true);
+                                            }}
                                         >
                                             <i className="fas fa-pencil-alt"></i>
                                         </button>

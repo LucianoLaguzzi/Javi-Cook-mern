@@ -3,8 +3,12 @@ import mongoose from 'mongoose';
 
 const ComentarioSchema = new mongoose.Schema({
     comentario: {
-         type: String, 
-         required: true },
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 1,
+        maxlength: 500
+    },
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Usuario',

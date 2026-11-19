@@ -365,6 +365,92 @@ header p {
 }
 
 
+/* Mensajes de validación del registro */
+.body-new-user .errores-registro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    width: 100%;
+    min-height: 64px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px 12px;
+
+    visibility: hidden;
+    opacity: 0;
+
+    background: transparent;
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+
+    transition: opacity 0.2s ease;
+}
+
+.body-new-user .errores-registro.visible {
+    visibility: visible;
+    opacity: 1;
+    background: rgba(133, 38, 38, 0.22);
+    border-color: rgba(235, 105, 105, 0.48);
+    border-left-color: #e36b65;
+}
+
+.body-new-user .error-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.body-new-user .error-item i {
+    flex: 0 0 auto;
+    font-size: 15px;
+    color: #f08a83;
+}
+
+.body-new-user .error-item p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+
+/* Mensaje de registro exitoso */
+.body-new-user .exito-registro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 16px;
+    padding: 13px 16px;
+
+    background: rgba(65, 125, 75, 0.18);
+    border: 1px solid rgba(105, 180, 115, 0.4);
+    border-radius: 10px;
+
+    color: #d8f0d9;
+}
+
+.body-new-user .exito-registro i {
+    flex-shrink: 0;
+    font-size: 19px;
+    color: #80c98a;
+}
+
+.body-new-user .exito-registro p {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+}
+
+
 /* ==========================================================
    HEADER - TABLET
    ========================================================== */
@@ -700,7 +786,10 @@ header p {
     margin: 17px 0 0;
 }
 
-.login-form .error-container {
+.login-form .error-container,
+.div-detalles-titulo .error-container,
+.div-detalles-cantidades .error-container,
+.detalles-pasos .error-container{
     display: flex;
     align-items: center;
     gap: 10px;
@@ -721,7 +810,10 @@ header p {
     text-align: left;
 }
 
-.login-form .error-container.visible {
+.login-form .error-container.visible,
+.div-detalles-titulo .error-container.visible,
+.div-detalles-cantidades .error-container.visible,
+.detalles-pasos .error-container.visible {
     visibility: visible;
     opacity: 1;
 
@@ -730,18 +822,37 @@ header p {
     border-left-color: #e36b65;
 }
 
-.login-form .error-container i {
+.login-form .error-container i,
+.div-detalles-titulo .error-container i,
+.div-detalles-cantidades .error-container i,
+.detalles-pasos .error-container i {
     flex: 0 0 auto;
     margin: 0;
     font-size: 17px;
     color: #f08a83;
 }
 
-.login-form .error-container p {
+.login-form .error-container p,
+.div-detalles-titulo .error-container p,
+.div-detalles-cantidades .error-container p,
+.detalles-pasos .error-container p {
     margin: 0;
     font-size: 12px;
     font-weight: 500;
     line-height: 1.45;
+}
+
+/* Separación del cartel respecto de los botones del título */
+.div-detalles-titulo .error-container {
+    margin: 8px 0 0;
+}
+
+.div-detalles-cantidades .error-container {
+    margin: 8px 0 0;
+}
+
+.detalles-pasos .error-container {
+    margin: 8px 0 0;
 }
 
 /*Formulario para registrar usuario*/
@@ -1634,24 +1745,27 @@ font-weight: bold;
     display: block;
     width: 100%;
     max-width: 100%;
-    min-height: 48px;
+    height: calc(1.05em + 12px);
     margin: 0 auto;
-    padding: 10px 14px;
+    padding: 6px 10px;
 
-    color: #f3eee7;
-    background: rgba(12, 12, 12, 0.72);
+    box-sizing: border-box;
 
-    font-family: Montserrat, sans-serif;
-    font-size: clamp(22px, 2.4vw, 30px);
-    font-weight: 600;
-    line-height: 1.25;
+    color: #f5f2ec;
+    background: rgba(222, 184, 135, 0.07);
+
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(30px, 3.2vw, 40px);
+    font-weight: 400;
+    line-height: 1.05;
     text-align: center;
+    letter-spacing: 0;
 
-    border: 1px solid rgba(222, 184, 135, 0.35);
+    border: 1px solid rgba(222, 184, 135, 0.32);
     border-radius: 10px;
     outline: none;
 
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.20);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.12);
 
     transition:
         border-color 0.2s ease,
@@ -1660,13 +1774,13 @@ font-weight: bold;
 }
 
 .nuevo-titulo:hover {
-    border-color: rgba(222, 184, 135, 0.60);
+    border-color: rgba(222, 184, 135, 0.55);
 }
 
 .nuevo-titulo:focus {
-    background: rgba(18, 16, 13, 0.95);
+    background: rgba(222, 184, 135, 0.11);
     border-color: #deb887;
-    box-shadow: 0 0 0 3px rgba(222, 184, 135, 0.12);
+    box-shadow: 0 0 0 3px rgba(222, 184, 135, 0.10);
 }
 
 
@@ -1746,9 +1860,9 @@ font-weight: bold;
 
 @media (max-width: 600px) {
     .nuevo-titulo {
-        min-height: 42px;
+        min-height: 48px;
         padding: 8px 10px;
-        font-size: 20px;
+        font-size: clamp(24px, 7vw, 30px);
     }
 
     .cancel-ok-titulo {
@@ -1902,11 +2016,10 @@ font-weight: bold;
     justify-content: flex-end;
     align-items: center;
     gap: 9px;
-
     width: 100%;
     margin-top: 10px;
-
     font-size: 16px;
+    right: 5px;
 }
 
 .btn-cancelar-ingredientes,
@@ -2537,24 +2650,75 @@ font-weight: bold;
     }
 }
 
-.modal-error-titulo {
-    color: red;
-    font-size: 14px;
-    margin-top: 5px;
+/* Espacios reservados para errores */
+#modalAgregarReceta .modal-error-titulo,
+#modalAgregarReceta .modal-error-ingredientes-cantidades,
+#modalAgregarReceta .modal-error-paso,
+#modalAgregarReceta .modal-error-imagen {
+    min-height: 42px;
+    height: auto !important;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 5px 0 10px;
+}
+
+#modalAgregarReceta .error-detalle-receta {
+    min-height: 42px;
+    box-sizing: border-box;
+    padding-top: 6px;
+}
+
+#modalAgregarReceta .error-ingredientes-final {
+    min-height: 42px;
+    box-sizing: border-box;
+    margin-top: 7px;
+}
+
+/* Formato unificado de los mensajes */
+#modalAgregarReceta .error-container {
+    display: flex;
+    align-items: center;
+    gap: 9px;
     width: 100%;
-    text-align: center;
-    font-weight: bold;
-    text-wrap-mode: nowrap;
+    min-height: 36px;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    background: rgba(133, 38, 38, 0.22);
+    border: 1px solid rgba(235, 105, 105, 0.4);
+    border-left: 3px solid #e36b65;
+    border-radius: 8px;
+    color: #ffd8d5;
+    text-align: left;
 }
 
-@media (max-width: 1000px) {
-    .modal-error-titulo {
-        font-size: 12px;
+#modalAgregarReceta .error-container i {
+    flex: 0 0 auto;
+    margin: 0;
+    color: #f08a83;
+    font-size: 15px;
+}
+
+#modalAgregarReceta .error-container p {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+@media (max-width: 560px) {
+    #modalAgregarReceta .modal-error-titulo,
+    #modalAgregarReceta .modal-error-ingredientes-cantidades,
+    #modalAgregarReceta .modal-error-paso,
+    #modalAgregarReceta .modal-error-imagen {
+        min-height: 48px;
     }
-}
 
-.modal-error-titulo-dinamico {
-    border-color: red;
+    #modalAgregarReceta .error-container p {
+        font-size: 10px;
+    }
 }
 
 .btn-guardar-receta {
@@ -2617,21 +2781,6 @@ font-weight: bold;
     font-size: 13px;
 }
 
-
-.modal-error-ingredientes-cantidades{
-    color: red;
-    font-size: 14px;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    text-wrap-mode: nowrap;
-}
-
-@media (max-width: 1000px) {
-    .modal-error-ingredientes-cantidades {
-        font-size: 12px;
-    }
-}
 
 /* ==========================================================
    PASOS DE LA RECETA
@@ -3082,27 +3231,6 @@ font-weight: bold;
     }
 }
 
-.modal-error-paso {
-    color: red;
-    font-size: 14px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    text-wrap-mode: nowrap;
-}
-
-@media (max-width: 1000px) {
-    .modal-error-paso {
-        font-size: 12px;
-    }
-}
-
-
-.modal-error-paso-dinamico {
-    border-color: red;
-}
 
 /* ==========================================================
    IMAGEN PRINCIPAL
@@ -3312,29 +3440,6 @@ font-weight: bold;
 }
 
 
-/* ---------------------------
-   ERROR DE IMAGEN
-   --------------------------- */
-
-.modal-error-imagen {
-    min-height: 20px;
-
-    margin: 6px 0 10px;
-
-    color: #ff7b6b;
-
-    font-family: Poppins, sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-
-    line-height: 1.35;
-}
-
-
-.modal-error-imagen:empty {
-    display: none;
-}
-
 
 /* ---------------------------
    RESPONSIVE
@@ -3377,31 +3482,8 @@ font-weight: bold;
     .btn-seleccionar-imagen {
         min-height: 42px;
     }
-
-    .modal-error-imagen {
-        font-size: 12px;
-    }
 }
 
-
-
-.modal-error-imagen {
- color: red;
-    font-size: 14px;
-    margin-top: 5px;
-    font-weight: bold;
-    text-wrap-mode: nowrap;
-}
-
-@media (max-width: 1000px) {
-    .modal-error-imagen {
-        font-size: 12px;
-    }
-}
-
-.modal-error-imagen-dinamico {
-    border-color: red;
-}
 
 .detalles-receta {
     width: 100%;
@@ -3537,15 +3619,6 @@ font-weight: bold;
 
 
 
-.error-detalle-receta {
-    min-height: 16px;
-    color: #f26b5e;
-    font-family: Poppins, sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 1.3;
-}
-
 
 @media (max-width: 800px) {
     .detalles-receta {
@@ -3651,15 +3724,6 @@ font-weight: bold;
     font-family: Poppins, sans-serif;
     font-size: 11px;
     font-weight: 400;
-}
-
-.error-ingredientes-final {
-    min-height: 18px;
-    margin-top: 7px;
-    color: #f26b5e;
-    font-family: Poppins, sans-serif;
-    font-size: 11px;
-    font-weight: 500;
 }
 
 
@@ -3800,6 +3864,143 @@ font-weight: bold;
         font-size: 13px;
     }
 }
+
+
+.lista-ingredientes-crear {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cabecera-fila-ingredientes,
+.fila-ingrediente-crear {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(100px, 0.65fr) 34px;
+    align-items: center;
+    gap: 10px;
+}
+
+.cabecera-fila-ingredientes {
+    padding: 0 4px;
+    color: rgba(255, 255, 255, 0.42);
+    font-family: Poppins, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.input-fila-ingrediente,
+.input-fila-cantidad {
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    color: #f2eee7;
+    background: rgba(0, 0, 0, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 10px;
+    outline: none;
+    font-family: Poppins, sans-serif;
+    font-size: 13px;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-fila-ingrediente::placeholder,
+.input-fila-cantidad::placeholder {
+    color: rgba(255, 255, 255, 0.30);
+}
+
+.input-fila-ingrediente:focus,
+.input-fila-cantidad:focus {
+    background: rgba(0, 0, 0, 0.22);
+    border-color: rgba(222, 184, 135, 0.65);
+    box-shadow: 0 0 0 3px rgba(222, 184, 135, 0.09);
+}
+
+.btn-quitar-ingrediente-crear {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.45);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-quitar-ingrediente-crear:hover {
+    color: #f26b5e;
+    border-color: rgba(242, 107, 94, 0.45);
+    background: rgba(242, 107, 94, 0.08);
+}
+
+.btn-agregar-ingrediente-crear {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 9px 13px;
+    color: #deb887;
+    background: rgba(222, 184, 135, 0.07);
+    border: 1px solid rgba(222, 184, 135, 0.22);
+    border-radius: 10px;
+    font-family: Poppins, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-agregar-ingrediente-crear:hover {
+    background: rgba(222, 184, 135, 0.14);
+    border-color: rgba(222, 184, 135, 0.45);
+}
+
+@media (max-width: 500px) {
+    .cabecera-fila-ingredientes,
+    .fila-ingrediente-crear {
+        grid-template-columns: minmax(0, 1fr) minmax(85px, 0.7fr) 30px;
+        gap: 7px;
+    }
+
+    .input-fila-ingrediente,
+    .input-fila-cantidad {
+        padding: 0 8px;
+        font-size: 12px;
+    }
+
+    .btn-quitar-ingrediente-crear {
+        width: 30px;
+        height: 32px;
+    }
+}
+
+
+.cabecera-ingredientes {
+    margin-bottom: 16px;
+}
+
+.lista-ingredientes-crear {
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.13);
+    border: 1px solid rgba(222, 184, 135, 0.13);
+    border-radius: 14px;
+}
+
+.cabecera-fila-ingredientes {
+    padding: 0 4px 5px;
+}
+
+.fila-ingrediente-crear + .fila-ingrediente-crear {
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+
 
 
 /* Estilos para la dificultad */
@@ -5026,6 +5227,31 @@ margin-left: 20px;
         color 0.2s ease;
 }
 
+.btn-guardar-pasos.guardando-pasos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.btn-cancelar-pasos.acciones-pasos-deshabilitadas {
+    pointer-events: none;
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.btn-guardar-pasos.guardando-pasos .fa-spinner {
+    animation: fa-spin 1s infinite linear;
+}
+
+.btn-guardar-pasos.guardando-pasos span {
+    font-size: 13px;
+    white-space: nowrap;
+}
+
 .btn-cancelar-pasos {
     color: #e58b85;
     background: rgba(190, 55, 48, 0.10);
@@ -5095,11 +5321,18 @@ margin-left: 20px;
 
 .input-comentarios {
     display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
     width: 100%;
     gap: 10px;
     padding: 0;
     margin-bottom: 10px;
+}
+
+.input-comentarios .contador-respuesta {
+    flex: 0 0 100%;
+    width: 100%;
+    margin-top: -5px;
 }
 
 .input-comentario {
@@ -5126,6 +5359,69 @@ margin-left: 20px;
 .input-comentario:focus {
     border-color: #deb887;
     background: #252321;
+}
+
+
+.input-comentarios + .error-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    margin: -2px 0 15px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+
+    visibility: hidden;
+    opacity: 0;
+
+    background: rgba(133, 38, 38, 0.22);
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+
+    color: #ffd8d5;
+    text-align: left;
+    transition: opacity 0.2s ease;
+}
+
+.input-comentarios + .error-container.visible {
+    visibility: visible;
+    opacity: 1;
+    background: rgba(133, 38, 38, 0.22);
+    border-color: rgba(235, 105, 105, 0.48);
+    border-left-color: #e36b65;
+}
+
+.input-comentarios + .error-container i {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 17px;
+    color: #f08a83;
+}
+
+.input-comentarios + .error-container p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+
+.contador-respuesta {
+    display: block;
+    width: 100%;
+    color: #96918a;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    text-align: right;
+    margin-top: 5px;
+    transition: color 0.2s ease;
+}
+
+.contador-respuesta.limite-alcanzado {
+    color: #ea9a54;
+    font-weight: 600;
 }
 
 .boton-comentario {
@@ -5555,6 +5851,66 @@ margin-left: 20px;
     box-sizing: border-box;
 }
 
+.edicion-comentario .error-container,
+.modo-edicion-respuesta .error-container,
+.modo-edicion-re-respuesta .error-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    margin: 7px 0 0;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    visibility: hidden;
+    opacity: 0;
+    background: rgba(133, 38, 38, 0.22);
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    color: #ffd8d5;
+    text-align: left;
+    transition: opacity 0.2s ease;
+}
+
+.edicion-comentario .error-container.visible,
+.modo-edicion-respuesta .error-container.visible,
+.modo-edicion-re-respuesta .error-container.visible {
+    visibility: visible;
+    opacity: 1;
+    background: rgba(133, 38, 38, 0.22);
+    border-color: rgba(235, 105, 105, 0.48);
+    border-left-color: #e36b65;
+}
+
+.edicion-comentario .error-container i,
+.modo-edicion-respuesta .error-container i,
+.modo-edicion-re-respuesta .error-container i {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 17px;
+    color: #f08a83;
+}
+
+.edicion-comentario .error-container p,
+.modo-edicion-respuesta .error-container p,
+.modo-edicion-re-respuesta .error-container p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+
+.edicion-comentario .contador-respuesta,
+.modo-edicion-respuesta .contador-respuesta,
+.modo-edicion-re-respuesta .contador-respuesta {
+    flex: 0 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
 .input-respuesta-edicion {
     display: block;
     box-sizing: border-box;
@@ -5623,12 +5979,6 @@ margin-left: 20px;
 }
 
 
-
-
-
-
-
-
 .titulo-valoracion {
     margin: 0;
     color: rgba(255, 255, 255, 0.52);
@@ -5647,6 +5997,52 @@ margin-left: 20px;
     color: grey;
   }
 
+
+  /* Errores de valoración en DetalleReceta */
+.bloque-valoracion .error-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    margin: 10px 0 0;
+    padding: 8px 12px;
+
+    visibility: hidden;
+    opacity: 0;
+
+    background: rgba(133, 38, 38, 0.22);
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+
+    color: #ffd8d5;
+    text-align: left;
+}
+
+.bloque-valoracion .error-container.visible {
+    visibility: visible;
+    opacity: 1;
+
+    background: rgba(133, 38, 38, 0.22);
+    border-color: rgba(235, 105, 105, 0.48);
+    border-left-color: #e36b65;
+}
+
+.bloque-valoracion .error-container i {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 17px;
+    color: #f08a83;
+}
+
+.bloque-valoracion .error-container p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
 /* Zona de acción del propietario */
 .zona-eliminar-receta {
     margin: 26px 0 30px;
@@ -5656,11 +6052,13 @@ margin-left: 20px;
 .separador-eliminar-receta {
     width: 100%;
     height: 1px;
-    margin: 0 auto 22px;
+    margin: 0 auto 26px;
     background: linear-gradient(
         90deg,
         transparent,
-        rgba(222, 184, 135, 0.32),
+        rgba(234, 110, 18, 0.42),
+        rgba(222, 184, 135, 0.55),
+        rgba(234, 110, 18, 0.42),
         transparent
     );
 }
@@ -5738,6 +6136,46 @@ margin-left: 20px;
     }
 }
 
+
+/* Encabezado de la sección de eliminación */
+.encabezado-eliminar-receta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    margin: 0 12px 20px;
+    text-align: center;
+}
+
+.encabezado-eliminar-receta h4 {
+    margin: 0;
+    color: #deb887;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.encabezado-eliminar-receta p {
+    max-width: 560px;
+    margin: 0;
+    color: #c4b5aa;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    .encabezado-eliminar-receta {
+        gap: 7px;
+        margin-bottom: 17px;
+    }
+
+    .encabezado-eliminar-receta h4 {
+        font-size: 15px;
+    }
+
+    .encabezado-eliminar-receta p {
+        font-size: 12px;
+    }
+}
 
 /* Sweet alert para eliminar receta*/
 
@@ -6207,6 +6645,11 @@ margin-left: 20px;
     box-shadow: 0 0 0 2px #deb887, 0 5px 15px rgba(83, 56, 32, 0.16);
 }
 
+.perfil-imagen .error-container {
+    width: 260px;
+    max-width: 100%;
+}
+
 .imagen-perfil {
     display: block;
     width: 100%;
@@ -6466,6 +6909,40 @@ margin-left: 20px;
 .input-nuevo-nombre:focus,
 .input-nuevo-email:focus {
     border-bottom-color: #ea6e12;
+}
+
+
+/* Errores de validación en Perfil */
+
+.perfil-section .error-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 42px;
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    background: rgba(133, 38, 38, 0.08);
+    border: 1px solid rgba(195, 75, 68, 0.3);
+    border-left: 3px solid #c74732;
+    border-radius: 8px;
+    color: #873a34;
+    text-align: left;
+}
+
+.perfil-section .error-container i {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 17px;
+    color: #c74732;
+}
+
+.perfil-section .error-container p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.45;
 }
 
 .btn-editar-user,
@@ -7527,20 +8004,48 @@ margin-left: 20px;
 }
 
 /* Espacio para el mensaje de error */
-.recuperar-contrasenia .recuperar-form > div:has(.error-usuario-recuperar) {
-    min-height: 20px;
-    height: auto !important;
-    margin: 0 0 4px;
+/* Aviso de error: mismo criterio visual que Login */
+.recuperar-contrasenia .recuperar-form .error-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    box-sizing: border-box;
+    margin: 4px 0 14px;
+    padding: 8px 12px;
+
+    visibility: hidden;
+    opacity: 0;
+
+    background: rgba(133, 38, 38, 0.22);
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+
+    color: #ffd8d5;
+    text-align: left;
+    transition: opacity 0.2s ease;
 }
 
-.recuperar-contrasenia .error-usuario-recuperar {
-    width: 100%;
+.recuperar-contrasenia .recuperar-form .error-container.visible {
+    visibility: visible;
+    opacity: 1;
+    border-color: rgba(235, 105, 105, 0.48);
+    border-left-color: #e36b65;
+}
+
+.recuperar-contrasenia .recuperar-form .error-container i {
+    flex: 0 0 auto;
+    font-size: 17px;
+    color: #f08a83;
+}
+
+.recuperar-contrasenia .recuperar-form .error-container p {
     margin: 0;
-    color: #ff9c91;
-    font-size: 13px;
-    line-height: 1.4;
-    text-align: left;
-    overflow-wrap: anywhere;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.45;
 }
 
 /* Botón principal */
@@ -8404,6 +8909,23 @@ margin-left: 20px;
     outline: none;
 }
 
+/* Ocultar controles numéricos del input */
+.input-tempo::-webkit-inner-spin-button,
+.input-tempo::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-tempo {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.input-tempo:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Controles */
 
 .contenedor-botones-tempo {
@@ -8770,6 +9292,7 @@ margin-left: 20px;
 
 .input-respuesta {
     display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
     gap: 8px;
     box-sizing: border-box;
@@ -8841,6 +9364,68 @@ margin-left: 20px;
 .boton-enviar-re-respuesta:disabled {
     cursor: wait;
     opacity: 0.6;
+}
+
+.contador-respuesta {
+    flex: 0 0 100%;
+    width: 100%;
+    box-sizing: border-box;
+    color: #96918a;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    text-align: right;
+    margin-top: 0;
+    transition: color 0.2s ease;
+}
+
+.contador-respuesta.limite-alcanzado {
+    color: #ea9a54;
+    font-weight: 600;
+}
+
+/* Error de respuestas y re-respuestas */
+
+.input-respuesta .error-container {
+    display: flex;
+    flex: 0 0 100%;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    margin: -2px 0 8px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    visibility: hidden;
+    opacity: 0;
+    background: rgba(133, 38, 38, 0.22);
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    color: #ffd8d5;
+    text-align: left;
+    transition: opacity 0.2s ease;
+}
+
+.input-respuesta .error-container.visible {
+    visibility: visible;
+    opacity: 1;
+    background: rgba(133, 38, 38, 0.22);
+    border-color: rgba(235, 105, 105, 0.48);
+    border-left-color: #e36b65;
+}
+
+.input-respuesta .error-container i {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 17px;
+    color: #f08a83;
+}
+
+.input-respuesta .error-container p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.45;
 }
 
 /* El input de re-respuesta sigue la alineación de su conversación */

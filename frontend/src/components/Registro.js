@@ -12,33 +12,48 @@ const Registro = () => {
   const [email, setEmail] = useState('');
   const [mensajeError, setMensajeError] = useState('');
   const [mensajeExito, setMensajeExito] = useState('');
+  const [erroresCampos, setErroresCampos] = useState({});
 
 
 
   const manejarRegistro = async (e) => {
-    e.preventDefault(); // Evitar que el formulario se envíe de manera convencional
-    try {
-      const response = await axios.post(`${API_BASE_URL}/api/usuarios/registrar`, {
-        nombre,
-        contrasenia,
-        email,
-      });
+    e.preventDefault();
 
-      // Si la respuesta es exitosa
-      setMensajeExito(response.data.mensaje);
-      setNombre('');
-      setContrasenia('');
-      setEmail('');
-      setMensajeError(''); // Limpiar el mensaje de error
+    setErroresCampos({});
+    setMensajeError('');
+    setMensajeExito('');
+
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/usuarios/registrar`, {
+            nombre,
+            contrasenia,
+            email,
+        });
+
+        setMensajeExito(response.data.mensaje);
+
+        setNombre('');
+        setContrasenia('');
+        setEmail('');
+
     } catch (error) {
-      
-      console.error('Error en el registro:', error); // Imprimir el error
- 
-      if (error.response) {
-        setMensajeError(error.response.data.mensaje || 'Error al registrar el usuario');
-      } else {
-        setMensajeError('Error de conexión');
-      }
+
+        console.error('Error en el registro:', error);
+
+        if (error.response) {
+            const errores = error.response.data.errores;
+
+            if (errores) {
+                setErroresCampos(errores);
+            } else {
+                setMensajeError(
+                    error.response.data.mensaje || 'Error al registrar el usuario.'
+                );
+            }
+
+        } else {
+            setMensajeError('Error de conexión. Intentá nuevamente.');
+        }
     }
   };
 
@@ -58,13 +73,6 @@ const Registro = () => {
           </div>
         )}
 
-        {mensajeExito && (
-          <div id="exito-container">
-            <i className="fa fa-check-circle"></i>
-            <p>{mensajeExito}</p>
-          </div>
-        )}
-
         <header className="titulo-registrar">
           <h1>Creá tu cuenta en JaviCook</h1>
           <p>Un espacio para tus recetas favoritas.</p>
@@ -74,17 +82,23 @@ const Registro = () => {
 
           <form className="new-user-form" onSubmit={manejarRegistro}>
               
-          <h2 className="new-user-title">Registre sus datos</h2>
-            <div className="entrada">
-              <input
-                type="text"
-                placeholder="Usuario"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="inp-nuevo-usuario"
-                required
-              />
-              <i className="fas fa-user"></i>
+            <h2 className="new-user-title">Registre sus datos</h2>
+              <div className="entrada">
+                <input
+                    type="text"
+                    placeholder="Usuario"
+                    value={nombre}
+                    onChange={(e) => {
+                        setNombre(e.target.value);
+                        setErroresCampos((prev) => ({
+                            ...prev,
+                            nombre: ''
+                        }));
+                    }}
+                    className={`inp-nuevo-usuario ${erroresCampos.nombre ? 'input-error' : ''}`}
+                    required
+                />
+                <i className="fas fa-user"></i>
             </div>
 
             <div className="entrada">
@@ -101,17 +115,45 @@ const Registro = () => {
 
             <div className="entrada">
               <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="inp-nuevo-email"
-                required
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => {
+                      setEmail(e.target.value);
+                      setErroresCampos((prev) => ({
+                          ...prev,
+                          email: ''
+                      }));
+                  }}
+                  className={`inp-nuevo-email ${erroresCampos.email ? 'input-error' : ''}`}
+                  required
               />
               <i className="fas fa-envelope"></i>
             </div>
 
+
+            <div className={`errores-registro ${Object.values(erroresCampos).some(Boolean) ? 'visible' : ''}`}>
+              {Object.entries(erroresCampos).map(([campo, mensaje]) => (
+                  mensaje && (
+                      <div className="error-item" key={campo}>
+                          <i className="fas fa-exclamation-circle"></i>
+                          <p>{mensaje}</p>
+                      </div>
+                  )
+              ))}
+            </div>
+
+
+
+
             <button type="submit" className="boton-registrar-usuario">Registrarse</button>
+
+            {mensajeExito && (
+              <div className="exito-registro">
+                  <i className="fas fa-check-circle"></i>
+                  <p>{mensajeExito}</p>
+              </div>
+            )}
 
             <div className="panel-links">
               <span className="mensaje-ir-login">

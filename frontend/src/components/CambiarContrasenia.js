@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -9,21 +9,16 @@ const CambiarContrasenia = () => {
     const { token } = useParams(); // Obtener el token de la URL
     const [nuevaContrasenia, setNuevaContrasenia] = useState('');
     const [confirmarContrasenia, setConfirmarContrasenia] = useState('');
+    const [error, setError] = useState('');
+    const [mostrarError, setMostrarError] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setMostrarError(false);
 
         if (nuevaContrasenia !== confirmarContrasenia) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Las contraseñas no coinciden.',
-                confirmButtonText: 'OK',
-
-                customClass: {
-                    confirmButton: 'swal-small-button-error',
-                }
-            });
+            setError('Las contraseñas no coinciden.');
+            setMostrarError(true);
             return;
         }
 
@@ -58,14 +53,29 @@ const CambiarContrasenia = () => {
             
         } catch (error) {
             console.error('Error al cambiar la contraseña:', error.response || error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.response?.data?.message || 'Error al cambiar la contraseña. Inténtalo de nuevo.',
-                confirmButtonText: 'OK',
-            });
+
+            if (error.response?.status === 400) {
+                setError('El enlace para cambiar la contraseña no es válido o ya fue utilizado.');
+            } else if (error.response?.status === 404) {
+                setError('No encontramos la cuenta asociada a este enlace.');
+            } else {
+                setError('No pudimos cambiar tu contraseña. Intentá nuevamente.');
+            }
+
+            setMostrarError(true);
         }
     };  
+
+
+    useEffect(() => {
+        if (mostrarError) {
+            const timer = setTimeout(() => {
+                setMostrarError(false);
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [mostrarError]);
 
     return (
         <div>
@@ -85,12 +95,15 @@ const CambiarContrasenia = () => {
 
                         <p className="p-recuperar-pass">Ingrese su nueva contraseña y confírmela para poder acceder a su cuenta nuevamente.</p>
 
+                        
+
                         <div className='entrada-recuperar'>
                             <input
                                 type="password"
                                 placeholder="Nueva Contraseña"
                                 value={nuevaContrasenia}
                                 onChange={(e) => setNuevaContrasenia(e.target.value)}
+                                required
                             />
                         </div>
                         <div className='entrada-recuperar'>
@@ -99,7 +112,17 @@ const CambiarContrasenia = () => {
                                 placeholder="Confirmar Contraseña"
                                 value={confirmarContrasenia}
                                 onChange={(e) => setConfirmarContrasenia(e.target.value)}
+                                required
                             />
+                        </div>
+
+                        <div
+                            className={`error-container ${mostrarError ? 'visible' : ''}`}
+                            role="alert"
+                            aria-hidden={!mostrarError}
+                        >
+                            <i className="fas fa-exclamation-circle"></i>
+                            <p>{error}</p>
                         </div>
 
                         <button className='boton-cambiar-contrasenia' type="submit">Cambiar contraseña</button>

@@ -16,69 +16,121 @@ const generarSlug = (texto) =>
     .replace(/[^\w-]/g, '');
 
 
+
 // Ruta para valorar una receta
 router.post('/', async (req, res) => {
   const { recetaId, usuarioId, valor } = req.body;
 
-
-
   try {
-    // Verificar si el usuario ya valoró esta receta
-    const valoracionExistente = await Valoracion.findOne({ receta: recetaId, usuario: usuarioId });
-    
+    // Validar los datos recibidos
+    if (!recetaId || !usuarioId) {
+      return res.status(400).json({
+        mensaje: 'Faltan datos para registrar la valoración.'
+      });
+    }
+
+    const valorNumerico = Number(valor);
+
+    if (
+      !Number.isInteger(valorNumerico) ||
+      valorNumerico < 1 ||
+      valorNumerico > 5
+    ) {
+      return res.status(400).json({
+        mensaje: 'La valoración debe ser un número entero entre 1 y 5.'
+      });
+    }
+
+    // Comprobar que existan la receta y el usuario
+    const receta = await Receta.findById(recetaId);
+
+    if (!receta) {
+      return res.status(404).json({
+        mensaje: 'La receta no existe.'
+      });
+    }
+
+    const usuarioEmisor = await Usuario.findById(usuarioId).select('nombre');
+
+    if (!usuarioEmisor) {
+      return res.status(404).json({
+        mensaje: 'El usuario no existe.'
+      });
+    }
+
+    // Comprobar si el usuario ya había valorado esta receta
+    const valoracionExistente = await Valoracion.findOne({
+      receta: recetaId,
+      usuario: usuarioId
+    });
+
+    const esNuevaValoracion = !valoracionExistente;
+
     if (valoracionExistente) {
-      // Si ya valoró, actualiza la valoración
-      valoracionExistente.valor = valor;
+      // Modificar la valoración existente
+      valoracionExistente.valor = valorNumerico;
       await valoracionExistente.save();
     } else {
-      // Si no ha valorado, crea una nueva valoración
+      // Crear una valoración nueva
       const nuevaValoracion = new Valoracion({
         receta: recetaId,
         usuario: usuarioId,
-        valor
+        valor: valorNumerico
       });
+
       await nuevaValoracion.save();
     }
 
-    // Calcular el promedio de la receta
+    // Recalcular el promedio
     const valoraciones = await Valoracion.find({ receta: recetaId });
-    const promedio = Math.round(valoraciones.reduce((acumulado, val) => acumulado + val.valor, 0) / valoraciones.length);
 
-    // Actualizar el promedio en el modelo Receta
-    const receta = await Receta.findById(recetaId);
+    const promedio = Math.round(
+      valoraciones.reduce(
+        (acumulado, valoracion) => acumulado + valoracion.valor,
+        0
+      ) / valoraciones.length
+    );
+
     receta.valoracion = promedio;
     await receta.save();
 
-
-
+    // Notificar únicamente cuando se registra una valoración nueva
+    // y el autor de la receta no es quien está valorando.
+    if (
+      esNuevaValoracion &&
+      receta.usuario &&
+      receta.usuario.toString() !== usuarioId.toString()
+    ) {
       const slug = generarSlug(receta.titulo);
 
-    // Crear la notificación para el autor de la receta
-    // Poblar el usuario para obtener su nombre
-    // Crear la notificación para el autor de la receta
-    const usuarioEmisor = await Usuario.findById(usuarioId).select('nombre'); 
+      try {
+        const nuevaNotificacion = new Notificacion({
+          usuarioDestino: receta.usuario,
+          mensaje: `@${usuarioEmisor.nombre} valoró tu receta "${receta.titulo}"`,
+          enlace: `${process.env.FRONTEND_URL}/detalle-receta/${slug}/${receta._id}`,
+          leida: false
+        });
 
-    if (!usuarioEmisor) {
-      console.error("Usuario emisor no encontrado para ID:", usuarioId);
-    } else {
-      if (receta.usuario && receta.usuario.toString() !== usuarioId.toString()) {  // No notificar si el autor valoró su propia receta
-          try {
-              const nuevaNotificacion = new Notificacion({
-                  usuarioDestino: receta.usuario,  
-                  mensaje: `@${usuarioEmisor.nombre} valoró tu receta "${receta.titulo}"`,
-                  enlace:  `${process.env.FRONTEND_URL}/detalle-receta/${slug}/${receta._id}`,
-                  leida: false
-              });
-              await nuevaNotificacion.save();
-          } catch (err) {
-              console.error("Error al guardar la notificación:", err);
-          }
+        await nuevaNotificacion.save();
+      } catch (errorNotificacion) {
+        console.error(
+          'Error al guardar la notificación:',
+          errorNotificacion
+        );
       }
     }
 
-    res.status(200).json({ mensaje: 'Valoración guardada correctamente', valoracion: receta.valoracion });
+    res.status(200).json({
+      mensaje: 'Valoración guardada correctamente',
+      valoracion: receta.valoracion
+    });
+
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al valorar la receta', error });
+    console.error('Error al valorar la receta:', error);
+
+    res.status(500).json({
+      mensaje: 'Error al valorar la receta.'
+    });
   }
 });
 

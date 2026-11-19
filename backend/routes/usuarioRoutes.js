@@ -22,30 +22,73 @@ const router = express.Router();
 router.post('/registrar', async (req, res) => {
   try {
     const { nombre, contrasenia, email } = req.body;
-    
 
-     // Validación simple
-     if (!nombre || !contrasenia || !email) {
-      return res.status(400).json({ mensaje: 'Todos los campos son requeridos' });
+    // Validar campos obligatorios
+    if (!nombre || !contrasenia || !email) {
+      return res.status(400).json({
+        mensaje: 'Todos los campos son requeridos'
+      });
+    }
+
+    // Verificar si el usuario o el email ya existen
+    const [usuarioExistente, emailExistente] = await Promise.all([
+      Usuario.findOne({ nombre }),
+      Usuario.findOne({ email })
+    ]);
+
+    const errores = {};
+
+    if (usuarioExistente) {
+      errores.nombre = 'Este nombre de usuario ya está en uso.';
+    }
+
+    if (emailExistente) {
+      errores.email = 'Este correo electrónico ya está registrado.';
+    }
+
+    // Si hay duplicados, devolver los errores correspondientes
+    if (Object.keys(errores).length > 0) {
+      return res.status(409).json({ errores });
     }
 
     // Hashear la contraseña
-    const hashedContrasenia = await bcrypt.hash(contrasenia, 10); 
+    const hashedContrasenia = await bcrypt.hash(contrasenia, 10);
 
     // Crear el nuevo usuario
-    const nuevoUsuario = new Usuario({ nombre, contrasenia: hashedContrasenia, email});
-
-   
+    const nuevoUsuario = new Usuario({
+      nombre,
+      contrasenia: hashedContrasenia,
+      email
+    });
 
     await nuevoUsuario.save();
-    
-    res.status(201).json({ mensaje: 'Usuario creado exitosamente', usuario: nuevoUsuario }
-    );
+
+    res.status(201).json({
+      mensaje: 'Usuario creado exitosamente',
+      usuario: nuevoUsuario
+    });
+
   } catch (error) {
-    if (error.code === 11000) { // Código de error para clave duplicada
-      return res.status(400).json({ mensaje: 'El correo electrónico ya está registrado' });
+    // Mantener protección ante duplicados simultáneos
+    if (error.code === 11000) {
+      const errores = {};
+
+      if (error.keyPattern?.nombre || error.keyValue?.nombre) {
+        errores.nombre = 'Este nombre de usuario ya está en uso.';
+      }
+
+      if (error.keyPattern?.email || error.keyValue?.email) {
+        errores.email = 'Este correo electrónico ya está registrado.';
+      }
+
+      return res.status(409).json({ errores });
     }
-    res.status(500).json({ mensaje: 'Error al crear el usuario', error });
+
+    console.error('Error al registrar usuario:', error);
+
+    res.status(500).json({
+      mensaje: 'Ocurrió un error al registrar el usuario.'
+    });
   }
 });
 
@@ -77,30 +120,54 @@ router.post('/login', async (req, res) => {
 
 // Ruta para actualizar el perfil del usuario
 router.put('/actualizarPerfil/:id', async (req, res) => {
-  try {
-      //Asigna en la variable nombre y email los valores que vienen en el body de la request llamados nombre y email (el objeto).    
-      const { nombre, email } = req.body;
-      const usuarioId = req.params.id;
+    try {
+        //Asigna en la variable nombre y email los valores que vienen en el body de la request llamados nombre y email (el objeto).    
+        const { nombre, email } = req.body;
+        const usuarioId = req.params.id;
 
-      // Actualizar usuario en la base de datos
-      const usuarioActualizado = await Usuario.findByIdAndUpdate(
-          usuarioId,
-          { nombre, email },
-          { new: true } // Para que devuelva el documento actualizado
-      );
+        const nombreLimpio = typeof nombre === 'string' ? nombre.trim() : '';
+        const emailLimpio = typeof email === 'string' ? email.trim() : '';
 
-      if (!usuarioActualizado) {
-          return res.status(404).json({ error: 'Usuario no encontrado' });
-      }
+        if (!nombreLimpio) {
+            return res.status(400).json({ error: 'El nombre de usuario es obligatorio.' });
+        }
 
-      res.json(usuarioActualizado);
-  } catch (error) {
-      // Si el error es de duplicidad (duplicate key error) se verifica con error.code === 11000
-      if (error.code === 11000) {
-          return res.status(400).json({ error: 'El email o el usuario que intentas modificar ya están en uso' });
-      }
-      res.status(500).json({ error: 'Error al actualizar el perfil del usuario' });
-  }
+        if (!emailLimpio) {
+            return res.status(400).json({ error: 'El correo electrónico es obligatorio.' });
+        }
+
+        const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLimpio);
+
+        if (!emailValido) {
+            return res.status(400).json({ error: 'Ingresá un correo electrónico válido.' });
+        }
+
+        const usuarioActualizado = await Usuario.findByIdAndUpdate(
+            usuarioId,
+            { nombre: nombreLimpio, email: emailLimpio },
+            { new: true, runValidators: true }
+        );
+
+        if (!usuarioActualizado) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.json(usuarioActualizado);
+    } catch (error) {
+        // Si el error es de duplicidad (duplicate key error) se verifica con error.code === 11000
+        if (error.code === 11000) {
+            if (error.keyPattern?.nombre) {
+                return res.status(400).json({ error: 'Ese nombre de usuario ya está en uso.' });
+            }
+
+            if (error.keyPattern?.email) {
+                return res.status(400).json({ error: 'Ese correo electrónico ya está registrado.' });
+            }
+
+            return res.status(400).json({ error: 'El nombre de usuario o correo ya están en uso.' });
+        }
+        res.status(500).json({ error: 'Error al actualizar el perfil del usuario' });
+    }
 });
 
 

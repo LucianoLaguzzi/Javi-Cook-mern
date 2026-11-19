@@ -27,16 +27,23 @@ const DetalleReceta = () => {
   const [pasos, setPasos] = useState([]);
   const [tituloOriginal, setTituloOriginal] = useState(receta.titulo); // Estado para el título original
   const [tituloEditable, setTituloEditable] = useState(false);
+  const [errorTituloDetalle, setErrorTituloDetalle] = useState('');
   const [ingredientesCantidades, setIngredientesCantidades] = useState('');
   const [ingredientesEditable, setIngredientesEditable] = useState(false);
   const [filasIngredientes, setFilasIngredientes] = useState([]);
   const [ingredientesOriginales, setIngredientesOriginales] = useState(ingredientesCantidades); // Estado para los ingredientes originales
+  const [errorIngredientesDetalle, setErrorIngredientesDetalle] = useState('');
   const [pasosEditable, setPasosEditable] = useState(false);
   const [pasosEditados, setPasosEditados] = useState([]);
+  const [errorPasosDetalle, setErrorPasosDetalle] = useState('');
+  const [guardandoPasos, setGuardandoPasos] = useState(false);
   const [valoracionUsuario, setValoracionUsuario] = useState(0); // Valor del usuario actual
   const [yaValorado, setYaValorado] = useState(false); // Para verificar si ya valoró
   const [valoracionHover, setValoracionHover] = useState(0); // Valoración temporal para hover
   const [edicionActiva, setEdicionActiva] = useState(false);  // Controla si la edición está activa
+  const [guardandoValoracion, setGuardandoValoracion] = useState(false);
+  const [errorValoracion, setErrorValoracion] = useState('');
+  const [eliminandoValoracion, setEliminandoValoracion] = useState(false);
   const [loading, setLoading] = useState(false); // Estado para el cartel de carga al eliminar
   const [isLoading, setIsLoading] = useState(true); // Nuevo estado para loading de carga de recetas 
   const [tiempo, setTiempo] = useState(0); // Tiempo en segundos
@@ -53,9 +60,12 @@ const DetalleReceta = () => {
   const [nuevoComentarioEditado, setNuevoComentarioEditado] = useState('');
   const [esRespuesta, setEsRespuesta] = useState(false); // Indica si estamos editando una respuesta
   const [comentarioPadreId, setComentarioPadreId] = useState(null); // ID del comentario padre (para respuestas)
+  const [errorRespuesta, setErrorRespuesta] = useState('');
   const [valoracionOriginal, setValoracionOriginal] = useState(null); // Valoración original antes de editar
   const [mostrarEliminar, setMostrarEliminar] = useState(false); // Controla la visibilidad del ícono de eliminar
   const [isEnviando, setIsEnviando] = useState(false);
+  const [errorComentario, setErrorComentario] = useState('');
+  const [errorEdicionComentario, setErrorEdicionComentario] = useState('');
   const [isEnviandoRespuesta, setIsEnviandoRespuesta] = useState(false);
   const [copiado, setCopiado] = useState(false);
   const [imagenesPasos, setImagenesPasos] = useState([]);
@@ -104,7 +114,6 @@ const DetalleReceta = () => {
 
         if (slug !== slugCorrecto) {
           navigate(`/detalle-receta/${slugCorrecto}/${id}`, { replace: true });
-          return;
         }
 
         setImagenesPasos(recetaData.imagenesPasos || []);
@@ -223,17 +232,25 @@ const DetalleReceta = () => {
   
   // Métodos del temporizador
   const iniciarTemporizador = () => {
-    if (tiempo > 0) {
+    if (tiempo > 0 && !activo) {
+      setTiempoInicial(tiempo);
+      setUltimaActualizacion(Date.now());
       setActivo(true);
-      setUltimaActualizacion(Date.now());  // Registrar el momento en que se inicia o reanuda el temporizador
     }
   };
-  
+
   const pausarTemporizador = () => {
+    if (!activo) return;
+
+    const tiempoTranscurrido = Math.floor(
+      (Date.now() - ultimaActualizacion) / 1000
+    );
+
+    const tiempoRestante = Math.max(0, tiempoInicial - tiempoTranscurrido);
+
+    setTiempo(tiempoRestante);
+    setTiempoInicial(tiempoRestante);
     setActivo(false);
-    // Guardar el tiempo transcurrido al pausar
-    const elapsedTime = Math.floor((Date.now() - ultimaActualizacion) / 1000);  // Tiempo transcurrido hasta el momento
-    setTiempoInicial(tiempoInicial - elapsedTime); // Actualizar el tiempo inicial con lo que queda
   };
   
   const reiniciarTemporizador = () => {
@@ -244,69 +261,120 @@ const DetalleReceta = () => {
   };
   
   const handleTiempoInput = (e) => {
-    const valor = parseInt(e.target.value, 10);
-    setInputTiempo(e.target.value);  // Actualizar el valor del input
-    setTiempoInicial(isNaN(valor) ? 0 : valor * 60);  // Convertir minutos a segundos
-    setTiempo(isNaN(valor) ? 0 : valor * 60);  // Establecer tiempo inicial
+    const valor = e.target.value;
+
+    setInputTiempo(valor);
+
+    if (valor === '') {
+      setTiempo(0);
+      setTiempoInicial(0);
+      return;
+    }
+
+    const minutos = Number(valor);
+
+    if (Number.isInteger(minutos) && minutos >= 1) {
+      setTiempoInicial(minutos * 60);
+      setTiempo(minutos * 60);
+    } else {
+      setTiempo(0);
+      setTiempoInicial(0);
+    }
   };
 
 
   // Manejar la edición del título
   const cambiarTitulo = () => {
-    setTituloOriginal(receta.titulo); // Guarda el título original
-    setTituloEditable(true);
+      setTituloOriginal(receta.titulo);
+      setErrorTituloDetalle('');
+      setTituloEditable(true);
   };
-
 
   const cancelarTitulo = () => {
-    setReceta({ ...receta, titulo: tituloOriginal }); // Restablece el título al original
-    setTituloEditable(false);
+      setReceta({ ...receta, titulo: tituloOriginal });
+      setErrorTituloDetalle('');
+      setTituloEditable(false);
   };
 
-  // Función para guardar el nuevo título
+  // Guardar el nuevo título
   const guardarTitulo = async () => {
+      const tituloLimpio = receta.titulo?.trim() || '';
+
+      if (!tituloLimpio) {
+          setErrorTituloDetalle('El título de la receta no puede estar vacío.');
+          return;
+      }
+
       try {
-      await axios.put(`${API_BASE_URL}/api/recetas/${id}/titulo`, { titulo: receta.titulo });
-      setTituloEditable(false);
+          await axios.put(`${API_BASE_URL}/api/recetas/${id}/titulo`, {
+              titulo: tituloLimpio
+          });
+
+          setReceta({ ...receta, titulo: tituloLimpio });
+          setTituloOriginal(tituloLimpio);
+          setErrorTituloDetalle('');
+          setTituloEditable(false);
+
       } catch (error) {
-      console.error('Error al guardar el título', error);
+          console.error('Error al guardar el título', error);
+
+          setErrorTituloDetalle(
+              error.response?.data?.message ||
+              'No se pudo guardar el título. Intentá nuevamente.'
+          );
       }
   };
 
 
 
-   // Manejar la edición de ingredientes
+  // Manejar la edición de ingredientes
   const cambiarIngredientes = () => {
     const filas = ingredientesCantidades
-      .split(/\r?\n/)
-      .map((linea) => {
-        const separador = linea.indexOf(':');
+        .split(/\r?\n/)
+        .map((linea) => {
+            const separador = linea.indexOf(':');
 
-        if (separador === -1) {
-          return {
-            nombre: linea.trim(),
-            cantidad: ''
-          };
-        }
+            if (separador === -1) {
+                return {
+                    nombre: linea.trim(),
+                    cantidad: ''
+                };
+            }
 
-        return {
-          nombre: linea.slice(0, separador).trim(),
-          cantidad: linea.slice(separador + 1).trim()
-        };
-      });
+            return {
+                nombre: linea.slice(0, separador).trim(),
+                cantidad: linea.slice(separador + 1).trim()
+            };
+        });
 
     setFilasIngredientes(filas);
     setIngredientesOriginales(ingredientesCantidades);
+    setErrorIngredientesDetalle('');
     setIngredientesEditable(true);
   };
 
   // Actualizar nombre o cantidad de una fila
   const actualizarFilaIngrediente = (index, campo, valor) => {
-    setFilasIngredientes((filas) =>
-      filas.map((fila, i) =>
-        i === index ? { ...fila, [campo]: valor } : fila
-      )
-    );
+    setFilasIngredientes((filas) => {
+        const filasActualizadas = filas.map((fila, i) =>
+            i === index ? { ...fila, [campo]: valor } : fila
+        );
+
+        const filasConDatos = filasActualizadas.filter(
+            fila => fila.nombre.trim() || fila.cantidad.trim()
+        );
+
+        if (
+            filasConDatos.length > 0 &&
+            filasConDatos.every(
+                fila => fila.nombre.trim() && fila.cantidad.trim()
+            )
+        ) {
+            setErrorIngredientesDetalle('');
+        }
+
+        return filasActualizadas;
+    });
   };
 
   // Agregar una nueva fila
@@ -331,106 +399,147 @@ const DetalleReceta = () => {
   // Cancelar la edición de ingredientes
   const cancelarIngredientes = () => {
     setIngredientesCantidades(ingredientesOriginales);
+    setErrorIngredientesDetalle('');
     setIngredientesEditable(false);
-  };
+};
 
   // Guardar ingredientes
   const guardarIngredientes = async () => {
-    const ingredientesFormateados = filasIngredientes
-      .filter((fila) => fila.nombre.trim() || fila.cantidad.trim())
-      .map((fila) => `${fila.nombre.trim()}:${fila.cantidad.trim()}`)
-      .join('\n');
+    const filasConDatos = filasIngredientes.filter(
+        fila => fila.nombre.trim() || fila.cantidad.trim()
+    );
+
+    if (filasConDatos.length === 0) {
+        setErrorIngredientesDetalle(
+            'Agregá al menos un ingrediente con su cantidad.'
+        );
+        return;
+    }
+
+    const hayFilasIncompletas = filasConDatos.some(
+        fila => !fila.nombre.trim() || !fila.cantidad.trim()
+    );
+
+    if (hayFilasIncompletas) {
+        setErrorIngredientesDetalle(
+            'Completá el nombre y la cantidad de cada ingrediente.'
+        );
+        return;
+    }
+
+    const ingredientesFormateados = filasConDatos
+        .map(fila => `${fila.nombre.trim()}:${fila.cantidad.trim()}`)
+        .join('\n');
 
     try {
-      await axios.put(
-        `${API_BASE_URL}/api/recetas/${id}/ingredientesCantidades`,
-        { ingredientesCantidades: ingredientesFormateados }
-      );
+        await axios.put(
+            `${API_BASE_URL}/api/recetas/${id}/ingredientesCantidades`,
+            { ingredientesCantidades: ingredientesFormateados }
+        );
 
-      setIngredientesCantidades(ingredientesFormateados);
-      setIngredientesOriginales(ingredientesFormateados);
-      setIngredientesEditable(false);
+        setIngredientesCantidades(ingredientesFormateados);
+        setIngredientesOriginales(ingredientesFormateados);
+        setErrorIngredientesDetalle('');
+        setIngredientesEditable(false);
+
     } catch (error) {
-      console.error('Error al guardar ingredientes', error);
+        console.error('Error al guardar ingredientes', error);
+
+        setErrorIngredientesDetalle(
+            error.response?.data?.message ||
+            'No se pudieron guardar los ingredientes. Intentá nuevamente.'
+        );
     }
   };
 
   // Guardar pasos
   const guardarPasos = async () => {
+    if (guardandoPasos) return;
+
+    const pasosFormateados = pasosEditados.map(paso =>
+        typeof paso === 'string' ? paso.trim() : ''
+    );
+
+    if (pasosFormateados.length === 0) {
+        setErrorPasosDetalle('Agregá al menos un paso para preparar la receta.');
+        return;
+    }
+
+    if (pasosFormateados.some(paso => !paso)) {
+        setErrorPasosDetalle('Completá todos los pasos antes de guardar.');
+        return;
+    }
+
+    setErrorPasosDetalle('');
+    setGuardandoPasos(true);
+
     try {
-      const pasosFormateados = [...pasosEditados]; // mandamos array real
+        let imagenesPasosUrls = new Array(pasosFormateados.length).fill(null);
+        const imagenesAEliminarFinal = [...imagenesAEliminar];
 
-      let imagenesPasosUrls = new Array(pasosEditados.length).fill(null);
+        // SUBIR SOLO LAS IMÁGENES NUEVAS
+        for (let i = 0; i < pasosFormateados.length; i++) {
+            const fileData = imagenesPasosFiles[i];
 
-      // 🧠 Vamos a registrar qué imágenes hay que eliminar
-      const imagenesAEliminarFinal = [...imagenesAEliminar];
+            if (fileData?.file instanceof File) {
+                if (imagenesOriginales[i]) {
+                    imagenesAEliminarFinal.push(imagenesOriginales[i]);
+                }
 
-      // 🔥 SUBIR SOLO LAS IMÁGENES NUEVAS
-      for (let i = 0; i < pasosEditados.length; i++) {
+                const formData = new FormData();
+                formData.append("file", fileData.file);
+                formData.append("upload_preset", "recipe_images");
+                formData.append("folder", "recetas");
 
-        const fileData = imagenesPasosFiles[i];
+                const resCloudinary = await axios.post(
+                    "https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload",
+                    formData
+                );
 
-        // 📷 nueva imagen subida
-        if (fileData?.file instanceof File) {
-
-          if (imagenesOriginales[i]) {
-            imagenesAEliminarFinal.push(imagenesOriginales[i]);
-          }
-
-          const formData = new FormData();
-          formData.append("file", fileData.file);
-          formData.append("upload_preset", "recipe_images");
-          formData.append("folder", "recetas");
-
-          const resCloudinary = await axios.post(
-            "https://api.cloudinary.com/v1_1/dzaqvpxqk/image/upload",
-            formData
-          );
-
-          imagenesPasosUrls[i] = resCloudinary.data.secure_url;
+                imagenesPasosUrls[i] = resCloudinary.data.secure_url;
+            } else if (imagenesOriginales[i]) {
+                imagenesPasosUrls[i] = imagenesOriginales[i];
+            }
         }
 
-        // 📌 mantener imagen existente
-        else if (imagenesOriginales[i]) {
-          imagenesPasosUrls[i] = imagenesOriginales[i];
+        const response = await axios.put(
+            `${API_BASE_URL}/api/recetas/${id}/pasos`,
+            {
+                pasos: pasosFormateados,
+                imagenesPasos: imagenesPasosUrls,
+                imagenesAEliminar: imagenesAEliminarFinal
+            }
+        );
+
+        if (response.status === 200) {
+            setPasos(pasosFormateados);
+
+            setReceta(prev => ({
+                ...prev,
+                imagenesPasos: imagenesPasosUrls
+            }));
+
+            imagenesPasosFiles.forEach(img => {
+                if (img?.preview && img.file) {
+                    URL.revokeObjectURL(img.preview);
+                }
+            });
+
+            setImagenesPasosFiles([]);
+            setPasosEditable(false);
+            setImagenesAEliminar([]);
+            setErrorPasosDetalle('');
         }
-      }
-
-
-
-
-      // 🔥 GUARDAR EN TU BACKEND
-      const response = await axios.put(
-        `${API_BASE_URL}/api/recetas/${id}/pasos`,
-        {
-          pasos: pasosFormateados,
-          imagenesPasos: imagenesPasosUrls,
-          imagenesAEliminar: imagenesAEliminarFinal
-        }
-      );
-
-      if (response.status === 200) {
-        console.log("Pasos e imágenes actualizados");
-
-        setPasos(pasosFormateados);
-        setReceta(prev => ({
-          ...prev,
-          imagenesPasos: imagenesPasosUrls
-        }));
-
-        imagenesPasosFiles.forEach(img => {
-          if (img?.preview && img.file) {
-            URL.revokeObjectURL(img.preview);
-          }
-        });
-
-        setImagenesPasosFiles([]); // limpiar buffer
-        setPasosEditable(false);
-        setImagenesAEliminar([]);
-      }
 
     } catch (error) {
-      console.error("Error al actualizar pasos", error);
+        console.error("Error al actualizar pasos", error);
+
+        setErrorPasosDetalle(
+            error.response?.data?.message ||
+            'No se pudieron guardar los pasos. Intentá nuevamente.'
+        );
+    } finally {
+        setGuardandoPasos(false);
     }
   };
 
@@ -445,61 +554,103 @@ const DetalleReceta = () => {
 
   // Agregar comentario
   const agregarComentario = async () => {
-    if (!nuevoComentario || isEnviando) return;
+    const comentarioLimpio = nuevoComentario.trim();
 
-    setIsEnviando(true); // Marcamos que ya se está enviando
-    try {
-        const response = await axios.post(
-            `${API_BASE_URL}/api/recetas/${id}/comentarios`,
-            { comentario: nuevoComentario, usuario: usuarioEnSesion._id }
-        );
+    if (isEnviando) return;
 
-        // Recupera el comentario con el usuario ya poblado
-        const comentarioPoblado = response.data.comentarioGuardado;
-
-        setComentarios((prevComentarios) => [...prevComentarios, comentarioPoblado]);
-        setNuevoComentario('');
-    } catch (error) {
-        console.error('Error al agregar el comentario:', error);
+    if (!comentarioLimpio) {
+      setErrorComentario('Escribí un comentario antes de enviarlo.');
+      return;
     }
-    setIsEnviando(false); // Se restablece el estado, permitiendo nuevos envíos
-  };
 
-  // Función para agregar respuesta
-  const agregarRespuesta = async () => {
-    if (!respuestaTexto.trim() || isEnviandoRespuesta) return; // No enviar si está vacío
-  
-    setIsEnviandoRespuesta(true); // Marcar que ya se está enviando una respuesta
+    if (comentarioLimpio.length > 500) {
+      setErrorComentario('El comentario no puede superar los 500 caracteres.');
+      return;
+    }
+
+    setIsEnviando(true);
+    setErrorComentario('');
 
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/recetas/${id}/comentarios`,
         {
-          comentario: respuestaTexto, // Texto de la respuesta
-          usuario: usuarioEnSesion._id, // Usuario actual
-          parentCommentId: comentarioAResponder, // ID del comentario o respuesta al que responde
+          comentario: comentarioLimpio,
+          usuario: usuarioEnSesion._id
         }
       );
-  
+
+      const comentarioPoblado = response.data.comentarioGuardado;
+
+      setComentarios(prev => [...prev, comentarioPoblado]);
+      setNuevoComentario('');
+
+    } catch (error) {
+      console.error('Error al agregar el comentario:', error);
+
+      setErrorComentario(
+        error.response?.data?.message ||
+        'No se pudo publicar el comentario. Intentá nuevamente.'
+      );
+
+    } finally {
+      setIsEnviando(false);
+    }
+  };
+
+  // Función para agregar respuesta
+  const agregarRespuesta = async () => {
+    const respuestaLimpia = respuestaTexto.trim();
+
+    if (isEnviandoRespuesta) return;
+
+    if (!respuestaLimpia) {
+      setErrorRespuesta('Escribí una respuesta antes de enviarla.');
+      return;
+    }
+
+    if (respuestaLimpia.length > 500) {
+      setErrorRespuesta('La respuesta no puede superar los 500 caracteres.');
+      return;
+    }
+
+    setIsEnviandoRespuesta(true);
+    setErrorRespuesta('');
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/recetas/${id}/comentarios`,
+        {
+          comentario: respuestaLimpia,
+          usuario: usuarioEnSesion._id,
+          parentCommentId: comentarioAResponder,
+        }
+      );
+
       const nuevaRespuesta = response.data.comentarioGuardado;
-  
-      // Actualizar los comentarios en el estado local
-      setComentarios((prevComentarios) =>
+
+      setComentarios(prev =>
         agregarRespuestaAlArbol(
-          prevComentarios,
+          prev,
           comentarioAResponder,
           nuevaRespuesta
         )
       );
-  
-      // Limpiar el estado
-      setRespuestaTexto("");
-      setComentarioAResponder(null);
-    } catch (error) {
-      console.error("Error al agregar la respuesta:", error);
-    }
 
-    setIsEnviandoRespuesta(false); // Permitir nuevos envíos
+      setRespuestaTexto('');
+      setComentarioAResponder(null);
+
+    } catch (error) {
+      console.error('Error al agregar la respuesta:', error);
+
+      setErrorRespuesta(
+        error.response?.data?.message ||
+        'No se pudo publicar la respuesta. Intentá nuevamente.'
+      );
+
+    } finally {
+      setIsEnviandoRespuesta(false);
+    }
   };
 
 
@@ -559,6 +710,7 @@ const DetalleReceta = () => {
 
   // Función para manejar la respuesta
   const responderComentario = (comentarioId) => {
+    setErrorRespuesta('');
     setComentarioAResponder((prevId) => (prevId === comentarioId ? null : comentarioId)); // Alternar entre abrir y cerrar el input
     setTimeout(() => { // Pequeño delay para asegurar que el input está en el DOM
       if (inputRef.current) {
@@ -580,6 +732,7 @@ const DetalleReceta = () => {
 
   // Función para manejar la edición de comentario o de respuestas
   const editarComentario = (comentarioId, textoActual) => {
+    setErrorEdicionComentario('');
     setComentarioEditado(comentarioId);
     setNuevoComentarioEditado(textoActual);
   };
@@ -594,7 +747,20 @@ const DetalleReceta = () => {
 
   // Función para guardar la edición de un comentario o respuesta
   const guardarEdicion = async () => {
-    if (!nuevoComentarioEditado.trim()) return; //nuevoComentarioEditado es el comentario o respuesta ya editada (texto)
+
+    const comentarioLimpio = nuevoComentarioEditado.trim();
+
+    if (!comentarioLimpio) {
+      setErrorEdicionComentario('El comentario no puede estar vacío.');
+      return;
+    }
+
+    if (comentarioLimpio.length > 500) {
+      setErrorEdicionComentario('El comentario no puede superar los 500 caracteres.');
+      return;
+    }
+
+    setErrorEdicionComentario('');
 
     try {
       // Llamada al servidor para editar comentario o respuesta
@@ -603,7 +769,7 @@ const DetalleReceta = () => {
           ? `${API_BASE_URL}/api/recetas/${id}/comentarios/${comentarioPadreId}/respuestas/${comentarioEditado}` //re-respuesta
           : `${API_BASE_URL}/api/recetas/${id}/comentarios/${comentarioEditado}`, //Comentario o respuesta
         {
-          comentario: nuevoComentarioEditado,
+          comentario: comentarioLimpio,
           usuario: usuarioEnSesion._id,
         }
       );
@@ -650,6 +816,7 @@ const DetalleReceta = () => {
 
   // Función para manejar la edición de re-respuestas
   const editarReRespuesta = (comentarioId, textoActual, respuestaPadreId) => {
+    setErrorEdicionComentario('');
     setComentarioEditado(comentarioId);
     setNuevoComentarioEditado(textoActual);
     setEsRespuesta(true);
@@ -666,20 +833,31 @@ const DetalleReceta = () => {
 
   // Guardar edición de re-respuesta
   const guardarEdicionReRespuesta = async (comentarioId) => {
-    if (!nuevoComentarioEditado.trim()) return;
+    const comentarioLimpio = nuevoComentarioEditado.trim();
+
+    if (!comentarioLimpio) {
+      setErrorEdicionComentario('El comentario no puede estar vacío.');
+      return;
+    }
+
+    if (comentarioLimpio.length > 500) {
+      setErrorEdicionComentario('El comentario no puede superar los 500 caracteres.');
+      return;
+    }
+
+    setErrorEdicionComentario('');
 
     try {
       const response = await axios.put(
         `${API_BASE_URL}/api/recetas/${id}/rerespuesta/${comentarioId}`,
         {
-          comentario: nuevoComentarioEditado,
+          comentario: comentarioLimpio,
           usuario: usuarioEnSesion._id,
         }
       );
 
       const comentarioActualizado = response.data.comentarioActualizado;
 
-      // Actualizar el estado local de los comentarios
       setComentarios((prevComentarios) =>
         prevComentarios.map((comentario) => {
           if (comentario.respuestas) {
@@ -708,7 +886,7 @@ const DetalleReceta = () => {
     } catch (error) {
       console.error('Error al guardar la edición de la re-respuesta:', error);
     }
-  };
+  };  
   
   // Función para capitalizar la primera letra de cada paso
   const capitalizarPrimeraLetra = (texto) => {
@@ -716,21 +894,39 @@ const DetalleReceta = () => {
   };
 
 
-  {/* Función para eliminar la valoración */}
+  //Función para eliminar la valoración
   const eliminarValoracion = async () => {
+    if (eliminandoValoracion || guardandoValoracion) return;
+
+    setEliminandoValoracion(true);
+    setErrorValoracion('');
+
     try {
-      // Llamada al backend para eliminar la valoración
-      await axios.delete(`${API_BASE_URL}/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`);
+      const response = await axios.delete(
+        `${API_BASE_URL}/api/valoraciones/${id}/usuario/${usuarioEnSesion._id}`
+      );
 
-      // Actualiza el estado de la valoración
-      setValoracionUsuario(0);  // La valoración pasa a ser 0
-      setYaValorado(false);  // El usuario ya no ha valorado la receta
+      setValoracionUsuario(0);
+      setYaValorado(false);
+      setReceta(prev => ({
+        ...prev,
+        valoracion: response.data.valoracion
+      }));
 
-      // Opcional: Actualizar el promedio de valoraciones aquí, si es necesario
-      // Puede ser útil refrescar los datos de la receta o recalcular el promedio global
+      setEdicionActiva(false);
+      setValoracionOriginal(null);
+      setValoracionHover(0);
 
     } catch (error) {
-      console.log('Error al eliminar la valoración:', error);
+      console.error('Error al eliminar la valoración:', error);
+
+      setErrorValoracion(
+        error.response?.data?.mensaje ||
+        'No se pudo eliminar tu valoración. Intentá nuevamente.'
+      );
+
+    } finally {
+      setEliminandoValoracion(false);
     }
   };
 
@@ -743,48 +939,64 @@ const DetalleReceta = () => {
     const nuevosPasos = [...pasosEditados];
     nuevosPasos[index] = nuevoValor;
     setPasosEditados(nuevosPasos);
+
+    if (
+        nuevosPasos.length > 0 &&
+        nuevosPasos.every(paso => paso.trim() !== '')
+    ) {
+        setErrorPasosDetalle('');
+    }
   };
 
   // Función para agregar un nuevo paso
   const agregarPaso = () => {
-    setPasosEditados([...pasosEditados, '']); // Añadir un nuevo paso vacío
+    setPasosEditados(prev => [...prev, '']);
+    setImagenesPasosFiles(prev => [...prev, null]);
+    setImagenesOriginales(prev => [...prev, null]);
+    setImagenesEditadas(prev => [...prev, null]);
   };
 
   // Función para quitar paso
   const eliminarPaso = (indexAEliminar) => {
-
-    // 🔥 si había imagen original, marcarla para eliminar
+    // Marcar la imagen original para eliminar de Cloudinary
     const imagenAEliminar = imagenesOriginales[indexAEliminar];
 
     if (imagenAEliminar) {
-      setImagenesAEliminar(prev => [...prev, imagenAEliminar]);
+        setImagenesAEliminar(prev => [...prev, imagenAEliminar]);
     }
 
-    // eliminar texto
+    // Eliminar el texto
     setPasosEditados(prev => {
-      const nuevos = [...prev];
-      nuevos.splice(indexAEliminar, 1);
-      return nuevos;
+        const nuevos = [...prev];
+        nuevos.splice(indexAEliminar, 1);
+        return nuevos;
     });
 
-    // eliminar archivo nuevo si existía
+    // Eliminar el archivo o preview correspondiente
     setImagenesPasosFiles(prev => {
-      const nuevas = [...prev];
+        const nuevas = [...prev];
+        const eliminada = nuevas[indexAEliminar];
 
-      const eliminada = nuevas[indexAEliminar];
-      if (eliminada?.preview && eliminada?.file) {
-        URL.revokeObjectURL(eliminada.preview);
-      }
+        if (eliminada?.preview && eliminada.file) {
+            URL.revokeObjectURL(eliminada.preview);
+        }
 
-      nuevas.splice(indexAEliminar, 1);
-      return nuevas;
+        nuevas.splice(indexAEliminar, 1);
+        return nuevas;
     });
 
-    // eliminar de originales
+    // Eliminar la imagen original correspondiente
     setImagenesOriginales(prev => {
-      const nuevas = [...prev];
-      nuevas.splice(indexAEliminar, 1);
-      return nuevas;
+        const nuevas = [...prev];
+        nuevas.splice(indexAEliminar, 1);
+        return nuevas;
+    });
+
+    // IMPORTANTE: sincronizar también las imágenes que se muestran
+    setImagenesEditadas(prev => {
+        const nuevas = [...prev];
+        nuevas.splice(indexAEliminar, 1);
+        return nuevas;
     });
   };
 
@@ -814,7 +1026,7 @@ const DetalleReceta = () => {
       return nuevas;
     });
 
-    // 🔥 eliminar visualmente YA
+    // eliminar visualmente YA
     setImagenesEditadas(prev => {
       const nuevas = [...prev];
       nuevas[index] = null;
@@ -838,21 +1050,39 @@ const DetalleReceta = () => {
 
   //Valoracion de receta
   const manejarValoracion = async (valor) => {
-  try {
-    // Si está en modo de edición o es una nueva valoración
-    await axios.post(`${API_BASE_URL}/api/valoraciones`, {
-      recetaId: id,
-      usuarioId: usuarioEnSesion._id,
-      valor,
-    });
+    if (guardandoValoracion) return;
 
-    setValoracionUsuario(valor);
-    setYaValorado(true);
-    // Desactivar el modo de edición
-    setEdicionActiva(false);
+    setGuardandoValoracion(true);
+    setErrorValoracion('');
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/valoraciones`, {
+        recetaId: id,
+        usuarioId: usuarioEnSesion._id,
+        valor,
+      });
+
+      setValoracionUsuario(valor);
+      setYaValorado(true);
+      setReceta(prev => ({
+        ...prev,
+        valoracion: response.data.valoracion
+      }));
+
+      setEdicionActiva(false);
+      setValoracionOriginal(null);
+      setValoracionHover(0);
 
     } catch (error) {
-      console.log('Error al valorar la receta:', error);
+      console.error('Error al valorar la receta:', error);
+
+      setErrorValoracion(
+        error.response?.data?.mensaje ||
+        'No se pudo guardar tu valoración. Intentá nuevamente.'
+      );
+
+    } finally {
+      setGuardandoValoracion(false);
     }
   };
 
@@ -1065,7 +1295,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
       return nuevas;
     });
 
-    // 👇 esto hace que el usuario vea el cambio inmediato
+    // esto hace que el usuario vea el cambio inmediato
     setImagenesEditadas(prev => {
       const nuevas = [...prev];
       nuevas[index] = preview;
@@ -1089,17 +1319,21 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
   };
 
   const entrarEnEdicionPasos = () => {
+    setErrorPasosDetalle('');
     setPasosEditable(true);
 
     setPasosEditados([...pasos]);
 
-    setImagenesOriginales(receta.imagenesPasos || []);
+    const imagenesActuales = receta.imagenesPasos || [];
 
-    setImagenesPasosFiles([]); // 🔥 limpiar estado viejo
-
+    setImagenesOriginales([...imagenesActuales]);
+    setImagenesEditadas([...imagenesActuales]);
     setImagenesPasosFiles(
-      reconstruirImagenesDesdeReceta(receta.imagenesPasos || [])
+        reconstruirImagenesDesdeReceta(imagenesActuales)
     );
+    
+    // No arrastrar eliminaciones de una edición anterior
+    setImagenesAEliminar([]);
   };
 
 
@@ -1469,11 +1703,15 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                     ) : (
                       <>
                         <input
-                          className="nuevo-titulo"
-                          value={receta.titulo}
-                          onChange={(e) =>
-                            setReceta({ ...receta, titulo: e.target.value })
-                          }
+                          className={`nuevo-titulo ${errorTituloDetalle ? 'input-error' : ''}`}
+                          value={receta.titulo || ''}
+                          onChange={(e) => {
+                              setReceta({ ...receta, titulo: e.target.value });
+
+                              if (e.target.value.trim()) {
+                                  setErrorTituloDetalle('');
+                              }
+                          }}
                         />
 
                         <div className="cancel-ok-titulo">
@@ -1484,6 +1722,16 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                             <i className="fas fa-check-circle"></i>
                           </a>
                         </div>
+
+                        <div
+                          className={`error-container ${errorTituloDetalle ? 'visible' : ''}`}
+                          role="alert"
+                          aria-hidden={!errorTituloDetalle}
+                        >
+                          <i className="fas fa-exclamation-circle"></i>
+                          <p>{errorTituloDetalle}</p>
+                        </div>
+
                       </>
                     )}
 
@@ -1498,7 +1746,16 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         onMouseEnter={() => setMostrarEliminar(true)}
                         onMouseLeave={() => setMostrarEliminar(false)}
                       >
-                        <div className="detalles-valoracion" ref={estrellasRef}>
+                        <div
+                            className="detalles-valoracion"
+                            ref={estrellasRef}
+                            style={{
+                              pointerEvents: guardandoValoracion ? 'none' : 'auto',
+                              cursor: guardandoValoracion ? 'wait' : 'default',
+                              opacity: guardandoValoracion ? 0.6 : 1
+                            }}
+                            aria-busy={guardandoValoracion}
+                        >
                           {[1, 2, 3, 4, 5].map((i) => (
                             <i
                               key={i}
@@ -1538,6 +1795,17 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                       {edicionActiva && (
                         <p className="mensaje-edicion">Puedes editar tu valoración ahora.</p>
                       )}
+
+
+                      <div
+                        className={`error-container ${errorValoracion ? 'visible' : ''}`}
+                        role="alert"
+                        aria-hidden={!errorValoracion}
+                      >
+                        <i className="fas fa-exclamation-circle"></i>
+                        <p>{errorValoracion}</p>
+                      </div>
+                      
                     </div>
                   )}
   
@@ -1590,61 +1858,70 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
               <div className="separador-contenido-receta"></div>
 
-              <div className="detalles-cantidades">
+              <div className="div-detalles-cantidades">
+                <div className="detalles-cantidades">
+                  
 
+                  <div className="titulo-detalles-cantidades">
+                      <p>Ingredientes</p>
 
-                <div className="titulo-detalles-cantidades">
-                    <p>Ingredientes</p>
-
-                    {esPropietario && (
-                        <a className="btn-editar-ingredientes" onClick={cambiarIngredientes}>
-                            <i className="fas fa-pencil-alt" title="Editar ingredientes"></i>
-                        </a>
-                    )}
-                </div>
-                {!ingredientesEditable ? (
-                  <>
-                    <div className='valores-cantidad'>
-                      {ingredientesCantidades.split('\n').map((ingrediente, index) => { //Separa cada linea con una "," como un elemento nuevo.
-                        const partes = ingrediente.split(':'); //Separa cada ingrediente con su cantidad , ingrediente:cantidad por cada linea.
-                        if (partes.length === 2) { //Ejemplo: partes = ["Harina", "200g"]
-                          return (
-                            <div className="fila-ingrediente" key={index}>
-                              <span className="nombre-ingrediente">
-                                  {capitalizarPrimeraLetra(partes[0].trim())}
-                              </span>
-
-                              <span className="cantidad-ingrediente">
-                                  {partes[1].trim()}
-                              </span>
-                            </div>
-                          );
-                        }
-
-                        return <div key={index}>{ingrediente}</div>; 
-
-                      })}
-                    </div>
-                  </>
-                ) : (
+                      {esPropietario && (
+                          <a className="btn-editar-ingredientes" onClick={cambiarIngredientes}>
+                              <i className="fas fa-pencil-alt" title="Editar ingredientes"></i>
+                          </a>
+                      )}
+                  </div>
+                  {!ingredientesEditable ? (
                     <>
-                    <div className="editor-ingredientes">
+                      <div className='valores-cantidad'>
+                        {ingredientesCantidades.split('\n').map((ingrediente, index) => { //Separa cada linea con una "," como un elemento nuevo.
+                          const partes = ingrediente.split(':'); //Separa cada ingrediente con su cantidad , ingrediente:cantidad por cada linea.
+                          if (partes.length === 2) { //Ejemplo: partes = ["Harina", "200g"]
+                            return (
+                              <div className="fila-ingrediente" key={index}>
+                                <span className="nombre-ingrediente">
+                                    {capitalizarPrimeraLetra(partes[0].trim())}
+                                </span>
+
+                                <span className="cantidad-ingrediente">
+                                    {partes[1].trim()}
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          return <div key={index}>{ingrediente}</div>; 
+
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="editor-ingredientes">
                         {filasIngredientes.map((fila, index) => (
                             <div className="fila-editor-ingrediente" key={index}>
                                 <span className="viñeta-editor-ingrediente">•</span>
 
                                 <input
-                                    className="input-nombre-ingrediente"
-                                    type="text"
-                                    value={fila.nombre}
-                                    placeholder="Ingrediente"
-                                    aria-label={`Ingrediente ${index + 1}`}
-                                    onChange={(e) =>
-                                        actualizarFilaIngrediente(
-                                            index,
-                                            'nombre',
-                                            e.target.value
-                                        )
+                                  className={`input-nombre-ingrediente ${
+                                    errorIngredientesDetalle &&
+                                    !fila.nombre.trim() &&
+                                    (fila.cantidad.trim() ||
+                                    (index === 0 && !filasIngredientes.some(f => f.nombre.trim() || f.cantidad.trim())))
+                                    ? 'input-error'
+                                    : ''
+                                  }`}
+
+                                  type="text"
+                                  value={fila.nombre}
+                                  placeholder="Ingrediente"
+                                  aria-label={`Ingrediente ${index + 1}`}
+                                  onChange={(e) =>
+                                      actualizarFilaIngrediente(
+                                          index,
+                                          'nombre',
+                                          e.target.value
+                                      )
                                     }
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
@@ -1655,24 +1932,32 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                 />
 
                                 <input
-                                    className="input-cantidad-ingrediente"
-                                    type="text"
-                                    value={fila.cantidad}
-                                    placeholder="Cantidad"
-                                    aria-label={`Cantidad del ingrediente ${index + 1}`}
-                                    onChange={(e) =>
-                                        actualizarFilaIngrediente(
-                                            index,
-                                            'cantidad',
-                                            e.target.value
-                                        )
+                                  className={`input-cantidad-ingrediente ${
+                                    errorIngredientesDetalle &&
+                                    !fila.cantidad.trim() &&
+                                    (fila.nombre.trim() ||
+                                    (index === 0 && !filasIngredientes.some(f => f.nombre.trim() || f.cantidad.trim())))
+                                        ? 'input-error'
+                                        : ''
+                                  }`}
+
+                                  type="text"
+                                  value={fila.cantidad}
+                                  placeholder="Cantidad"
+                                  aria-label={`Cantidad del ingrediente ${index + 1}`}
+                                  onChange={(e) =>
+                                    actualizarFilaIngrediente(
+                                        index,
+                                        'cantidad',
+                                        e.target.value
+                                    )
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        agregarFilaIngrediente(index);
                                     }
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            agregarFilaIngrediente(index);
-                                        }
-                                    }}
+                                  }}
                                 />
 
                                 <button
@@ -1697,29 +1982,41 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                             <i className="fas fa-plus"></i>
                             <span>Agregar ingrediente</span>
                         </button>
-                    </div>
+                      </div>
 
-                    <div className="cancel-ok-ingredientes">
+                      <div className="cancel-ok-ingredientes">
                         <a
-                            className="btn-cancelar-ingredientes"
-                            onClick={cancelarIngredientes}
-                            title="Cancelar"
+                          className="btn-cancelar-ingredientes"
+                          onClick={cancelarIngredientes}
+                          title="Cancelar"
                         >
-                            <i className="fas fa-times-circle"></i>
+                          <i className="fas fa-times-circle"></i>
                         </a>
 
                         <a
-                            className="btn-guardar-ingredientes"
-                            onClick={guardarIngredientes}
-                            title="Guardar"
+                          className="btn-guardar-ingredientes"
+                          onClick={guardarIngredientes}
+                          title="Guardar"
                         >
-                            <i className="fas fa-check-circle"></i>
+                          <i className="fas fa-check-circle"></i>
                         </a>
-                    </div>
-                </>
-                )}
+                      </div>
+
+                      
+                    </>
+                  )}
+                </div>
+
+                <div
+                  className={`error-container ${errorIngredientesDetalle ? 'visible' : ''}`}
+                  role="alert"
+                  aria-hidden={!errorIngredientesDetalle}
+                >
+                  <i className="fas fa-exclamation-circle"></i>
+                  <p>{errorIngredientesDetalle}</p>
+                </div>
+                
               </div>
-              
               
   
               <div className="detalles-pasos">
@@ -1790,7 +2087,9 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
                               <textarea
                                 id={`paso${index + 1}`}
-                                className="text-area-pasos"
+                                className={`text-area-pasos ${
+                                  errorPasosDetalle && !paso.trim() ? 'input-error' : ''
+                                }`}
                                 placeholder="Escribe el paso..."
                                 value={paso}
                                 onChange={(e) => manejarCambioPaso(index, e.target.value)}
@@ -1864,6 +2163,7 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         <a
                           className="btn-cancelar-pasos"
                           onClick={() => {
+                            setErrorPasosDetalle('');
                             setPasosEditable(false);
                             limpiarPreviews();
 
@@ -1887,6 +2187,25 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                         </a>
 
                       </div>
+
+                    </div>
+
+                    {guardandoPasos && (
+                      <div className="loading-container-eliminar">
+                          <div className="spinner-eliminar"></div>
+                          <p className="loading-message-eliminar">
+                              Guardando los pasos...
+                          </p>
+                      </div>
+                    )}
+
+                    <div
+                      className={`error-container ${errorPasosDetalle ? 'visible' : ''}`}
+                      role="alert"
+                      aria-hidden={!errorPasosDetalle}
+                    >
+                      <i className="fas fa-exclamation-circle"></i>
+                      <p>{errorPasosDetalle}</p>
                     </div>
                   </>
                 )}
@@ -1894,15 +2213,18 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
               </div>
 
               
-
-
-              
-
-
               {/* Acción de eliminar: solo para el propietario */}
               {esPropietario && (
                 <div className="zona-eliminar-receta">
                   <div className="separador-eliminar-receta"></div>
+
+                  <div className="encabezado-eliminar-receta">
+                    <h4>Administración de la receta</h4>
+                    <p>
+                      Desde aquí podés eliminar la receta completa, incluidos sus
+                      ingredientes, pasos e imágenes.
+                    </p>
+                  </div>
 
                   <div className="contenedor-eliminar-receta">
                     <button
@@ -1929,8 +2251,12 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                   <input
                     className="input-comentario"
                     value={nuevoComentario}
-                    onChange={(e) => setNuevoComentario(e.target.value)}
+                    onChange={(e) => {
+                      setNuevoComentario(e.target.value);
+                      if (errorComentario) setErrorComentario('');
+                    }}
                     placeholder="Agregar comentario..."
+                    maxLength={500}
                   />
                   <button
                     className="boton-comentario"
@@ -1939,12 +2265,26 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                   >
                     Enviar
                   </button>
+
+                  <span className={`contador-respuesta ${nuevoComentario.length >= 500 ? 'limite-alcanzado' : ''}`}>
+                    {nuevoComentario.length}/500 caracteres
+                  </span>
+
+                  
                 </div>
+                
+
               ) : (
                 <p className="mensaje-login">
                   Iniciá sesión para comentar esta receta.
                 </p>
+                
               )}
+
+              <div className={`error-container ${errorComentario ? 'visible' : ''}`}>
+                <i className="fas fa-exclamation-circle"></i>
+                <p>{errorComentario || ' '}</p>
+              </div>
             
               <div className="comentarios-usuarios">
                 {comentarios && comentarios.length > 0 ? (
@@ -1988,9 +2328,21 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                               className='input-respuesta-edicion'
                               type="text"
                               value={nuevoComentarioEditado}
-                              onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                              maxLength={500}
+                              onChange={(e) => {
+                                setNuevoComentarioEditado(e.target.value);
+                                if (errorEdicionComentario) setErrorEdicionComentario('');
+                              }}
                             />
 
+                            <span className={`contador-respuesta ${nuevoComentarioEditado.length >= 500 ? 'limite-alcanzado' : ''}`}>
+                              {nuevoComentarioEditado.length}/500 caracteres
+                            </span>
+
+                            <div className={`error-container ${errorEdicionComentario ? 'visible' : ''}`}>
+                              <i className="fas fa-exclamation-circle"></i>
+                              <p>{errorEdicionComentario || ' '}</p>
+                            </div>
 
 
                             <div className="modo-edicion">
@@ -2035,23 +2387,39 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
 
 
 
-                        {/* Input para responder un comentario */}
+                        {/* Input de Respuesta a un comentario */}
                         {comentarioAResponder === comentario._id && (
                           <div className="input-respuesta input-respuesta-comentario">
                             <input
-                              ref={inputRef} // Asigna la referencia aquí
+                              ref={inputRef}
                               type="text"
                               value={respuestaTexto}
-                              onChange={(e) => setRespuestaTexto(e.target.value)}
+                              maxLength={500}
+                              onChange={(e) => {
+                                setRespuestaTexto(e.target.value);
+                                if (errorRespuesta) setErrorRespuesta('');
+                              }}
                               placeholder="Escribe tu respuesta..."
                             />
-                            <button className='boton-enviar-re-respuesta' onClick={agregarRespuesta} disabled={isEnviandoRespuesta}>Enviar</button>
-                          </div>
+
+                            <button
+                              className="boton-enviar-re-respuesta"
+                              onClick={agregarRespuesta}
+                              disabled={isEnviandoRespuesta}
+                            >
+                              Enviar
+                            </button>
+
+                            <span className={`contador-respuesta ${respuestaTexto.length >= 500 ? 'limite-alcanzado' : ''}`}>
+                              {respuestaTexto.length}/500 caracteres
+                            </span>
+
+                            <div className={`error-container ${errorRespuesta ? 'visible' : ''}`}>
+                              <i className="fas fa-exclamation-circle"></i>
+                              <p>{errorRespuesta || ' '}</p>
+                            </div>
+                          </div>          
                         )}
-
-
-
-
                         
                       </div>
 
@@ -2102,8 +2470,24 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                         className='input-respuesta-edicion'
                                         type="text"
                                         value={nuevoComentarioEditado}
-                                        onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                                        maxLength={500}
+                                        onChange={(e) => {
+                                          setNuevoComentarioEditado(e.target.value);
+                                          if (errorEdicionComentario) setErrorEdicionComentario('');
+                                        }}
                                       />
+
+                                      <span className={`contador-respuesta ${nuevoComentarioEditado.length >= 500 ? 'limite-alcanzado' : ''}`}>
+                                        {nuevoComentarioEditado.length}/500 caracteres
+                                      </span>
+
+
+                                      <div className={`error-container ${errorEdicionComentario ? 'visible' : ''}`}>
+                                        <i className="fas fa-exclamation-circle"></i>
+                                        <p>{errorEdicionComentario || ' '}</p>
+                                      </div>
+
+
                                       <div className="modo-edicion">
                                         <a className="btn-guardar-edicion" onClick={() => guardarEdicion(respuesta._id)} title='Guardar'>
                                           <i className="fas fa-check-circle"></i> 
@@ -2193,8 +2577,23 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                                     className="input-respuesta-edicion"
                                                     type="text"
                                                     value={nuevoComentarioEditado}
-                                                    onChange={(e) => setNuevoComentarioEditado(e.target.value)}
+                                                    maxLength={500}
+                                                    onChange={(e) => {
+                                                      setNuevoComentarioEditado(e.target.value);
+                                                      if (errorEdicionComentario) setErrorEdicionComentario('');
+                                                    }}
                                                   />
+
+                                                  <span className={`contador-respuesta ${nuevoComentarioEditado.length >= 500 ? 'limite-alcanzado' : ''}`}>
+                                                    {nuevoComentarioEditado.length}/500 caracteres
+                                                  </span>
+
+                                                  <div className={`error-container ${errorEdicionComentario ? 'visible' : ''}`}>
+                                                    <i className="fas fa-exclamation-circle"></i>
+                                                    <p>{errorEdicionComentario || ' '}</p>
+                                                  </div>
+
+
                                                   <div className="modo-edicion">
                                                     <a
                                                       className="btn-guardar-edicion"
@@ -2246,10 +2645,30 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                         ref={inputRef}
                                         type="text"
                                         value={respuestaTexto}
-                                        onChange={(e) => setRespuestaTexto(e.target.value)}
+                                        maxLength={500}
+                                        onChange={(e) => {
+                                          setRespuestaTexto(e.target.value);
+                                          if (errorRespuesta) setErrorRespuesta('');
+                                        }}
                                         placeholder={`Responder a @${respuesta.usuario.nombre || 'usuario'}`}
                                       />
-                                      <button className='boton-enviar-re-respuesta' onClick={agregarRespuesta}  disabled={isEnviandoRespuesta}>Enviar</button>
+
+                                      <button
+                                        className="boton-enviar-re-respuesta"
+                                        onClick={agregarRespuesta}
+                                        disabled={isEnviandoRespuesta}
+                                      >
+                                        Enviar
+                                      </button>
+
+                                      <span className={`contador-respuesta ${respuestaTexto.length >= 500 ? 'limite-alcanzado' : ''}`}>
+                                        {respuestaTexto.length}/500 caracteres
+                                      </span>
+
+                                      <div className={`error-container ${errorRespuesta ? 'visible' : ''}`}>
+                                        <i className="fas fa-exclamation-circle"></i>
+                                        <p>{errorRespuesta || ' '}</p>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
@@ -2330,9 +2749,11 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
               className="input-tempo"
               type="number"
               min="1"
+              step={1}
               placeholder="Ej. 10"
               value={inputTiempo}
               onChange={handleTiempoInput}
+              disabled={activo}
             />
 
             <div className="contenedor-botones-tempo">

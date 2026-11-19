@@ -12,7 +12,9 @@ const CrearReceta = () => {
   /* ------------------ ESTADOS ------------------ */
 
   const [titulo, setTitulo] = useState("");
-  const [cantidadIngrediente, setCantidadIngrediente] = useState("");
+  const [filasIngredientes, setFilasIngredientes] = useState([
+    { nombre: "", cantidad: "" }
+  ]);
   const [pasos, setPasos] = useState([""]);
   const [imagen, setImagen] = useState(null);
   const [dificultad, setDificultad] = useState("");
@@ -40,7 +42,7 @@ const CrearReceta = () => {
   /* ------------------ REFS ------------------ */
 
     const tituloRef = useRef();
-    const cantidadIngredienteRef = useRef();
+   const ingredientesFilasRef = useRef([]);
     const pasosRef = useRef();
     const imagenRef = useRef();
     const dificultadRef = useRef();
@@ -160,55 +162,97 @@ const CrearReceta = () => {
     
         // Variable para rastrear si hay errores
         let hasError = false;
-    
-        // Manejo de errores en los campos
-        if (!titulo) {
-            setErrorTitulo("Por favor, ingrese el nombre de la receta.");
-            tituloRef.current.focus(); // Foco en el primer campo con error
+        
+
+        const enfocarPrimerError = (ref) => {
+            if (!hasError) {
+                ref?.current?.focus();
+            }
             hasError = true;
-        } 
-        if (!cantidadIngrediente){
-            setErrorIngredientesCantidades("Por favor, ingrese ingredientes y cantidades.");
-            cantidadIngredienteRef.current.focus();
+        };
+
+        if (!titulo.trim()) {
+            setErrorTitulo("Ingresá el nombre de la receta.");
+            enfocarPrimerError(tituloRef);
+        }
+
+        const filasCompletas = filasIngredientes.filter(
+            (fila) => fila.nombre.trim() && fila.cantidad.trim()
+        );
+
+        const filasIncompletas = filasIngredientes.some(
+            (fila) =>
+                (fila.nombre.trim() && !fila.cantidad.trim()) ||
+                (!fila.nombre.trim() && fila.cantidad.trim())
+        );
+
+        if (filasCompletas.length === 0 || filasIncompletas) {
+            setErrorIngredientesCantidades(
+                filasCompletas.length === 0
+                    ? "Agregá al menos un ingrediente con su cantidad."
+                    : "Completá el ingrediente y la cantidad en cada fila."
+            );
+
+            const primeraFilaIncompleta = filasIngredientes.findIndex(
+                (fila) =>
+                    !fila.nombre.trim() ||
+                    !fila.cantidad.trim()
+            );
+
+            if (!hasError) {
+                ingredientesFilasRef.current[primeraFilaIncompleta]?.focus();
+            }
+
             hasError = true;
-        } 
-       if (!pasos.some(p => p.trim() !== "")) {
-            setErrorPasos("Por favor, ingrese pasos de la receta.");
-            pasosRef.current.focus();
+        }
+
+        const pasosIncompletos = pasos.some(paso => !paso.trim());
+        if (pasosIncompletos) {
+            setErrorPasos("Completá todos los pasos de preparación.");
+            if (!hasError) {
+                const primerPasoVacio = pasos.findIndex(paso => !paso.trim());
+                document.getElementById(`paso${primerPasoVacio + 1}`)?.focus();
+            }
             hasError = true;
-        } 
-        if (!imagen){
-            setErrorImagen("Por favor, ingrese una imagen de la receta.");
-            imagenRef.current.focus();
-            hasError = true;
-        } 
-        if (!dificultad){
-            setErrorDificultad("Por favor, seleccione dificultad");
-            dificultadRef.current.focus();
-            hasError = true;
-        } 
-        if (!categoria){
-            setErrorCategoria("Por favor, seleccione categoria");
-            categoriaRef.current.focus();
-            hasError = true;
-        } 
-        if (!tiempoPreparacion){
-            setErrorTiempo("Por favor, coloque tiempo de preparación");
-            tiempoPreparacionRef.current.focus();
-            hasError = true;
-        } 
-        if (!ingredientes){
-            setErrorIngredientes("Por favor, inserte ingredientes de la receta");
-            ingredientesRef.current.focus();
-            hasError = true;
-        } 
-    
-        // Si hay algún error, termina la función aquí
+        }
+
+        if (!imagen) {
+            setErrorImagen("Seleccioná una imagen principal para la receta.");
+            enfocarPrimerError(imagenRef);
+        }
+
+        if (!dificultad) {
+            setErrorDificultad("Seleccioná la dificultad.");
+            enfocarPrimerError(dificultadRef);
+        }
+
+        if (!categoria) {
+            setErrorCategoria("Seleccioná una categoría.");
+            enfocarPrimerError(categoriaRef);
+        }
+
+        const tiempo = Number(tiempoPreparacion);
+
+        if (!tiempoPreparacion || !Number.isInteger(tiempo) || tiempo < 1) {
+            setErrorTiempo("Ingresá un tiempo válido, de al menos 1 minuto.");
+            enfocarPrimerError(tiempoPreparacionRef);
+        }
+
+        if (!ingredientes.trim()) {
+            setErrorIngredientes("Ingresá los ingredientes de la receta.");
+            enfocarPrimerError(ingredientesRef);
+        }
+
+        //Si hay algún error en algun campo, no continuar con la creación de la receta
         if (hasError) return;
     
+
+
         const nuevaReceta = {
             titulo,
-            cantidadIngrediente,
+            ingredientesCantidades: filasCompletas
+                .map((fila) => `${fila.nombre.trim()}:${fila.cantidad.trim()}`)
+                .join("\n"),
             pasos: pasos.join("\n"),
             dificultad,
             categoria,
@@ -265,9 +309,7 @@ const CrearReceta = () => {
 
             console.log('Datos antes de enviar:', nuevaReceta);
 
-            // Asegúrate de que ingredientesCantidades tenga el valor correcto
-            const hiddenInputIngredientes = document.querySelector(".inputOcultoIngredientesCantidades");
-            formData.append('ingredientesCantidades', hiddenInputIngredientes.value); // Asegúrate de que este valor se envíe correctamente
+
             
             nuevaReceta.imagenesPasos = JSON.stringify(imagenesPasosUrls);
 
@@ -294,14 +336,29 @@ const CrearReceta = () => {
 
 /* ------------------ OTRAS FUNCIONES ------------------ */
 
-  // Función para manejar el cambio en el textarea de ingredientes y cantidades
-    const actualizarIngredientesCantidades = (e) => {
-        const value = e.target.value;
-        setCantidadIngrediente(value); // Actualiza el estado
+    const actualizarFilaIngrediente = (index, campo, valor) => {
+        setFilasIngredientes((prev) =>
+            prev.map((fila, i) =>
+                i === index ? { ...fila, [campo]: valor } : fila
+            )
+        );
 
-        // Actualiza el input oculto
-        const hiddenInput = document.querySelector(".inputOcultoIngredientesCantidades");
-        hiddenInput.value = value;  // Guardamos el valor del textarea en el input oculto
+        setErrorIngredientesCantidades("");
+    };
+
+    const agregarFilaIngrediente = () => {
+        setFilasIngredientes((prev) => [
+            ...prev,
+            { nombre: "", cantidad: "" }
+        ]);
+    };
+
+    const quitarFilaIngrediente = (index) => {
+        setFilasIngredientes((prev) =>
+            prev.filter((_, i) => i !== index)
+        );
+
+        setErrorIngredientesCantidades("");
     };
 
 
@@ -354,6 +411,7 @@ const CrearReceta = () => {
                     id="form-receta"
                     encType="multipart/form-data"
                     onSubmit={handleSubmit}
+                    noValidate
                 >
                     <div className="contenedor-receta">
 
@@ -370,50 +428,103 @@ const CrearReceta = () => {
                                 placeholder="Escribí el nombre de tu receta"
                                 className={`receta-titulo ${errorTitulo ? 'input-error' : ''}`}
                                 value={titulo}
-                                onChange={(e) => setTitulo(e.target.value)}
+                                onChange={(e) => {
+                                    setTitulo(e.target.value);
+                                    if (errorTitulo) setErrorTitulo("");
+                                }}
                             />
                         </div>
-                        <div className="modal-error-titulo"  style={{height:'20px'}}>
-                            {errorTitulo && <div id="modalErrorTitulo" > {errorTitulo} </div>}
+
+
+                        <div className="modal-error-titulo">
+                            {errorTitulo && (
+                                <div className="error-container visible" role="alert">
+                                    <i className="fas fa-exclamation-circle"></i>
+                                    <p>{errorTitulo}</p>
+                                </div>
+                            )}
                         </div>
 
-                        {/* Campos de los ingredientes y sus cantidades */}
+                        {/* Ingredientes y cantidades */}
                         <div className="div-cantidad-ingredientes-receta">
 
                             <div className="cabecera-ingredientes">
-                                <label
-                                    htmlFor="cantidadIngrediente"
-                                    className="label-cantidad-ingrediente"
-                                >
+                                <label className="label-cantidad-ingrediente">
                                     Ingredientes y cantidades
                                 </label>
 
-                                <span className="regla-ingredientes">
-                                    ingrediente : cantidad
-                                </span>
                             </div>
 
-                            <textarea
-                                ref={cantidadIngredienteRef}
-                                id="cantidadIngrediente"
-                                className={`text-area-cantidad-ingrediente ${errorIngredientesCantidades ? 'input-error' : ''}`}
-                                placeholder={"Harina: 200 g\nBanana: 2 unidades\nLeche: 150 ml"}
-                                value={cantidadIngrediente}
-                                onChange={actualizarIngredientesCantidades}
-                            ></textarea>
+                            <div className="lista-ingredientes-crear">
 
-                            <input
-                                type="hidden"
-                                className="inputOcultoIngredientesCantidades"
-                                name="ingredientesCantidades"
-                            />
+                                <div className="cabecera-fila-ingredientes">
+                                    <span>Ingrediente</span>
+                                    <span>Cantidad</span>
+                                    <span></span>
+                                </div>
+
+                                {filasIngredientes.map((fila, index) => (
+                                    <div className="fila-ingrediente-crear" key={index}>
+
+                                        <input
+                                            ref={(el) => ingredientesFilasRef.current[index] = el}
+                                            type="text"
+                                            placeholder="Ej. Harina"
+                                            value={fila.nombre}
+                                            className={`input-fila-ingrediente ${
+                                                errorIngredientesCantidades ? 'input-error' : ''
+                                            }`}
+                                            onChange={(e) =>
+                                                actualizarFilaIngrediente(index, "nombre", e.target.value)
+                                            }
+                                        />
+
+                                        <input
+                                            type="text"
+                                            placeholder="Ej. 200 g"
+                                            value={fila.cantidad}
+                                            className={`input-fila-cantidad ${
+                                                errorIngredientesCantidades ? 'input-error' : ''
+                                            }`}
+                                            onChange={(e) =>
+                                                actualizarFilaIngrediente(index, "cantidad", e.target.value)
+                                            }
+                                        />
+
+                                        {filasIngredientes.length > 1 && (
+                                            <button
+                                                type="button"
+                                                className="btn-quitar-ingrediente-crear"
+                                                title="Eliminar ingrediente"
+                                                onClick={() => quitarFilaIngrediente(index)}
+                                            >
+                                                <i className="fas fa-trash-alt"></i>
+                                            </button>
+                                        )}
+
+                                    </div>
+                                ))}
+
+                            </div>
+
+                            <button
+                                type="button"
+                                className="btn-agregar-ingrediente-crear"
+                                onClick={agregarFilaIngrediente}
+                            >
+                                <i className="fas fa-plus"></i>
+                                Agregar ingrediente
+                            </button>
 
                         </div>
 
-
-
-                        <div className="modal-error-ingredientes-cantidades"  style={{height:'20px'}}>
-                            {errorIngredientesCantidades && <div id="modalErrorIngredientesCantidades" > {errorIngredientesCantidades} </div>}
+                        <div className="modal-error-ingredientes-cantidades">
+                            {errorIngredientesCantidades && (
+                                <div className="error-container visible">
+                                    <i className="fas fa-exclamation-circle"></i>
+                                    <p>{errorIngredientesCantidades}</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Campos de los pasos */}
@@ -442,10 +553,21 @@ const CrearReceta = () => {
                                             <textarea
                                                 ref={pasosRef}
                                                 id={`paso${index + 1}`}
-                                                className={`text-area-pasos ${errorPasos ? 'input-error' : ''}`}
+                                                className={`text-area-pasos ${
+                                                    errorPasos && !paso.trim() ? 'input-error' : ''
+                                                }`}
                                                 placeholder="Escribí qué hacer en este paso..."
                                                 value={paso}
-                                                onChange={(e) => handlePasoChange(index, e.target.value)}
+                                                onChange={(e) => {
+                                                    handlePasoChange(index, e.target.value);
+
+                                                    const nuevosPasos = [...pasos];
+                                                    nuevosPasos[index] = e.target.value;
+
+                                                    if (nuevosPasos.every(paso => paso.trim())) {
+                                                        setErrorPasos("");
+                                                    }
+                                                }}
                                                 onInput={autoResize}
                                             />
 
@@ -479,11 +601,17 @@ const CrearReceta = () => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="modal-error-paso" style={{height:'20px'}}>
-                                {errorPasos && <div id="modalErrorPasos" > {errorPasos} </div>}
+
+
+                            <div className="modal-error-paso">
+                                {errorPasos && (
+                                    <div className="error-container visible" role="alert">
+                                        <i className="fas fa-exclamation-circle"></i>
+                                        <p>{errorPasos}</p>
+                                    </div>
+                                )}
                             </div>
                             
-
                             <div className="div-agregar-quitar-pasos">
                                 <button id="btnAgregarPaso" className="btn-agregar-paso" title="Agregar paso" onClick={agregarPaso}>
                                     <i className="fas fa-plus"></i>  Paso
@@ -523,14 +651,22 @@ const CrearReceta = () => {
                                     id="imagen"
                                     name="file"
                                     accept="image/*"
-                                    onChange={previewImage}
+                                    onChange={(e) => {
+                                        previewImage(e);
+                                        if (e.target.files[0]) {
+                                            setErrorImagen("");
+                                        }
+                                    }}
+
                                     className={`input-imagen ${errorImagen ? 'input-error' : ''}`}
                                 />
 
+
                                 <div className="modal-error-imagen">
                                     {errorImagen && (
-                                        <div id="modalErrorImagen">
-                                            {errorImagen}
+                                        <div className="error-container visible" role="alert">
+                                            <i className="fas fa-exclamation-circle"></i>
+                                            <p>{errorImagen}</p>
                                         </div>
                                     )}
                                 </div>
@@ -573,7 +709,10 @@ const CrearReceta = () => {
                                         errorDificultad ? 'input-error' : ''
                                     }`}
                                     value={dificultad}
-                                    onChange={(e) => setDificultad(e.target.value)}
+                                    onChange={(e) => {
+                                        setDificultad(e.target.value);
+                                        if (errorDificultad) setErrorDificultad("");
+                                    }}
                                 >
                                     <option value="">Seleccione...</option>
                                     <option value="Fácil">Fácil</option>
@@ -581,11 +720,14 @@ const CrearReceta = () => {
                                     <option value="Difícil">Difícil</option>
                                 </select>
 
-                                {errorDificultad && (
-                                    <div className="error-detalle-receta">
-                                        {errorDificultad}
-                                    </div>
-                                )}
+                                <div className="error-detalle-receta">
+                                    {errorDificultad && (
+                                        <div className="error-container visible" role="alert">
+                                            <i className="fas fa-exclamation-circle"></i>
+                                            <p>{errorDificultad}</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="campo-detalle-receta">
@@ -600,7 +742,10 @@ const CrearReceta = () => {
                                         errorCategoria ? 'input-error' : ''
                                     }`}
                                     value={categoria}
-                                    onChange={(e) => setCategoria(e.target.value)}
+                                    onChange={(e) => {
+                                        setCategoria(e.target.value);
+                                        if (errorCategoria) setErrorCategoria("");
+                                    }}
                                 >
                                     <option value="">Seleccione...</option>
                                     <option value="Desayuno/Merienda">Desayuno/Merienda</option>
@@ -612,11 +757,16 @@ const CrearReceta = () => {
                                     <option value="Postre">Postre</option>
                                 </select>
 
-                                {errorCategoria && (
-                                    <div className="error-detalle-receta">
-                                        {errorCategoria}
-                                    </div>
-                                )}
+
+                                <div className="error-detalle-receta">
+                                    {errorCategoria && (
+                                        <div className="error-container visible" role="alert">
+                                            <i className="fas fa-exclamation-circle"></i>
+                                            <p>{errorCategoria}</p>
+                                        </div>
+                                    )}
+                                </div>
+
                             </div>
 
                             <div className="campo-detalle-receta">
@@ -637,12 +787,16 @@ const CrearReceta = () => {
                                     <input
                                         ref={tiempoPreparacionRef}
                                         type="text"
+       
                                         id="tiempoPreparacion"
                                         className={`input-tiempo-receta ${
                                             errorTiempo ? 'input-error' : ''
                                         }`}
                                         value={tiempoPreparacion}
-                                        onChange={(e) => setTiempoPreparacion(e.target.value)}
+                                        onChange={(e) => {
+                                            setTiempoPreparacion(e.target.value);
+                                            if (errorTiempo) setErrorTiempo("");
+                                        }}
                                     />
 
 
@@ -656,11 +810,17 @@ const CrearReceta = () => {
                                     </button>
                                 </div>
 
-                                {errorTiempo && (
-                                    <div className="error-detalle-receta">
-                                        {errorTiempo}
-                                    </div>
-                                )}
+
+                                <div className="error-detalle-receta">
+                                    {errorTiempo && (
+                                        <div className="error-container visible" role="alert">
+                                            <i className="fas fa-exclamation-circle"></i>
+                                            <p>{errorTiempo}</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                
                             </div>
 
                         </div>
@@ -685,23 +845,30 @@ const CrearReceta = () => {
                                         placeholder="Harina, banana, leche..."
                                         name="ingredientes"
                                         value={ingredientes}
-                                        onChange={(e) => setIngredientes(e.target.value)}
+                                        onChange={(e) => {
+                                            setIngredientes(e.target.value);
+                                            if (errorIngredientes) setErrorIngredientes("");
+                                        }}
                                     />
 
                                     <span className="ayuda-ingredientes-final">
-                                        Separá cada ingrediente con una coma
+                                        Separá por comas los ingredientes principales o palabras por las que quieras que encuentren tu receta.
                                     </span>
                                 </div>
 
                             </div>
 
+
+
                             <div className="error-ingredientes-final">
                                 {errorIngredientes && (
-                                    <div id="modalErrorIngredientes">
-                                        {errorIngredientes}
+                                    <div className="error-container visible" role="alert">
+                                        <i className="fas fa-exclamation-circle"></i>
+                                        <p>{errorIngredientes}</p>
                                     </div>
                                 )}
                             </div>
+
 
                         </div>
 

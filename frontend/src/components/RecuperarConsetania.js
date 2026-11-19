@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Helmet } from 'react-helmet';
@@ -10,9 +10,11 @@ const RecuperarContrasenia = () => {
     const [usuario, setUsuario] = useState('');
     const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
+    const [mostrarError, setMostrarError] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setMostrarError(false);
 
          // Muestra el SweetAlert de carga al enviar
          Swal.fire({
@@ -47,15 +49,29 @@ const RecuperarContrasenia = () => {
             setError('');
             setUsuario('');
         })
-            .catch(err => {
-                Swal.close(); // Cierra el SweetAlert de carga antes de mostrar el mensaje de error
-                setError(err.response.data.error);
-                setMensaje('');
-                
-                // Borrar el mensaje de error después de 5 segundos
-                setTimeout(() => setError(''), 5000);
-            });
+        .catch(err => {
+            Swal.close();
+
+            if (err.response?.status === 404) {
+                setError('No encontramos un usuario o email asociado a esos datos.');
+            } else {
+                setError('No pudimos procesar tu solicitud. Intentá nuevamente.');
+            }
+
+            setMensaje('');
+            setMostrarError(true);
+        });
     };
+
+    useEffect(() => {
+        if (mostrarError) {
+            const timer = setTimeout(() => {
+                setMostrarError(false);
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [mostrarError]);
 
     return (
         <div>
@@ -84,8 +100,13 @@ const RecuperarContrasenia = () => {
                                 required 
                             />
                         </div>
-                        <div style={{height:'20px'}}>
-                            {error && <p className="error-usuario-recuperar">{error}</p>}
+                        <div
+                            className={`error-container ${mostrarError ? 'visible' : ''}`}
+                            role="alert"
+                            aria-hidden={!mostrarError}
+                        >
+                            <i className="fas fa-exclamation-circle"></i>
+                            <p>{error}</p>
                         </div>
                         <button className="boton-recuperar-contrasenia" type="submit">Recuperar</button>
 

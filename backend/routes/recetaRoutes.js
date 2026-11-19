@@ -78,8 +78,22 @@ router.post('/', upload.none(), async (req, res) => {
 
 
         // Validación de campos
-        if (!titulo || !ingredientesCantidades || !pasos  ||  !imagen || !dificultad || !categoria || !tiempoPreparacion || !ingredientes) {
-            return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+        const camposValidos =
+            titulo?.trim() &&
+            ingredientesCantidades?.trim() &&
+            pasosArray.length > 0 &&
+            pasosArray.every(paso => paso.trim()) &&
+            imagen?.trim() &&
+            dificultad?.trim() &&
+            categoria?.trim() &&
+            Number.isInteger(Number(tiempoPreparacion)) &&
+            Number(tiempoPreparacion) >= 1 &&
+            ingredientes?.trim();
+
+        if (!camposValidos) {
+            return res.status(400).json({
+                mensaje: 'Todos los campos son obligatorios y deben contener datos válidos.'
+            });
         }
 
 
@@ -117,22 +131,34 @@ router.put('/:id/titulo', async (req, res) => {
     const { id } = req.params;
     const { titulo } = req.body;
 
+    // Validar que el título sea un texto y no esté vacío
+    if (typeof titulo !== 'string' || !titulo.trim()) {
+        return res.status(400).json({
+            message: 'El título de la receta no puede estar vacío.'
+        });
+    }
+
     try {
-        // Buscar la receta por ID y actualizar el título
         const recetaActualizada = await Receta.findByIdAndUpdate(
-            id, 
-            { titulo }, 
-            { new: true } //Devuelve el documento actualizado de la bd, sin esto seguro traeria el anterior, sin actualizar.
+            id,
+            { titulo: titulo.trim() },
+            { new: true, runValidators: true }
         );
 
         if (!recetaActualizada) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
+            return res.status(404).json({
+                message: 'Receta no encontrada.'
+            });
         }
 
-        res.json(recetaActualizada); // Devolver la receta actualizada
+        res.json(recetaActualizada);
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al actualizar la receta' });
+        console.error('Error al actualizar el título:', error);
+
+        res.status(500).json({
+            message: 'No se pudo actualizar el título de la receta.'
+        });
     }
 });
 
@@ -143,75 +169,176 @@ router.put('/:id/ingredientesCantidades', async (req, res) => {
     const { id } = req.params;
     const { ingredientesCantidades } = req.body;
 
+    if (typeof ingredientesCantidades !== 'string') {
+        return res.status(400).json({
+            message: 'Los ingredientes enviados no son válidos.'
+        });
+    }
+
+    const filas = ingredientesCantidades
+        .split(/\r?\n/)
+        .map(linea => linea.trim())
+        .filter(linea => linea !== '');
+
+    if (filas.length === 0) {
+        return res.status(400).json({
+            message: 'Agregá al menos un ingrediente con su cantidad.'
+        });
+    }
+
+    const ingredientesValidos = filas.every(linea => {
+        const separador = linea.indexOf(':');
+
+        if (separador === -1) return false;
+
+        const nombre = linea.slice(0, separador).trim();
+        const cantidad = linea.slice(separador + 1).trim();
+
+        return nombre !== '' && cantidad !== '';
+    });
+
+    if (!ingredientesValidos) {
+        return res.status(400).json({
+            message: 'Cada ingrediente debe tener un nombre y una cantidad.'
+        });
+    }
+
+    const ingredientesNormalizados = filas.map(linea => {
+        const separador = linea.indexOf(':');
+        const nombre = linea.slice(0, separador).trim();
+        const cantidad = linea.slice(separador + 1).trim();
+
+        return `${nombre}:${cantidad}`;
+    });
+
     try {
-        // Buscar la receta por ID y actualizar la cantidad de ingredientes
         const recetaActualizada = await Receta.findByIdAndUpdate(
-            id, 
-            { ingredientesCantidades }, 
-            { new: true }
+            id,
+            { ingredientesCantidades: ingredientesNormalizados },
+            { new: true, runValidators: true }
         );
 
         if (!recetaActualizada) {
-            return res.status(404).json({ message: 'Receta no encontrada' });
+            return res.status(404).json({
+                message: 'Receta no encontrada.'
+            });
         }
 
-        res.json(recetaActualizada); // Devolver la receta actualizada
+        res.json(recetaActualizada);
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al actualizar la receta' });
+        console.error('Error al actualizar los ingredientes:', error);
+
+        res.status(500).json({
+            message: 'No se pudieron actualizar los ingredientes.'
+        });
     }
 });
 
 
 // Ruta para actualizar los pasos de una receta
 router.put('/:id/pasos', async (req, res) => {
-  const { id } = req.params;
-  const { pasos, imagenesPasos, imagenesAEliminar } = req.body;
+    const { id } = req.params;
+    const { pasos, imagenesPasos, imagenesAEliminar } = req.body;
 
-  try {
-    const receta = await Receta.findById(id);
-
-    if (!receta) {
-      return res.status(404).json({ message: 'Receta no encontrada' });
+    if (!Array.isArray(pasos) && typeof pasos !== 'string') {
+        return res.status(400).json({
+            message: 'Los pasos enviados no son válidos.'
+        });
     }
 
-    // 1. Eliminar imágenes viejas SOLO si existen
-    if (imagenesAEliminar && imagenesAEliminar.length > 0) {
-      for (const url of imagenesAEliminar) {
-        if (url) { // 🔥 importante para no romper Cloudinary
-          await eliminarImagenCloudinary(url);
+    const pasosNormalizados = (Array.isArray(pasos) ? pasos : pasos.split(/\r?\n/))
+        .map(paso => typeof paso === 'string' ? paso.trim() : '');
+
+    if (
+        pasosNormalizados.length === 0 ||
+        pasosNormalizados.some(paso => !paso)
+    ) {
+        return res.status(400).json({
+            message: 'Todos los pasos deben tener contenido. Agregá al menos un paso.'
+        });
+    }
+
+    if (
+        imagenesPasos !== undefined &&
+        !Array.isArray(imagenesPasos)
+    ) {
+        return res.status(400).json({
+            message: 'Las imágenes de los pasos no son válidas.'
+        });
+    }
+
+    if (
+        Array.isArray(imagenesPasos) &&
+        imagenesPasos.length !== pasosNormalizados.length
+    ) {
+        return res.status(400).json({
+            message: 'La cantidad de imágenes no coincide con la cantidad de pasos.'
+        });
+    }
+
+    if (
+        imagenesAEliminar !== undefined &&
+        !Array.isArray(imagenesAEliminar)
+    ) {
+        return res.status(400).json({
+            message: 'La lista de imágenes a eliminar no es válida.'
+        });
+    }
+
+    try {
+        const receta = await Receta.findById(id);
+
+        if (!receta) {
+            return res.status(404).json({
+                message: 'Receta no encontrada.'
+            });
         }
-      }
+
+        const imagenesLimpias = Array.isArray(imagenesPasos)
+            ? imagenesPasos.map(img => img || null)
+            : [];
+
+        // Identificar las URLs que siguen utilizándose.
+        const imagenesConservadas = new Set(
+            imagenesLimpias.filter(Boolean)
+        );
+
+        // Excluir cualquier URL que todavía esté asociada a un paso.
+        const imagenesParaEliminar = [
+            ...new Set(
+                (imagenesAEliminar || []).filter(
+                    url => typeof url === 'string' &&
+                    url &&
+                    !imagenesConservadas.has(url)
+                )
+            )
+        ];
+
+        // Guardar primero la nueva información en MongoDB.
+        receta.pasos = pasosNormalizados;
+        receta.imagenesPasos = imagenesLimpias;
+
+        await receta.save();
+
+        // Eliminar de Cloudinary solamente las imágenes que ya no se usan.
+        for (const url of imagenesParaEliminar) {
+            try {
+                await eliminarImagenCloudinary(url);
+            } catch (error) {
+                console.error('No se pudo eliminar la imagen de Cloudinary:', url, error);
+            }
+        }
+
+        res.json(receta);
+
+    } catch (error) {
+        console.error('Error actualizando pasos:', error);
+
+        res.status(500).json({
+            message: 'Error al actualizar los pasos de la receta.'
+        });
     }
-
-    // 2. Limpiar array de imágenes (Mongo NO quiere undefined)
-    let imagenesLimpias = [];
-
-    if (Array.isArray(imagenesPasos)) {
-    imagenesLimpias = imagenesPasos.map(img => img || null);
-    }
-
-    // 3. Guardar receta
-    //  Normalizar pasos para que SIEMPRE sea array
-    let pasosNormalizados = [];
-
-    if (Array.isArray(pasos)) {
-        pasosNormalizados = pasos;
-        } else if (typeof pasos === 'string') {
-        pasosNormalizados = pasos.split('\n').map(p => p.trim());
-    }
-
-    receta.pasos = pasosNormalizados;
-    receta.imagenesPasos = imagenesLimpias;
-
-    await receta.save();
-
-    res.json(receta);
-
-  } catch (error) {
-    console.error("Error actualizando pasos:", error);
-    res.status(500).json({ message: 'Error al actualizar la receta' });
-  }
 });
 
 
