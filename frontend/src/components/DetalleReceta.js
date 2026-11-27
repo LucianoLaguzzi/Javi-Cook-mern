@@ -2669,6 +2669,8 @@ const eliminarComentarioEnArbol = (comentarios, idAEliminar) => {
                                         <i className="fas fa-exclamation-circle"></i>
                                         <p>{errorRespuesta || ' '}</p>
                                       </div>
+
+                                      
                                     </div>
                                   )}
                                 </div>

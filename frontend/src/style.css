@@ -5362,7 +5362,7 @@ margin-left: 20px;
 }
 
 
-.input-comentarios + .error-container {
+.detalles-comentarios ~ .error-container {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -5385,7 +5385,7 @@ margin-left: 20px;
     transition: opacity 0.2s ease;
 }
 
-.input-comentarios + .error-container.visible {
+.detalles-comentarios ~ .error-container.visible {
     visibility: visible;
     opacity: 1;
     background: rgba(133, 38, 38, 0.22);
@@ -5393,14 +5393,14 @@ margin-left: 20px;
     border-left-color: #e36b65;
 }
 
-.input-comentarios + .error-container i {
+.detalles-comentarios ~ .error-container i {
     flex: 0 0 auto;
     margin: 0;
     font-size: 17px;
     color: #f08a83;
 }
 
-.input-comentarios + .error-container p {
+.detalles-comentarios ~ .error-container p {
     margin: 0;
     font-size: 12px;
     font-weight: 500;

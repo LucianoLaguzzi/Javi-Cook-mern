@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
-            .populate('usuario') // Popula el usuario que creó la receta
+            .populate('usuario', 'nombre') // Popula el usuario que creó la receta
             .populate({ 
                 path: 'comentarios', 
                 populate: { 

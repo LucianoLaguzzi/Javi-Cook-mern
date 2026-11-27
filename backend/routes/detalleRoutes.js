@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/:id', async (req, res) => {
     try {
         const receta = await Receta.findById(req.params.id)
-            .populate('usuario')
+            .populate('usuario', 'nombre')
             .populate({ 
                 path: 'comentarios',
                 populate: { 

@@ -15,7 +15,7 @@ const router = express.Router();
 // Obtener todas las recetas
 router.get('/', async (req, res) => {
     try {
-        const recetas = await Receta.find().populate('usuario').sort({ createdAt: -1});
+        const recetas = await Receta.find().populate('usuario', 'nombre').sort({ createdAt: -1 });
         res.status(200).json(recetas);
     } catch (error) {
         console.error("Error al cargar recetas", error);
@@ -29,7 +29,7 @@ router.get('/usuario/:id', async (req, res) => {
 
     try {
         // Busca todas las recetas cuyo campo "usuario" coincida con el ID del usuario logueado
-        const recetas = await Receta.find({ usuario: usuarioId }).populate('usuario');
+        const recetas = await Receta.find({ usuario: usuarioId })
         
         // Devolver las recetas como respuesta
         res.status(200).json(recetas);
@@ -47,8 +47,6 @@ const upload = multer();
 
 // ruta para crear una nueva receta con imagen
 router.post('/', upload.none(), async (req, res) => {
-
-    console.log('Apenas entro al backend, recibo en el body:', req.body); 
 
     try {
         const { titulo, ingredientesCantidades, pasos, imagen, dificultad, categoria, tiempoPreparacion, ingredientes, usuario,imagenesPasos } = req.body;
@@ -115,10 +113,8 @@ router.post('/', upload.none(), async (req, res) => {
 
         const recetaGuardada = await nuevaReceta.save();
 
-        // Poblar el campo 'usuario' para obtener toda la información del usuario
-        const recetaConUsuario = await Receta.findById(recetaGuardada._id).populate('usuario');
+        res.status(201).json(recetaGuardada);
 
-        res.status(201).json(recetaConUsuario);
     } catch (error) {
         console.error("Error al crear receta", error);
         res.status(400).json({ mensaje: "Error al crear receta", error });
@@ -442,7 +438,7 @@ const eliminarImagenCloudinary = async (urlImagen) => {
 // recetaRoutes.js
 router.get('/top3', async (req, res) => {
     try {
-        const recetas = await Receta.find({ valoracion: { $gt: 0 } }).populate('usuario')  // Solo recetas valoradas
+        const recetas = await Receta.find({ valoracion: { $gt: 0 } }).populate('usuario', 'nombre')  // Solo recetas valoradas
             .sort({ valoracion: -1, fecha: -1 })  // Orden por valoración y luego por fecha
             .limit(3);  // Limitar a 3
 

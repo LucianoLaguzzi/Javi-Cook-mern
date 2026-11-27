@@ -64,8 +64,13 @@ router.post('/registrar', async (req, res) => {
     await nuevoUsuario.save();
 
     res.status(201).json({
-      mensaje: 'Usuario creado exitosamente',
-      usuario: nuevoUsuario
+        mensaje: 'Usuario creado exitosamente',
+        usuario: {
+            _id: nuevoUsuario._id,
+            nombre: nuevoUsuario.nombre,
+            email: nuevoUsuario.email,
+            imagenPerfil: nuevoUsuario.imagenPerfil
+        }
     });
 
   } catch (error) {
@@ -96,22 +101,30 @@ router.post('/registrar', async (req, res) => {
 // Ruta para loguear un usuario
 router.post('/login', async (req, res) => {
     try {
-      const { nombre, contrasenia } = req.body;
+        const { nombre, contrasenia } = req.body;
       
-      // Buscar el usuario por nombre
-      const usuario = await Usuario.findOne({ nombre });
+        // Buscar el usuario por nombre
+        const usuario = await Usuario.findOne({ nombre });
       
-      if (!usuario) {
-        return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-      }
+        if (!usuario) {
+            return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+        }
   
-      // Comparar la contraseña proporcionada con la contraseña hasheada
-      const isMatch = await bcrypt.compare(contrasenia, usuario.contrasenia);
-      if (!isMatch) {
-        return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-      }
+        // Comparar la contraseña proporcionada con la contraseña hasheada
+        const isMatch = await bcrypt.compare(contrasenia, usuario.contrasenia);
+        if (!isMatch) {
+            return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+        }
       
-      res.status(200).json({ mensaje: 'Usuario logueado exitosamente', usuario });
+        res.status(200).json({
+            mensaje: 'Usuario logueado exitosamente',
+            usuario: {
+                _id: usuario._id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                imagenPerfil: usuario.imagenPerfil
+            }
+        });
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al loguear', error });
     }
@@ -152,7 +165,13 @@ router.put('/actualizarPerfil/:id', async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        res.json(usuarioActualizado);
+        res.json({
+            _id: usuarioActualizado._id,
+            nombre: usuarioActualizado.nombre,
+            email: usuarioActualizado.email,
+            imagenPerfil: usuarioActualizado.imagenPerfil
+        });
+        
     } catch (error) {
         // Si el error es de duplicidad (duplicate key error) se verifica con error.code === 11000
         if (error.code === 11000) {
